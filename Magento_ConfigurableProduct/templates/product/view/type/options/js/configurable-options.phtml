@@ -49,7 +49,6 @@ $currentProduct = $viewModels->require(CurrentProduct::class);
                         }
                     }
                     this.preselectQuerystringItems();
-                    this.preselectLocationHashItems();
                 });
             },
             productIndex: 0,
@@ -354,11 +353,6 @@ $currentProduct = $viewModels->require(CurrentProduct::class);
                 // pre-select option like ?size=167
                 const urlQueryParams = new URLSearchParams(window.location.search.replace('?',''));
                 this.preselectItemsBasedOnLocation(attribute => urlQueryParams.get(attribute.code));
-            },
-            preselectLocationHashItems() {
-                // pre-select option like #144=167
-                const urlHashParams = new URLSearchParams(window.location.hash.replace('#',''));
-                this.preselectItemsBasedOnLocation(attribute => urlHashParams.get(attribute.id));
             },
             preselectItemsBasedOnLocation(getLocationValue) {
                 Object.values(this.optionConfig.attributes).map(attribute => {
