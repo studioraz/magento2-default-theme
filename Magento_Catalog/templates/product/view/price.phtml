@@ -296,7 +296,7 @@ if ($product->getIsSalable()) {
                 <?php if ($priceValidUntil): ?>
                     <meta itemprop="priceValidUntil" content="<?= $escaper->escapeHtmlAttr($priceValidUntil) ?>" />
                 <?php endif; ?>
-                <link itemprop="availability" href="<?= $availability ?>" />
+                <link itemprop="availability" href="<?= $escaper->escapeHtmlAttr($availability) ?>" />
             </div>
             <?php if ($productPriceViewModel->displayPriceInclAndExclTax()): ?>
                 <div class="final-price-excl-tax">
