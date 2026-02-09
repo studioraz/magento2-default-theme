@@ -42,6 +42,8 @@ if ($productPriceViewModel->displayPriceInclAndExclTax()) {
 }
 
 $displayTax = $productPriceViewModel->displayPriceIncludingTax();
+$availability = $product->getIsSalable() ? 'http://schema.org/InStock' : 'http://schema.org/OutOfStock';
+$priceValidUntil = $product->getSpecialToDate();
 
 // We expect to refactor MSRP Support on the product detail page, which is why we put this code here
 // and not in a view model. Once it is a method on a view model, it is part of the public API and
@@ -294,9 +296,12 @@ if ($product->getIsSalable()) {
                 <meta itemprop="priceCurrency"
                       content="<?= $escaper->escapeHtmlAttr($productViewModel->getCurrencyData()['code']) ?>">
                 <?php if ($priceValidUntil): ?>
-                    <meta itemprop="priceValidUntil" content="<?= $escaper->escapeHtmlAttr($priceValidUntil) ?>" />
+                    <meta
+                        itemprop="priceValidUntil"
+                        content="<?= $escaper->escapeHtmlAttr(date('Y-m-d', strtotime($priceValidUntil))) ?>"
+                    >
                 <?php endif; ?>
-                <link itemprop="availability" href="<?= $escaper->escapeHtmlAttr($availability) ?>" />
+                <link itemprop="availability" href="<?= $escaper->escapeHtmlAttr($availability) ?>">
             </div>
             <?php if ($productPriceViewModel->displayPriceInclAndExclTax()): ?>
                 <div class="final-price-excl-tax">
