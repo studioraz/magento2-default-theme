@@ -16,9 +16,9 @@
 
         <referenceContainer name="head.additional">
             <block
-                name="catelog.preload.product.gallery"
+                name="catalog.preload.product.gallery"
                 class="Magento\Catalog\Block\Product\View\Gallery"
-                template="Magento_Catalog::page/catelog-preload-product-gallery.phtml"
+                template="Magento_Catalog::page/catalog-preload-product-gallery.phtml"
             />
         </referenceContainer>
 
