@@ -8,6 +8,38 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 [Unreleased]: https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/compare/1.4.3...main
 
+### Added
+
+-   **Add availability and priceValidUntil for product rich snippet**
+    For more information, please refer to [issue #680](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/680).
+
+    Many thanks to Vita Samohina (Perspective) for the contribution!
+
+### Changed
+
+-   **Fix missing support for legacy opacity modifier for the Hyvä checkout with Tailwind 4**
+    For more information, please refer to [issue #1279](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1279).
+
+-   **Fix wrong icon in cart page sidebar for shipping and tax**
+    For more information, please refer to [issue #1283](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1283).
+
+-   **Fix alignment in pagebuilder product slider if only the dots are enabled**
+    For more information, please refer to [merge request #1440](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/merge_requests/1440).
+
+-   **Fix layout shift on PDP caused by preformatted span**
+    For more information, please refer to [merge request #1436](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/merge_requests/1436).
+
+    Many thanks to Finn Reinhardt (Basecom) for the contribution!
+
+-   **Fix missing styling for buttons in user forms**
+    For more information, please refer to [issue #1271](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1271).
+
+    Many thanks to Finn Reinhardt (Basecom) for the contribution!
+
+### Removed
+
+-   Nothing Removed
+
 ## [1.4.3] - 2026-01-09
 
 [1.4.3]: https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/compare/1.4.2...1.4.3
