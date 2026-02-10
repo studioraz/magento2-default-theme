@@ -34,7 +34,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 -   **Fix missing styling for buttons in user forms**
     For more information, please refer to [issue #1271](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1271).
 
-    Many thanks to Finn Reinhardt (Basecom) for the contribution!
+    Many thanks to Viktor Yakaba (Perspective) for the contribution!
+
+-   **Fix use case where success message is empty if no text is passed**
+    For more information, please refer to [issue #1257](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1257).
+
+    Many thanks to Oleksii Rozhnenko (Perspective) for the contribution!
 
 ### Removed
 
