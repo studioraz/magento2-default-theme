@@ -14,25 +14,25 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- Nothing Added
+-   Nothing Added
 
 ### Changed
 
-- **Fix remove wishlist button closing tag**
+-   **Fix remove wishlist button closing tag**
 
-- **Fix PayPal Buttons / PayLater initialization on intersect**
-  Fixed an issue where PayPal (PayLater or Express) buttons were not initialized when the cart data wasn't yet available.
+-   **Fix PayPal Buttons / PayLater initialization on intersect**
+    Fixed an issue where PayPal (PayLater or Express) buttons were not initialized when the cart data wasn't yet available.
 
-  Many thanks to Christoph Hendreich (In Session) for the contribution!
+    Many thanks to Christoph Hendreich (In Session) for the contribution!
 
-- **Fix undefined productId variable in product list item swatches**
-  The script used `productId` instead of `this.productId` in one place.
+-   **Fix undefined productId variable in product list item swatches**
+    The script used `productId` instead of `this.productId` in one place.
 
-- **Improve README.md**
+-   **Improve README.md**
 
 ### Removed
 
-- Nothing removed
+-   Nothing Removed
 
 ## [1.4.2] - 2025-12-10
 
