@@ -218,6 +218,7 @@ $productName = $block->getProduct()->getName();
                         transition ease-in-out duration-150"
                     :class="{ 'hidden': !fullscreen, 'block': fullscreen }"
                     aria-label="<?= $escaper->escapeHtmlAttr(__('Close fullscreen')) ?>"
+                    x-ref="galleryFullscreenCloseBtn"
             >
                 <?= $heroicons->xHtml('', 24, 24, ['aria-hidden' => 'true']) ?>
             </button>
@@ -504,9 +505,13 @@ $productName = $block->getProduct()->getName();
                 document.body.style.overflow = use ? "hidden" : "";
             },
             openFullscreen() {
+                const setFocusTo = this.$refs.galleryFullscreenCloseBtn;
                 this.fullscreen = true;
-
                 hyva.trapFocus(this.$root);
+                this.$nextTick(() => {
+                    this.calcPageSize();
+                    setFocusTo && setFocusTo.focus()
+                });
             },
             closeFullScreen() {
                 const setFocusTo = this.$refs.galleryFullscreenBtn;
