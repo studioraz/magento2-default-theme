@@ -167,6 +167,7 @@ $miniCartOptionShowSku = $block->getShowSku() !== null ? (bool) $block->getShowS
                 ["@pageshow.window"](event) {
                     if (event.persisted) {
                         this.open = false;
+                        window.dispatchEvent(new CustomEvent("reload-customer-section-data"));
                     }
                 }
             }
