@@ -84,7 +84,7 @@ $serializedCheckoutConfig =  $block->getItemsCount() ? $checkoutConfigViewModel-
         }
     }( window.hyva = window.hyva || {} ));
 
-    function initCartMainForm() {
+    function initCartForm() {
         let cartIsReloading = false;
 
         return {
@@ -169,14 +169,24 @@ $serializedCheckoutConfig =  $block->getItemsCount() ? $checkoutConfigViewModel-
             },
             proceedToCheckout() {
                 this.$dispatch('toggle-authentication', { url: this.$el.href });
+            },
+            postCart() {
+                hyva.postCart(this.$event.target)
+            },
+            removeItem() {
+                hyva.postForm(JSON.parse(this.$el.dataset.deletePostJson));
+                this.$dispatch('cart-item-removed', [JSON.parse(this.$el.dataset.cartItemRemovedPayload)]);
+            },
+            moveToWishlist() {
+                hyva.postForm(JSON.parse(this.$el.dataset.postForm));
             }
         }
     }
-    window.addEventListener('alpine:init', () => Alpine.data('initCartMainForm', initCartMainForm), { once: true })
+    window.addEventListener('alpine:init', () => Alpine.data('initCartForm', initCartForm), { once: true })
 </script>
 <?php $hyvaCsp->registerInlineScript() ?>
 <section
-    x-data="initCartMainForm"
+    x-data="initCartForm"
     class="cart-form"
     aria-label="<?= $escaper->escapeHtmlAttr(__('Shopping Cart')) ?>"
     @private-content-loaded.window="checkCartShouldUpdate"
