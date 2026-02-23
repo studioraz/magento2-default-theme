@@ -22,8 +22,10 @@ use Magento\Framework\View\Element\Template;
 
 /** @var ProductPage $productViewModel */
 $productViewModel = $viewModels->require(ProductPage::class);
+
 /** @var ProductAttributes $attributesViewModel */
 $attributesViewModel = $viewModels->require(ProductAttributes::class);
+
 /** @var Product $product */
 $product = $productViewModel->getProduct();
 $productType = $product->getTypeId();
@@ -37,7 +39,7 @@ $productType = $product->getTypeId();
     </div>
 
     <?php if ($shortDescription = $productViewModel->getShortDescription()): ?>
-        <div class="mb-4 leading-relaxed product-description prose"><?= /* @noEscape */ $shortDescription ?></div>
+        <div class="my-4 leading-relaxed product-description prose"><?= /* @noEscape */ $shortDescription ?></div>
     <?php endif; ?>
 
     <div class="flex flex-col sm:flex-row justify-between my-4">
@@ -78,7 +80,7 @@ $productType = $product->getTypeId();
             <?= $block->getChildHtml("product.info.price") ?>
         </div>
 
-        <div class="flex mt-4 ml-auto sm:mt-0">
+        <div class="flex gap-2 mt-4 ml-auto sm:mt-0">
             <?php if ($product->isSaleable()): ?>
                 <?= $block->getChildHtml("product.info.quantity") ?>
                 <?= $block->getChildHtml("product.info.addtocart") ?>
