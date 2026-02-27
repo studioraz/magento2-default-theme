@@ -64,7 +64,7 @@ $searchConfig = $viewModels->require(SearchConfig::class);
             <?php endif ?>
             search(term) {
                 const search = this.$refs.searchInput;
-                term = term || search.value;
+                term = term && typeof term === 'string' ? term : search.value;
                 if (term.length < this.minSearchLength) {
                     search.setCustomValidity('<?= $escaper->escapeJs(
                         __('Minimum Search query length is %1', $helper->getMinQueryLength())
