@@ -138,7 +138,7 @@ body:where(:not([class*="-full-width"])) {
 }
 
 :is(a, button, div) {
-    @apply btn-primary;
+    @apply btn;
 
     &.pagebuilder-button-primary {
         @apply btn-primary;
