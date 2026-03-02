@@ -138,14 +138,12 @@ body:where(:not([class*="-full-width"])) {
 }
 
 :is(a, button, div) {
-    @apply btn;
-
     &.pagebuilder-button-primary {
-        @apply btn-primary;
+        @apply btn btn-primary;
     }
 
     &.pagebuilder-button-secondary {
-        @apply btn-secondary;
+        @apply btn btn-secondary;
     }
 }
 
