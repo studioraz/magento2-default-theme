@@ -19,6 +19,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
     Many thanks to Vita Samohina (Perspective) for the contribution!
 
+-   **Add reCAPTCHA Legal Notice option to customize**  
+    For more information, please refer to [issue #1295](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1295).
+
 ### Changed
 
 -   **Fix missing support for legacy opacity modifier for the Hyvä checkout with Tailwind 4**  
