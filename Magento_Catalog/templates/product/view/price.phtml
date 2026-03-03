@@ -42,6 +42,8 @@ if ($productPriceViewModel->displayPriceInclAndExclTax()) {
 }
 
 $displayTax = $productPriceViewModel->displayPriceIncludingTax();
+$availability = $product->getIsSalable() ? 'http://schema.org/InStock' : 'http://schema.org/OutOfStock';
+$priceValidUntil = $product->getSpecialToDate();
 
 // We expect to refactor MSRP Support on the product detail page, which is why we put this code here
 // and not in a view model. Once it is a method on a view model, it is part of the public API and
@@ -252,7 +254,7 @@ if ($msrpPrice = iterator_to_array($product->getPriceInfo()->getPrices())[MsrpPr
                     <span id="product-price-<?= (int)$product->getId() ?>"
                           class="price-wrapper">
                         <span class="price" x-html="hyva.formatPrice(<?= (float)$regularPrice ?> + getCustomOptionPrice())">
-                            <?= /** @noEscape */ $productViewModel->format($regularPrice) ?>
+                            <?= /** @noEscape */ $productViewModel->format($regularPrice, false) ?>
                         </span>
                     </span>
                 </div>
@@ -261,7 +263,7 @@ if ($msrpPrice = iterator_to_array($product->getPriceInfo()->getPrices())[MsrpPr
                     <span>
                         <span><?= $escaper->escapeHtml(__('Excl. Tax')) ?>:</span>
                         <span class="price" x-html="hyva.formatPrice(<?= (float)$regularPriceExclTax ?> + getCustomOptionBasePrice())">
-                            <?= /** @noEscape */ $productViewModel->format($regularPriceExclTax) ?>
+                            <?= /** @noEscape */ $productViewModel->format($regularPriceExclTax, false) ?>
                         </span>
                     </span>
                 </div>
@@ -277,19 +279,26 @@ if ($msrpPrice = iterator_to_array($product->getPriceInfo()->getPrices())[MsrpPr
                 <span id="product-price-<?= (int)$product->getId() ?>"
                       class="price-wrapper">
                     <span class="price" x-html="getFormattedFinalPrice()">
-                        <?= /** @noEscape */ $productViewModel->format($finalPrice) ?>
+                        <?= /** @noEscape */ $productViewModel->format($finalPrice, false) ?>
                     </span>
                 </span>
                 <meta itemprop="price" content="<?= $escaper->escapeHtmlAttr($finalPrice) ?>">
                 <meta itemprop="priceCurrency"
                       content="<?= $escaper->escapeHtmlAttr($productViewModel->getCurrencyData()['code']) ?>">
+                <?php if ($priceValidUntil): ?>
+                    <meta
+                        itemprop="priceValidUntil"
+                        content="<?= $escaper->escapeHtmlAttr(date('Y-m-d', strtotime($priceValidUntil))) ?>"
+                    >
+                <?php endif; ?>
+                <link itemprop="availability" href="<?= $escaper->escapeHtmlAttr($availability) ?>">
             </div>
             <?php if ($productPriceViewModel->displayPriceInclAndExclTax()): ?>
                 <div class="final-price-excl-tax">
                     <span>
                         <span><?= $escaper->escapeHtml(__('Excl. Tax')) ?>:</span>
                         <span class="price" x-html="getFormattedBasePrice()">
-                            <?= /** @noEscape */ $productViewModel->format($finalPriceExclTax) ?>
+                            <?= /** @noEscape */ $productViewModel->format($finalPriceExclTax, false) ?>
                         </span>
                     </span>
                 </div>

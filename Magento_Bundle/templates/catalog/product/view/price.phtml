@@ -201,7 +201,7 @@ $displayTax = $productPriceViewModel->displayPriceIncludingTax();
             <span>
                 <span><?= $escaper->escapeHtml(__('Excl. Tax')) ?>:</span>
                 <span class="price" x-html="getFormattedBasePrice()">
-                    <?= /** @noEscape */ $productViewModel->format($finalPriceExclTax) ?>
+                    <?= /** @noEscape */ $productViewModel->format($finalPriceExclTax, false) ?>
                 </span>
             </span>
         </div>

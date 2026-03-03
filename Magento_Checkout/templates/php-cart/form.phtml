@@ -28,16 +28,16 @@ $modalViewModel = $viewModels->require(Modal::class);
 
 /** @var ItemOutput $cartItemOutputViewModel */
 $cartItemOutputViewModel = $viewModels->require(ItemOutput::class);
+
+$mergedCells = ($cartItemOutputViewModel->isItemPriceDisplayBoth() ? 2 : 1);
 ?>
-<?php $mergedCells = ($cartItemOutputViewModel->isItemPriceDisplayBoth() ? 2 : 1); ?>
 <?= $block->getChildHtml('form_before') ?>
 <form
     id="form-validate"
     class="form form-cart"
     action="<?= $escaper->escapeUrl($block->getUrl('checkout/cart/updatePost')) ?>"
     method="post"
-    x-data
-    @submit.prevent="hyva.postCart($event.target)"
+    @submit.prevent="postCart"
 >
     <?= $block->getBlockHtml('formkey') ?>
     <div class="<?= $mergedCells == 2 ? 'cart detailed' : 'cart' ?>">

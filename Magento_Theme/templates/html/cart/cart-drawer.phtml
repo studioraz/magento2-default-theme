@@ -98,11 +98,7 @@ $miniCartOptionShowSku = $block->getShowSku() !== null ? (bool) $block->getShowS
                 });
             },
             toggleCartDrawer(event) {
-                if (event.detail && event.detail.isOpen) {
-                    this.open = event.detail.isOpen;
-                } else {
-                    this.open = !this.open;
-                }
+                this.open = event.detail?.isOpen ?? !this.open;
             },
             openCartDrawer() {
                 this.open = true;
@@ -167,6 +163,7 @@ $miniCartOptionShowSku = $block->getShowSku() !== null ? (bool) $block->getShowS
                 ["@pageshow.window"](event) {
                     if (event.persisted) {
                         this.open = false;
+                        window.dispatchEvent(new CustomEvent("reload-customer-section-data"));
                     }
                 }
             }

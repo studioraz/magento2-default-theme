@@ -6,7 +6,106 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-[Unreleased]: https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/compare/1.4.3...main
+[Unreleased]: https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/compare/1.4.4...main
+
+## [1.4.4] - 2026-03-03
+
+[1.4.4]: https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/compare/1.4.3...1.4.4
+
+### Added
+
+-   **Add availability and priceValidUntil for product rich snippet**  
+    For more information, please refer to [issue #680](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/680).
+
+    Many thanks to Vita Samohina (Perspective) for the contribution!
+
+-   **Add reCAPTCHA Legal Notice option to customize**  
+    For more information, please refer to [issue #1295](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1295).
+
+### Changed
+
+-   **Fix missing support for legacy opacity modifier for the Hyvä checkout with Tailwind 4**  
+    For more information, please refer to [issue #1279](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1279).
+
+-   **Fix wrong icon in cart page sidebar for shipping and tax**  
+    For more information, please refer to [issue #1283](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1283).
+
+-   **Fix alignment in pagebuilder product slider if only the dots are enabled**  
+    For more information, please refer to [merge request #1440](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/merge_requests/1440).
+
+-   **Fix layout shift on PDP caused by preformatted span**  
+    For more information, please refer to [merge request #1436](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/merge_requests/1436).
+
+    Many thanks to Finn Reinhardt (Basecom) for the contribution!
+
+-   **Fix missing styling for buttons in user forms**  
+    For more information, please refer to [issue #1271](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1271).
+
+    Many thanks to Viktor Yakaba (Perspective) for the contribution!
+
+-   **Fix use case where success message is empty if no text is passed**  
+    For more information, please refer to [issue #1257](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1257).
+
+    Many thanks to Oleksii Rozhnenko (Perspective) for the contribution!
+
+-   **Move standalone php statement into php block**  
+    For more information, please refer to [merge request #1453](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/merge_requests/1453).
+
+    Many thanks to Finn Reinhardt (Basecom) for the contribution!
+
+-   **Fix invalid aria-label in authentication-popup**  
+    For more information, please refer to [issue #1281](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1281).
+
+-   **Prevent stale content in minicart with Bfcache**  
+    For more information, please refer to [merge request #1456](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/merge_requests/1456).
+
+    Many thanks to Finn Reinhardt (Basecom) for the contribution!
+
+-   **Optimize Cart item actions to 1 script, same as seen in the CSP theme**  
+    For more information, please refer to [issue #1291](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1291).
+
+-   **Make the View Transition from the Product List to the Gallery optional and configurable**  
+    For more information, please refer to [issue #1286](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1286).
+
+-   **Preload the gallery main image to improve the LCP of the product page**  
+    For more information, please refer to [issue #1285](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1285).
+
+-   **Remove search params in the current url for Breadcrumbs**  
+    For more information, please refer to [issue #1282](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1282).
+
+-   **Improve PDP gallery keyboard accessibility**  
+    For more information, please refer to [issue #1191](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1191).
+
+-   **Visual improvements for 1.4.4**  
+    For more information, please refer to [merge request #1454](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/merge_requests/1454).
+
+-   **Revert Mark forgotpassword page as uncacheable to fix an issue with Varnish**  
+    For more information, please refer to [merge request #1434](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/merge_requests/1434).
+
+    Many thanks to Pieter Hoste (Baldwin) for the contribution!
+
+-   **Add keyboard shortcut to open search and fix focus ring in input groups**
+    The search panel can now be opened with `Cmd+K` (macOS) or `Ctrl+K` (Windows/Linux), following the convention used by popular search interfaces.
+
+    For more information, please refer to [issue #1288](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1288).
+
+-   **Optimize Product Selection Lookup Performance**  
+    For more information, please refer to [issue #1292](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1292).
+
+-   **Use System Preset for Scrollbar Color**
+    The `--scrollthumb-color` CSS variable is now unset by default, allowing the scrollbar thumb to inherit the operating system's native style.
+    To apply a custom scrollbar color, set this variable to your desired value.
+
+    For more information, please refer to [issue #1293](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/issues/1293).
+
+-   **Fix cart drawer always toggling instead of using isOpen state**  
+    For more information, please refer to [merge request #1463](https://gitlab.hyva.io/hyva-themes/magento2-default-theme/-/merge_requests/1463).
+
+    Many thanks to Finn Reinhardt (Basecom) for the contribution!
+
+### Removed
+
+-   Nothing Removed
 
 ## [1.4.3] - 2026-01-09
 
@@ -14,25 +113,25 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- Nothing Added
+-   Nothing Added
 
 ### Changed
 
-- **Fix remove wishlist button closing tag**
+-   **Fix remove wishlist button closing tag**
 
-- **Fix PayPal Buttons / PayLater initialization on intersect**
-  Fixed an issue where PayPal (PayLater or Express) buttons were not initialized when the cart data wasn't yet available.
+-   **Fix PayPal Buttons / PayLater initialization on intersect**  
+    Fixed an issue where PayPal (PayLater or Express) buttons were not initialized when the cart data wasn't yet available.
 
-  Many thanks to Christoph Hendreich (In Session) for the contribution!
+    Many thanks to Christoph Hendreich (In Session) for the contribution!
 
-- **Fix undefined productId variable in product list item swatches**
-  The script used `productId` instead of `this.productId` in one place.
+-   **Fix undefined productId variable in product list item swatches**  
+    The script used `productId` instead of `this.productId` in one place.
 
-- **Improve README.md**
+-   **Improve README.md**
 
 ### Removed
 
-- Nothing removed
+-   Nothing Removed
 
 ## [1.4.2] - 2025-12-10
 
