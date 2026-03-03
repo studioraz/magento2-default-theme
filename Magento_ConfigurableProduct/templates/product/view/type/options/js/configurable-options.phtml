@@ -263,7 +263,6 @@ $currentProduct = $viewModels->require(CurrentProduct::class);
                 }, []);
             },
             changeOption(attributeId, value) {
-                console.log('changeOption was called with attributeId ', attributeId, ' and value ', value);
                 if (value === '') {
                     this.selectedValues = this.removeAttrFromSelection(this.selectedValues, attributeId)
                 } else if (value && this.getAllowedAttributeOptions(attributeId).find(option => option.id === value)) {
@@ -361,7 +360,6 @@ $currentProduct = $viewModels->require(CurrentProduct::class);
                 this.preselectItemsBasedOnLocation(attribute => urlQueryParams.get(attribute.code));
             },
             preselectLocationHashItems() {
-                console.log('was called')
                 // pre-select option like #144=167
                 const urlHashParams = new URLSearchParams(window.location.hash.replace('#',''));
                 this.preselectItemsBasedOnLocation(attribute => urlHashParams.get(attribute.id));
@@ -369,7 +367,6 @@ $currentProduct = $viewModels->require(CurrentProduct::class);
             preselectItemsBasedOnLocation(getLocationValue) {
                 Object.values(this.optionConfig.attributes).map(attribute => {
                     const v = getLocationValue(attribute);
-                    console.log('v value ', v);
                     v && this.changeOption(attribute.id, v)
                 });
             }
