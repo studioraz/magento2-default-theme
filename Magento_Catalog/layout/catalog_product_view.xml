@@ -19,7 +19,11 @@
                 name="catalog.preload.product.gallery"
                 class="Magento\Catalog\Block\Product\View\Gallery"
                 template="Magento_Catalog::page/catalog-preload-product-gallery.phtml"
-            />
+            >
+                <arguments>
+                    <argument name="imageHelper" xsi:type="object">Magento\Catalog\Helper\Image</argument>
+                </arguments>
+            </block>
         </referenceContainer>
 
         <referenceBlock name="page.main.title">
