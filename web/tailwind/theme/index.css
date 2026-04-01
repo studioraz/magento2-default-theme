@@ -9,3 +9,14 @@
 @import "./page-customer.css";
 @import "./page-catalog.css";
 @import "./page-builder.css";
+
+/* ----- Custom styles ----- */
+@import "./menu-snowdog.css";
+@import "./mst-nav.css";
+@import "./mst-search.css";
+@import "./otp.css";
+@import "./product-page.css";
+@import "./cart.css";
+@import "./minicart.css";
+@import "./structure.css";
+@import "./header.css";

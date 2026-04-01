@@ -56,4 +56,24 @@
             background-color: var(--color-primary);
         }
     }
+
+    .snap {
+        -ms-scroll-snap-type: x mandatory;
+        scroll-snap-type: x mandatory;
+        -ms-overflow-style: none;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        & > div {
+            scroll-snap-align: start;
+        }
+    }
+}
+
+.catalog-product-view .page-main .price-container .baseprice {
+    @apply order-3 w-full text-[#757575] mt-[2px];
 }

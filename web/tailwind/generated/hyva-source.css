@@ -6,9 +6,66 @@
  * please exclude them in your theme using the hyva.config.json configuration.
  */
 
-@source "../../../../magento2-theme-module/src";
-@source "../../../../../mollie/magento2-hyva-compatibility/src/Mollie_HyvaCompatibility";
+@source "../../../../../../../../vendor/hyva-themes/magento2-theme-module/src/**/*.phtml";
+@source "../../../../../../../../vendor/hyva-themes/magento2-theme-module/src/**/*.xml";
+@source "../../../../../../../../vendor/mirasvit/module-gdpr-hyva/src/MirasvitGdprCookie/**/*.phtml";
+@source "../../../../../../../../vendor/mirasvit/module-gdpr-hyva/src/MirasvitGdprCookie/**/*.xml";
+@source "../../../../../../../../vendor/mirasvit/module-cataloglabel-hyva/src/MirasvitCatalogLabel/**/*.phtml";
+@source "../../../../../../../../vendor/mirasvit/module-cataloglabel-hyva/src/MirasvitCatalogLabel/**/*.xml";
+@source "../../../../../../../../vendor/mirasvit/module-navigation-hyva/src/MirasvitAllProducts/**/*.phtml";
+@source "../../../../../../../../vendor/mirasvit/module-navigation-hyva/src/MirasvitAllProducts/**/*.xml";
+@source "../../../../../../../../vendor/mirasvit/module-fb-marketing-hyva/src/MirasvitFbMarketing/**/*.phtml";
+@source "../../../../../../../../vendor/mirasvit/module-fb-marketing-hyva/src/MirasvitFbMarketing/**/*.xml";
+@source "../../../../../../../../vendor/mirasvit/module-gdpr-hyva/src/MirasvitGdpr/**/*.phtml";
+@source "../../../../../../../../vendor/mirasvit/module-gdpr-hyva/src/MirasvitGdpr/**/*.xml";
+@source "../../../../../../../../vendor/mirasvit/module-gdpr-hyva/src/MirasvitGdprConsent/**/*.phtml";
+@source "../../../../../../../../vendor/mirasvit/module-gdpr-hyva/src/MirasvitGdprConsent/**/*.xml";
+@source "../../../../../../../../vendor/mirasvit/module-gtm-hyva/src/MirasvitGoogleTagManager/**/*.phtml";
+@source "../../../../../../../../vendor/mirasvit/module-gtm-hyva/src/MirasvitGoogleTagManager/**/*.xml";
+@source "../../../../../../../../vendor/mirasvit/module-navigation-hyva/src/MirasvitBrand/**/*.phtml";
+@source "../../../../../../../../vendor/mirasvit/module-navigation-hyva/src/MirasvitBrand/**/*.xml";
+@source "../../../../../../../../vendor/mirasvit/module-search-ultimate-hyva/src/MirasvitMisspell/**/*.phtml";
+@source "../../../../../../../../vendor/mirasvit/module-search-ultimate-hyva/src/MirasvitMisspell/**/*.xml";
+@source "../../../../../../../../vendor/mirasvit/module-navigation-hyva/src/MirasvitQuickNavigation/**/*.phtml";
+@source "../../../../../../../../vendor/mirasvit/module-navigation-hyva/src/MirasvitQuickNavigation/**/*.xml";
+@source "../../../../../../../../vendor/mirasvit/module-navigation-hyva/src/MirasvitScroll/**/*.phtml";
+@source "../../../../../../../../vendor/mirasvit/module-navigation-hyva/src/MirasvitScroll/**/*.xml";
+@source "../../../../../../../../vendor/mirasvit/module-search-ultimate-hyva/src/MirasvitSearch/**/*.phtml";
+@source "../../../../../../../../vendor/mirasvit/module-search-ultimate-hyva/src/MirasvitSearch/**/*.xml";
+@source "../../../../../../../../vendor/mirasvit/module-search-ultimate-hyva/src/MirasvitSearchAutocomplete/**/*.phtml";
+@source "../../../../../../../../vendor/mirasvit/module-search-ultimate-hyva/src/MirasvitSearchAutocomplete/**/*.xml";
+@source "../../../../../../../../vendor/hyva-themes/magento2-mirasvit-seo/src/**/*.phtml";
+@source "../../../../../../../../vendor/hyva-themes/magento2-mirasvit-seo/src/**/*.xml";
+@source "../../../../../../../../vendor/mirasvit/module-navigation-hyva/src/MirasvitLayeredNavigation/**/*.phtml";
+@source "../../../../../../../../vendor/mirasvit/module-navigation-hyva/src/MirasvitLayeredNavigation/**/*.xml";
+@source "../../../../../../../../vendor/mollie/magento2-hyva-compatibility/src/Mollie_HyvaCompatibility/**/*.phtml";
+@source "../../../../../../../../vendor/mollie/magento2-hyva-compatibility/src/Mollie_HyvaCompatibility/**/*.xml";
+@source "../../../../../../../../vendor/studioraz/magento2-customer-otp-auth/CustomerOtpAuthHyvaCompat/src/**/*.phtml";
+@source "../../../../../../../../vendor/studioraz/magento2-customer-otp-auth/CustomerOtpAuthHyvaCompat/src/**/*.xml";
+@source "../../../../../../../../vendor/magewirephp/magewire/src/**/*.phtml";
+@source "../../../../../../../../vendor/magewirephp/magewire/src/**/*.xml";
+@source "../../../../../../../../vendor/studioraz/magento2-directory/DirectoryHyvaCompat/src/**/*.phtml";
+@source "../../../../../../../../vendor/studioraz/magento2-directory/DirectoryHyvaCompat/src/**/*.xml";
+@source "../../../../../../../../vendor/studioraz/magento2-hyva-product-qty-spinner/HyvaProductQtySpinner/**/*.phtml";
+@source "../../../../../../../../vendor/studioraz/magento2-hyva-product-qty-spinner/HyvaProductQtySpinner/**/*.xml";
+@source "../../../../../../../code/SR/HyvaFreeShippingProgressBar/**/*.phtml";
+@source "../../../../../../../code/SR/HyvaFreeShippingProgressBar/**/*.xml";
+@source "../../../../../../../code/SR/HyvaMinicartRelated/**/*.phtml";
+@source "../../../../../../../code/SR/HyvaMinicartRelated/**/*.xml";
+@source "../../../../../../../../vendor/studioraz/magento2-hyva-product-qty-spinner/HyvaAddToCartQtySpinner/**/*.phtml";
+@source "../../../../../../../../vendor/studioraz/magento2-hyva-product-qty-spinner/HyvaAddToCartQtySpinner/**/*.xml";
+@source "../../../../../../../../vendor/snowdog/module-menu/**/*.phtml";
+@source "../../../../../../../../vendor/snowdog/module-menu/**/*.xml";
+@source "../../../../../../../../vendor/hyva-themes/magento2-default-theme/**/*.phtml";
+@source "../../../../../../../../vendor/hyva-themes/magento2-default-theme/**/*.xml";
 
-@import "../../../../../mollie/magento2-hyva-compatibility/src/Mollie_HyvaCompatibility/view/frontend/tailwind/tailwind-source.css";
+@import "../../../../../../../../vendor/mirasvit/module-cataloglabel-hyva/src/MirasvitCatalogLabel/view/frontend/tailwind/tailwind-source.css";
+@import "../../../../../../../../vendor/mollie/magento2-hyva-compatibility/src/Mollie_HyvaCompatibility/view/frontend/tailwind/tailwind-source.css";
+@import "../../../../../../../../vendor/studioraz/magento2-customer-otp-auth/CustomerOtpAuthHyvaCompat/src/view/frontend/tailwind/tailwind-source.css";
+@import "../../../../../../../../vendor/magewirephp/magewire/src/view/frontend/tailwind/tailwind-source.css";
+@import "../../../../../../../../vendor/studioraz/magento2-directory/DirectoryHyvaCompat/src/view/frontend/tailwind/tailwind-source.css";
+@import "../../../../../../../code/SR/HyvaFreeShippingProgressBar/view/frontend/tailwind/tailwind-source.css";
+@import "../../../../../../../code/SR/HyvaMinicartRelated/view/frontend/tailwind/tailwind-source.css";
+@import "../../../../../../../../vendor/snowdog/module-menu/view/frontend/tailwind/tailwind-source.css";
 
 

@@ -13,6 +13,7 @@
         --switch-width: --spacing(9);
         --switch-height: --spacing(5);
         --switch-thumb-offset: calc(var(--switch-width) - var(--switch-height));
+        border-color: var(--color-form);
         border-radius: calc(infinity * 1px);
         border-width: 2px;
         block-size: var(--switch-height);
@@ -31,8 +32,15 @@
             border-width: 1px;
             border-color: var(--form-bg);
             background-color: var(--form-stroke);
-            transition: background-color 150ms, border-color 150ms,
-                translate 150ms;
+            transition: translate 150ms;
+        }
+
+        &:hover:not(:checked) {
+            border-color: var(--color-form-hover);
+
+            &::after {
+                background-color: var(--color-form-hover);
+            }
         }
 
         &:checked {
@@ -60,7 +68,7 @@
 
         /* Reserve space for single line form validation messages */
         &.field-reserved {
-            --reserved-space: --spacing(7);
+            --reserved-space: --spacing(5);
             margin-block-end: var(--reserved-space);
 
             ul {
@@ -80,7 +88,7 @@
             }
 
             input {
-                @apply mr-3;
+                @apply me-3;
             }
         }
 

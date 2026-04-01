@@ -1,0 +1,7 @@
+.otp-form-actions-separator-choice {
+    @apply border-0 text-base text-[#565858] my-3 md:my-5 h-auto;
+
+    &:before {
+        content: '- ' attr(data-label) ' -';
+    }
+}

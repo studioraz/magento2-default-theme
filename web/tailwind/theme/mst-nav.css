@@ -1,0 +1,123 @@
+.mst-nav__horizontal-bar {
+    @apply mb-[21px] lg:mb-[17px];
+
+    .nav-panel {
+        @apply w-auto max-w-none border-none shadow-none lg:start-40 overflow-visible pb-3 lg:pb-0 px-2;
+
+        .close-icon {
+            @apply hidden;
+        }
+
+        .filter-option {
+            @apply lg:min-h-[47px] border border-black;
+
+            .filter-options-content {
+                @apply overflow-y-auto max-h-[200px] max-w-[200px];
+            }
+        }
+    }
+}
+
+/* Layered navigation, filters */
+
+.catalog-category-view,
+.catalogsearch-result-index,
+.brand-brand-view {
+    &.page-layout-2columns-left {
+        .all-filters-btn {
+            @apply lg:hidden;
+        }
+    }
+    .mst-nav__horizontal-bar {
+        .filter-content {
+            @apply gap-4;
+        }
+    }
+}
+
+.filter-dropdown-button {
+    @apply text-sm font-semibold leading-5 rounded-md bg-slate-100 border border-slate-100 text-slate-600 gap-2 py-2 px-3
+    hover:bg-slate-100 hover:border-primary active:border-primary;
+}
+
+.catalog-category-view,
+.catalogsearch-result-index,
+.brand-brand-view
+{
+    &.page-layout-2columns-left {
+        .toolbar-wrapper {
+            @apply justify-between flex-row-reverse lg:justify-start lg:flex-row;
+            .horizontal-filters {
+                @apply hidden lg:block;
+            }
+            .all-filters-btn {
+                @apply block lg:hidden;
+            }
+        }
+    }
+    &.page-layout-1column {
+        .toolbar-wrapper {
+            @apply justify-between flex-row-reverse lg:justify-start lg:flex-row;
+            .horizontal-filters {
+                @apply hidden lg:block;
+            }
+            .all-filters-btn {
+                @apply block lg:ms-4;
+            }
+        }
+    }
+
+    .sidebar {
+        &.sidebar-main {
+            @apply lg:px-[16px]
+        }
+    }
+}
+
+.mst-nav__label-item {
+    @apply px-0;
+}
+
+.mst-nav__horizontal-bar {
+    .mst-nav__label-item {
+        @apply px-3;
+    }
+}
+
+.layered-navigation-drawer-body {
+    h2 {
+        @apply !hidden;
+    }
+}
+
+.m-brand-additional-info {
+    @apply mb-4 lg:mb-10;
+}
+
+.catalog-category-view,
+.catalogsearch-result-index,
+.brand-brand-view {
+    &.page-layout-2columns-left {
+        .product-listing-wrapper {
+            .products {
+                ul {
+                    @apply xl:grid-cols-4;
+                }
+            }
+        }
+    }
+    &.page-layout-1column {
+        .product-listing-wrapper {
+            .products {
+                ul {
+                    @apply xl:grid-cols-5;
+                }
+            }
+        }
+    }
+    .sidebar {
+        &.sidebar-main {
+            @apply lg:ps-0;
+        }
+    }
+}

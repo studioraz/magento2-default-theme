@@ -1,0 +1,27 @@
+.minicart-related-item {
+    .product-item-photo {
+        img {
+            @apply w-[70px] h-[70px];
+        }
+    }
+
+    .product-item-link {
+        @apply text-sm text-[#334155] font-bold;
+    }
+
+    .price {
+        @apply text-sm lg:text-base text-[#2563EB];
+    }
+}
+
+.minicart-product-item {
+    .price {
+        @apply text-base font-bold text-[var(--color-price)];
+    }
+
+    .special-price {
+        .price {
+            @apply text-[var(--color-special-price)];
+        }
+    }
+}

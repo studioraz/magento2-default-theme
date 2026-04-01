@@ -1,0 +1,7 @@
+.page-main {
+    @apply container max-md:px-0 max-md:max-w-full;
+
+    .columns {
+        @apply md:px-0;
+    }
+}

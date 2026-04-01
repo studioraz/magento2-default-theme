@@ -1,0 +1,84 @@
+.catalog-product-view {
+    .product-info-main {
+        .qty-spinner-container-product-info-main {
+            @apply me-auto max-md:max-w-full md:max-w-[344px] md:mt-2 lg:mt-0;
+        }
+    }
+}
+
+.qty-spinner-container-add-to-cart-panel {
+    #product-addtocart-button {
+        @apply max-lg:w-full
+    }
+}
+
+.product-info-price {
+    --price-font-size: 18px;
+
+    @variant lg {
+        --price-font-size: 24px;
+    }
+
+    @apply mb-5;
+
+    & .old-price {
+        --price-font-size: 14px;
+        --price-font-weight: 600;
+    }
+}
+
+.catalog-product-view {
+
+    .baseprice {
+        .price {
+            @apply text-xs;
+        }
+    }
+
+    .fixed-add-to-cart {
+        .qty-spinner-container {
+            @apply w-[160px] md:w-[155px] md:h-[48px];
+        }
+        #product-addtocart-button {
+            @apply w-[160px] h-[40px] md:h-[48px];
+        }
+        .price-box {
+            @apply mb-0;
+            .price-container {
+                @apply justify-start text-start sm:justify-end sm:text-end;
+                .final-price {
+                    .price-wrapper {
+                        @apply flex items-center;
+                        .price {
+                            @apply text-base font-medium md:text-lg lg:text-xl;
+                        }
+                    }
+                }
+                .old-price {
+                    .price-wrapper {
+                        @apply flex items-center md:pb-[1px];
+                        .price {
+                            @apply text-xs font-medium md:text-sm pt-[2px];
+                        }
+                    }
+                }
+            }
+        }
+
+        .product-options-wrapper {
+            @apply hidden;
+        }
+    }
+}
+
+.product-options-wrapper {
+    h2 {
+        @apply hidden;
+    }
+}
+
+.has-gallery-fullscreen-opened {
+    .page-main {
+        @apply relative z-30;
+    }
+}

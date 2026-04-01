@@ -1,6 +1,6 @@
 @layer components {
     .message {
-        @apply flex items-center justify-between w-full p-2 pl-5 bg-gray-100 shadow rounded text-black font-semibold mb-2;
+        @apply flex items-center justify-between w-full p-2 ps-5 bg-gray-100 shadow rounded text-black font-semibold mb-2;
 
         &.error {
             @apply border-2 border-red-500 bg-red-50;
@@ -26,7 +26,7 @@
 }
 
 .page.messages {
-    @apply sticky top-0 z-20;
+    @apply relative z-[60];
 
     .messages section#messages {
         @apply container mx-auto py-3;

@@ -1,3 +1,7 @@
+/* ----- 3rd-party ----- */
+@import "../../swiper/swiper-bundle.css" layer(base);
+
+/* ----- Hyva ----- */
 @import "./actions-toolbar.css";
 @import "./button.css";
 @import "./card.css";
@@ -8,3 +12,9 @@
 @import "./slider.css";
 @import "./swatches.css";
 @import "./wrapper.css";
+
+/* ----- Custom styles ----- */
+@import "./floating-labels.css";
+@import "./page-builder.css";
+@import "./swiper.css";
+@import "./tooltip.css";

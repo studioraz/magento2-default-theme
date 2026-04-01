@@ -25,13 +25,24 @@
 @import "./theme";
 @import "./utilities";
 
+/* Temporary styles! */
+@import "./_temp";
+
 /* Import generated styles for Hyvä Compatible Modules and Design Tokens */
 @import "./generated/hyva-source.css";
 @import "./generated/hyva-tokens.css";
 
 @theme {
-    --color-bg: var(--color-slate-50);
+    --color-bg: var(--color-white);
     --color-fg: var(--color-slate-950);
     --color-fg-secondary: var(--color-slate-600);
     --color-surface: var(--color-white);
+
+    --color-tooltip-bg: var(--color-gray-100);
+    --color-tooltip-text: var(--color-slate-950);
+    --color-tooltip-border: var(--color-gray-100);
+}
+
+@utility inset-inline-end-3 {
+    inset-inline-end: 0.75rem;
 }

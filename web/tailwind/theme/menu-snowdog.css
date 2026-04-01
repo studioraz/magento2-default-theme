@@ -1,0 +1,37 @@
+@utility snowdog-menu-text-hover {
+    @apply hover:text-primary;
+}
+
+.snowdog-topmenu-desktop {
+    .menu-list-item-level-0 {
+        > .snowdog-menu-link {
+            @apply text-base leading-6 font-semibold;
+        }
+    }
+
+    .menu-list-level-3 {
+        @apply space-y-5;
+    }
+
+    .menu-list-item-level-4 {
+        > .snowdog-menu-link {
+            @apply mb-2 pb-1 text-base leading-6 font-semibold;
+        }
+    }
+
+    .menu-list-level-4 {
+        @apply space-y-[6px];
+    }
+
+    .menu-list-item-level-5 {
+        > .snowdog-menu-link {
+            @apply text-sm text-slate-600 leading-5 font-normal;
+        }
+    }
+
+    .menu-list-item-2nd-level-dropdown {
+        > .snowdog-menu-link {
+            @apply px-3 py-2 text-sm text-slate-600 leading-5 font-normal bg-white hover:bg-gray-50;
+        }
+    }
+}

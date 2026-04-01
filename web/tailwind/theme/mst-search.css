@@ -1,0 +1,9 @@
+.mst-search__result-tabs:has(li:only-child) {
+    @apply hidden;
+}
+
+.catalogsearch-result-index {
+    .toolbar-sorter {
+        @apply me-0;
+    }
+}

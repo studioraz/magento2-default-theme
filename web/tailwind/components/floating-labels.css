@@ -1,0 +1,56 @@
+/* Base styles */
+@layer components {
+    .floating-labels > .control {
+        @apply relative;
+    }
+
+    .floating-labels > .control > input,
+    .floating-labels > .control > select,
+    .floating-labels > .control textarea {
+        @apply block px-2.5 pb-2.5 pt-4 w-full text-sm rounded-lg border appearance-none focus:outline-none focus:ring-0;
+    }
+
+    .floating-labels-label {
+        @apply absolute text-sm  duration-300 top-2 px-2 start-1 rounded-sm cursor-text;
+
+        transform: translateY(-1rem) scale(.75);
+    }
+
+    .peer:placeholder-shown ~ .floating-labels-label {
+        top: 24px;
+        transform: translateY(-50%) scale(1);
+    }
+
+    .peer:focus ~ .floating-labels-label {
+        @apply top-2 ;
+        transform: translateY(-1rem) scale(.75);
+    }
+}
+
+/* Coloring */
+@layer components {
+    .floating-labels > .control > input,
+    .floating-labels > .control > select,
+    .floating-labels > .control textarea {
+        @apply text-gray-900 border-form hover:border-form-hover focus:border-form-focus;
+    }
+
+    .floating-labels.field-error > .control > input,
+    .floating-labels.field-error > .control > select,
+    .floating-labels.field-error > .control textarea {
+        @apply border-form-error;
+    }
+
+    .floating-labels-label {
+        @apply text-gray-900 bg-white;
+    }
+
+    .peer:focus ~ .floating-labels-label {
+        @apply text-form-focus;
+    }
+
+    .field-error .peer ~ .floating-labels-label {
+        @apply text-form-error;
+    }
+}
+

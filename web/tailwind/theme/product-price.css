@@ -1,4 +1,6 @@
 .price-box {
+    color: var(--color-price, var(--color-blue-800));
+
     & .price {
         font-size: var(--price-font-size, var(--text-base));
         font-weight: var(--price-font-weight, bolder);
@@ -13,9 +15,16 @@
         }
     }
 
+    & .special-price {
+        & .price {
+            color: var(--color-special-price);
+        }
+    }
+
     & .old-price {
         --price-font-size: 0.875em;
         --price-font-weight: normal;
+        color: var(--color-old-price, var(--color-slate-400));
 
         .price {
             text-decoration: line-through;
@@ -39,4 +48,8 @@
 
 .price-including-tax + .price-excluding-tax {
     --price-font-size: 1rem;
+}
+
+.catalog-product-view .page-main .price-container .baseprice {
+    @apply order-3 w-full text-[#757575] mt-[2px];
 }

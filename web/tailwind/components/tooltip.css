@@ -1,0 +1,86 @@
+/* Safelist */
+@source inline("!h-0");
+@source inline("tippy-box");
+@source inline("tippy-content");
+@source inline("tippy-arrow");
+@source inline("[data-tippy-root]");
+@source inline("[data-animation=fade]");
+@source inline("[data-state=hidden]");
+@source inline("[data-placement^=top]");
+@source inline("[data-placement^=bottom]");
+@source inline("[data-placement^=left]");
+@source inline("[data-placement^=right]");
+@source inline("[data-inertia]");
+
+@layer components {
+    [data-tippy-root] {
+        max-width: calc(100vw - 10px);
+    }
+
+    .tippy-box {
+        @apply relative bg-tooltip-bg text-tooltip-text border border-tooltip-border rounded-[4px] text-[14px] leading-[1.4] whitespace-normal outline-none;
+        transition-property: transform, visibility, opacity;
+
+        &[data-animation=fade][data-state=hidden] {
+            @apply opacity-0;
+        }
+
+        &[data-placement^=top] > .tippy-arrow {
+            @apply bottom-0;
+        }
+
+        &[data-placement^=top] > .tippy-arrow:before {
+            @apply bottom-[-7px] left-0 border-t-[8px] border-l-[8px] border-r-[8px] border-b-[0] border-t-tooltip-bg;
+            transform-origin: center top;
+        }
+
+        &[data-placement^=bottom] > .tippy-arrow {
+            @apply top-0;
+        }
+
+        &[data-placement^=bottom] > .tippy-arrow:before {
+            @apply top-[-7px] left-0 border-b-[8px] border-l-[8px] border-r-[8px] border-t-[0] border-b-tooltip-bg;
+            transform-origin: center bottom;
+        }
+
+        &[data-placement^=left] > .tippy-arrow {
+            @apply right-0;
+        }
+
+        &[data-placement^=left] > .tippy-arrow:before {
+            @apply right-[-7px] top-0 border-l-[8px] border-t-[8px] border-b-[8px] border-r-[0] border-l-tooltip-bg;
+            transform-origin: center left;
+        }
+
+        &[data-placement^=right] > .tippy-arrow {
+            @apply left-0;
+        }
+
+        &[data-placement^=right] > .tippy-arrow:before {
+            @apply left-[-7px] top-0 border-r-[8px] border-t-[8px] border-b-[8px] border-l-[0] border-r-tooltip-bg;
+            transform-origin: center right;
+        }
+
+        &[data-inertia][data-state=visible] {
+            transition-timing-function: cubic-bezier(.54, 1.5, .38, 1.11);
+        }
+
+
+    }
+
+    .tippy-arrow {
+        @apply w-4 h-4 text-tooltip-bg;
+
+        &:before {
+            content: "";
+            position: absolute;
+            border-color: transparent;
+            border-style: solid;
+            display: none; /* Remove this line to show the arrow */
+        }
+    }
+
+    .tippy-content {
+        @apply relative py-[5px] px-[9px] z-[1];
+    }
+}
