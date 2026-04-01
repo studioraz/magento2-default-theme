@@ -1,11 +1,7 @@
 <?php
 /**
- * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
- *
- * This file includes sections of software developed by Magento, Inc.
- * (https://github.com/magento/magento2) and distributed under the AFL v3.0.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
 
 declare(strict_types=1);
@@ -36,7 +32,7 @@ $showOptionalRegions = $block->getConfig('general/region/display_all');
 <div class="text-2xl mb-6">
     <?= $escaper->escapeHtml(__('Customer Address')) ?>
 </div>
-<form class="form-address-edit"
+<form class="form-address-edit max-w-[600px]"
       x-data="Object.assign(initCustomerAddressEdit(), hyva.formValidation($root))"
       @private-content-loaded.window="onPrivateContentLoaded($event.detail.data)"
       @submit="onSubmit"
@@ -79,10 +75,7 @@ $showOptionalRegions = $block->getConfig('general/region/display_all');
         <div class="md:grid grid-cols-2 gap-x-4 gap-y-0">
             <div class="street col-span-full md:grid grid-cols-2 gap-x-4 mb-6">
 
-                <div class="field field-reserved required">
-                    <label for="street_1" class="label">
-                        <span><?= /* @noEscape */ $streetLabel ?></span>
-                    </label>
+                <div class="field field-reserved required floating-labels">
                     <div class="control">
                         <input type="text"
                                name="street[]"
@@ -90,84 +83,89 @@ $showOptionalRegions = $block->getConfig('general/region/display_all');
                                value="<?= $escaper->escapeHtmlAttr($block->getStreetLine(1)) ?>"
                                title="<?= /* @noEscape */ $streetLabel ?>"
                                id="street_1"
-                               class="form-input w-full"
+                               class="form-input peer"
+                               placeholder=" "
                                @input.debounce="onChange"
                         >
+                        <label for="street_1" class="label floating-labels-label">
+                            <?= /* @noEscape */ $streetLabel ?>
+                        </label>
                     </div>
                 </div>
 
                 <?php for ($i = 1, $n = $addressViewModel->addressGetStreetLines(); $i < $n; $i++): ?>
-                    <div class="field additional">
-                        <label class="label" for="street_<?= /* @noEscape */ $i + 1 ?>">
-                            <span><?= $escaper->escapeHtml(__('Street Address %1', $i + 1)) ?></span>
-                        </label>
+                    <div class="field field-reserved floating-labels additional">
                         <div class="control">
                             <input type="text" name="street[]"
                                    value="<?= $escaper->escapeHtmlAttr($block->getStreetLine($i + 1)) ?>"
                                    title="<?= $escaper->escapeHtmlAttr(__('Street Address %1', $i + 1)) ?>"
+                                   placeholder=" "
                                    id="street_<?= /* @noEscape */ $i + 1 ?>"
-                                   class="form-input w-full"
+                                   class="form-input peer"
                                    @input.debounce="onChange"
                             >
+                            <label class="label floating-labels-label" for="street_<?= /* @noEscape */ $i + 1 ?>">
+                                <span><?= $escaper->escapeHtml(__('Street Address %1', $i + 1)) ?></span>
+                            </label>
                         </div>
                     </div>
                 <?php endfor; ?>
             </div>
 
             <?php if ($addressViewModel->addressIsVatAttributeVisible()): ?>
-                <div class="field field-reserved taxvat w-full">
-                    <label class="label" for="vat_id">
-                        <span><?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('vat_id') ?></span>
-                    </label>
+                <div class="field field-reserved floating-labels taxvat w-full">
                     <div class="control">
                         <input type="text"
                                name="vat_id"
                                value="<?= $escaper->escapeHtmlAttr($block->getAddress()->getVatId()) ?>"
                                title="<?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('vat_id') ?>"
-                               class="form-input w-full"
+                               placeholder=" "
+                               class="form-input peer"
                                id="vat_id"
                                @input.debounce="onChange">
+                        <label class="label floating-labels-label" for="vat_id">
+                            <?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('vat_id') ?>
+                        </label>
                     </div>
                 </div>
             <?php endif; ?>
-            <div class="field field-reserved zip w-full" :class="{ 'required': isZipRequired }">
-                <label class="label" for="zip">
-                    <span><?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('postcode') ?></span>
-                </label>
+            <div class="field field-reserved floating-labels zip w-full" :class="{ 'required': isZipRequired }">
                 <div class="control">
                     <input type="text"
                            name="postcode"
                            x-ref="postcode"
                            value="<?= $escaper->escapeHtmlAttr($block->getAddress()->getPostcode()) ?>"
                            title="<?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('postcode') ?>"
+                           placeholder=" "
                            id="zip"
                            :required="isZipRequired"
                            @input.debounce="onChange"
                            data-validate='{"postcode": true}'
-                           class="form-input w-full">
+                           class="form-input peer">
+                    <label class="label floating-labels-label" for="zip">
+                        <?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('postcode') ?>
+                    </label>
                 </div>
             </div>
 
-            <div class="field field-reserved required city w-full">
-                <label class="label" for="city">
-                    <span><?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('city') ?></span>
-                </label>
+            <div class="field field-reserved floating-labels city w-full">
                 <div class="control">
                     <input type="text"
                            name="city"
                            required
                            value="<?= $escaper->escapeHtmlAttr($block->getAddress()->getCity()) ?>"
+                           placeholder=" "
                            title="<?= $escaper->escapeHtmlAttr(__('City')) ?>"
-                           class="form-input w-full"
+                           class="form-input peer"
                            id="city"
                            @input.debounce="onChange">
+                    <label class="label floating-labels-label" for="city">
+                        <?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('city') ?>
+                    </label>
                 </div>
             </div>
 
-            <div class="field field-reserved required country w-full">
-                <label class="label" for="country">
-                    <span><?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('country_id') ?></span>
-                </label>
+            <div class="field field-reserved floating-labels required country w-full">
                 <div class="control">
                     <?php $countries = $block
                         ->getCountryCollection()
@@ -178,7 +176,7 @@ $showOptionalRegions = $block->getConfig('general/region/display_all');
                             id="country"
                             title="<?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('country_id') ?>"
                             required
-                            class="form-select"
+                            class="form-select form-input peer"
                             x-ref="country_id"
                             @input.debounce="changeCountry"
                     >
@@ -193,23 +191,23 @@ $showOptionalRegions = $block->getConfig('general/region/display_all');
                             </option>
                         <?php endforeach; ?>
                     </select>
+                    <label class="label floating-labels-label" for="country">
+                        <?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('country_id') ?>
+                    </label>
                 </div>
             </div>
 
             <div
-                class="field field-reserved region w-full"
+                class="field field-reserved floating-labels region w-full"
                 x-cloak
                 x-show="(hasAvailableRegions() && isRegionRequired) || showOptionalRegions"
                 :class="{ 'required': isRegionRequired }"
             >
-                <label class="label" for="region_id">
-                    <span><?= /* @noEscape */ $regionLabel ?></span>
-                </label>
                 <div class="control">
                     <template x-if="hasAvailableRegions() && (isRegionRequired || showOptionalRegions)">
                         <select id="region_id" name="region_id"
                                 title="<?= /* @noEscape */ $regionLabel ?>"
-                                class="form-select validate-select region_id"
+                                class="form-select validate-select peer region_id"
                                 x-ref="region_id"
                                 x-model="selectedRegion"
                                 :required="isRegionRequired"
@@ -234,11 +232,15 @@ $showOptionalRegions = $block->getConfig('general/region/display_all');
                            x-ref="region"
                            value="<?= $escaper->escapeHtmlAttr($block->getRegion()) ?>"
                            title="<?= /* @noEscape */ $regionLabel ?>"
-                           class="form-input w-full"
+                           placeholder=" "
+                           class="form-input peer"
                            aria-label="<?= /* @noEscape */ $regionLabel ?>"
                            :required="!hasAvailableRegions() && !showOptionalRegions ? isRegionRequired : false"
                            @input.debounce="onChange"
                     >
+                    <label class="label floating-labels-label" for="region_id">
+                        <span><?= /* @noEscape */ $regionLabel ?></span>
+                    </label>
                 </div>
             </div>
         </div>
@@ -279,7 +281,7 @@ $showOptionalRegions = $block->getConfig('general/region/display_all');
     <div class="actions-toolbar">
         <div class="primary">
             <button type="submit"
-                    class="action save btn btn-primary"
+                    class="action save primary btn btn-primary"
                     data-action="save-address"
                     title="<?= $escaper->escapeHtmlAttr(__('Save Address')) ?>">
                 <span><?= $escaper->escapeHtml(__('Save Address')) ?></span>

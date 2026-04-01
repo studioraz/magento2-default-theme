@@ -6,7 +6,8 @@
  * See COPYING.txt for license details.
  */
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Config/etc/view.xsd">
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:Config/etc/view.xsd">
     <media>
         <images module="Magento_Catalog">
             <image id="bundled_product_customization_page" type="thumbnail">
@@ -50,12 +51,12 @@
                 <height>100</height>
             </image>
             <image id="mini_cart_product_thumbnail" type="thumbnail">
-                <width>78</width>
-                <height>78</height>
+                <width>96</width>
+                <height>96</height>
             </image>
             <image id="new_products_content_widget_grid" type="small_image">
-                <width>240</width>
-                <height>300</height>
+                <width>216</width>
+                <height>216</height>
             </image>
             <image id="new_products_content_widget_list" type="small_image">
                 <width>270</width>
@@ -79,8 +80,8 @@
                 <height>700</height>
             </image>
             <image id="product_page_image_small" type="thumbnail">
-                <width>90</width>
-                <height>90</height>
+                <width>72</width>
+                <height>72</height>
             </image>
             <image id="product_swatch_image_large" type="image"/>
             <image id="product_swatch_image_medium" type="image">
@@ -187,28 +188,56 @@
                 <width>240</width>
                 <height>300</height>
             </image>
+
+            <image id="swatch_image" type="swatch_image">
+                <width>90</width>
+                <height>60</height>
+            </image>
+            <image id="fixed_bundle_selection_thumbnail" type="thumbnail">
+                <width>75</width>
+                <height>75</height>
+            </image>
+            <image id="add_to_cart_panel_product" type="small_image">
+                <width>135</width>
+                <height>135</height>
+            </image>
         </images>
     </media>
     <vars module="Magento_Catalog">
-        <var name="product_small_image_sidebar_size">100</var>  <!-- Override for small product image -->
-        <var name="product_base_image_size">275</var>           <!-- Override for base product image -->
-        <var name="product_base_image_icon_size">48</var>       <!-- Base product image icon size -->
-
-        <var name="product_list_image_size">166</var>           <!-- New Product image size used in product list -->
-        <var name="product_zoom_image_size">370</var>           <!-- New Product image size used for zooming -->
-
+        <var name="product_small_image_sidebar_size">100</var>
+        <var name="product_base_image_size">275</var>
+        <var name="product_base_image_icon_size">48</var>
+        <var name="product_list_image_size">166</var>
+        <var name="product_zoom_image_size">370</var>
         <var name="category_page_category_image">
-            <!-- <var name="width">580</var> -->
-            <!-- <var name="height">372</var> -->
         </var>
 
         <var name="product_image_white_borders">1</var>
+
+        <var name="gallery">
+            <var name="nav">thumbs</var>
+            <var name="loop">true</var>
+            <var name="caption">false</var>
+            <var name="allowfullscreen">true</var>
+            <var name="navdir">vertical</var>
+            <var name="navarrows">false</var>
+            <var name="arrows">end</var>
+            <var name="fullscreenicon">false</var>
+            <var name="navoverflow">true</var>
+            <var name="autoplay">true</var>
+            <var name="magnifier">
+                <var name="enable">false</var>
+                <var name="zoom">80</var>
+                <var name="fullscreen">true</var>
+                <var name="trigger">click</var>
+            </var>
+        </var>
     </vars>
     <vars module="Magento_Bundle">
-        <var name="product_summary_image_size">58</var>         <!-- New Product image size used for summary block-->
+        <var name="product_summary_image_size">58</var>
     </vars>
     <vars module="Magento_ConfigurableProduct">
-        <var name="gallery_switch_strategy">append</var> <!-- 'append' or 'replace' -->
+        <var name="gallery_switch_strategy">append</var>
     </vars>
     <vars module="Js_Bundle">
         <var name="bundle_size">1MB</var>

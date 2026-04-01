@@ -9,7 +9,15 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <update handle="catalog_list_item" />
     <body>
+        <referenceBlock name="page.main.title">
+            <arguments>
+                <argument name="wrapper_spacing_css" xsi:type="string">px-[15px] md:px-0 mb-4</argument>
+                <argument name="css_class" xsi:type="string"></argument>
+            </arguments>
+        </referenceBlock>
+
         <move element="div.sidebar.main" destination="columns" after="main"/>
+
         <referenceContainer name="content">
             <block class="Magento\CatalogSearch\Block\Result" name="search.result" template="Magento_CatalogSearch::result.phtml">
                 <block class="Magento\CatalogSearch\Block\SearchResult\ListProduct" name="search_result_list" template="Magento_Catalog::product/list.phtml">

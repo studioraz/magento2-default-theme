@@ -11,17 +11,17 @@ use Hyva\Theme\Model\ViewModelRegistry;
 use Hyva\Theme\ViewModel\Wishlist;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
-use Hyva\Theme\ViewModel\HeroiconsOutline;
+use Hyva\Theme\ViewModel\LucideIcons;
 
 // phpcs:disable Generic.Files.LineLength.TooLong
 
 /** @var ViewModelRegistry $viewModels */
 /** @var Escaper $escaper */
 /** @var Template $block */
-/** @var HeroiconsOutline $heroiconsOutline */
+/** @var LucideIcons $lucideIcons */
 
 $wishlistViewModel = $viewModels->require(Wishlist::class);
-$heroiconsOutline = $viewModels->require(HeroiconsOutline::class);
+$lucideIcons = $viewModels->require(LucideIcons::class);
 ?>
 
 <?php if ($wishlistViewModel->isEnabled()): ?>
@@ -115,7 +115,7 @@ $heroiconsOutline = $viewModels->require(HeroiconsOutline::class);
                         <li class="flex items-start mb-4">
                             <a
                                 :href="product.product_url"
-                                class="block mb-3 w-10 h-10 shrink-0 mr-4"
+                                class="block mb-3 w-10 h-10 shrink-0 me-4"
                                 tabindex="-1"
                                 aria-hidden="true"
                             >
@@ -126,10 +126,10 @@ $heroiconsOutline = $viewModels->require(HeroiconsOutline::class);
                                 >
                             </a>
                             <div class="product-item-details">
-                                <strong class="mr-2 text-sm leading-6 font-normal">
+                                <strong class="me-2 text-sm leading-6 font-normal">
                                     <a :href="product.product_url" :title="product.product_name" x-html="product.product_name"></a>
                                 </strong>
-                                <div class="mr-2 text-sm leading-6 font-bold" x-html="product.product_price"></div>
+                                <div class="me-2 text-sm leading-6 font-bold" x-html="product.product_price"></div>
                                 <template x-if="product.product_is_saleable_and_visible">
                                     <div class="actions-primary my-2">
                                         <template x-if="!product.product_has_required_options">
@@ -152,10 +152,10 @@ $heroiconsOutline = $viewModels->require(HeroiconsOutline::class);
                                 :aria-label="hyva.str('<?= $escaper->escapeJs(__('Remove product "%1" from My Wish List')) ?>', product.product_name)"
                                 class="
                                     p-1 inline-flex shrink-0 items-center
-                                    justify-center text-slate-400 hover:text-slate-800 ml-auto
+                                    justify-center text-slate-400 hover:text-slate-800 ms-auto
                                 "
                             >
-                                <?= $heroiconsOutline->xHtml('', 24, 24, ['aria-hidden' => 'true']); ?>
+                                <?= $lucideIcons->trashHtml('', 24, 24, ['aria-hidden' => 'true']); ?>
                             </button>
                         </li>
                     </template>

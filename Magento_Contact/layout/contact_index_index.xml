@@ -11,11 +11,23 @@
         <title>Contact Us</title>
     </head>
     <body>
+        <referenceBlock name="page.main.title">
+            <arguments>
+                <argument name="text_css" xsi:type="string">page-title text-center text-xl md:text-3xl font-medium mb-2 md:mb-5</argument>
+            </arguments>
+        </referenceBlock>
+
         <referenceContainer name="content">
             <block class="Magento\Contact\Block\ContactForm" name="contactForm" template="Magento_Contact::form.phtml" cacheable="false">
-                <container name="form.additional.info" label="Form Additional Info"/>
-                <container name="form.additional.after" label="Form Additional After Container"/>
-                <block name="contactDetails" as="contact.details" template="Magento_Contact::form/contact-details.phtml" />
+                <container name="form.additional.before" label="Contact Form Before"/>
+                <container name="form.additional.top" label="Contact Form Top"/>
+
+                <container name="form.additional.info" label="Contact Form Additional Info"/>
+
+                <container name="form.additional.bottom" label="Contact Form Bottom"/>
+
+                <container name="form.additional.after" label="Contact Form After"/>
+
             </block>
         </referenceContainer>
     </body>

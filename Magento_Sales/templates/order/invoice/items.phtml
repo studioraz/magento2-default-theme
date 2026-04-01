@@ -6,7 +6,7 @@
  */
 
 use Hyva\Theme\Model\ViewModelRegistry;
-use Hyva\Theme\ViewModel\HeroiconsOutline;
+use Hyva\Theme\ViewModel\LucideIcons;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\Escaper;
 use Magento\Sales\Block\Order\Invoice\Items;
@@ -15,8 +15,8 @@ use Magento\Sales\Block\Order\Invoice\Items;
 /** @var Items $block */
 /** @var ViewModelRegistry $viewModels */
 
-/** @var HeroiconsOutline $heroicons */
-$heroicons = $viewModels->require(HeroiconsOutline::class);
+/** @var LucideIcons $lucideIcons */
+$lucideIcons = $viewModels->require(LucideIcons::class);
 
 $order = $block->getOrder();
 ?>
@@ -24,11 +24,11 @@ $order = $block->getOrder();
     <div class="order-title text-center md:text-left font-semibold">
         <?= $escaper->escapeHtml(__('Invoice #')) ?><?= $escaper->escapeHtml($invoice->getIncrementId()) ?>
         <a href="<?= $escaper->escapeUrl($block->getPrintInvoiceUrl($invoice)) ?>"
-           class="inline-block ml-2 pl-2 border-l text-sm font-normal"
+           class="inline-block ms-2 pl-2 border-s text-sm font-normal"
            target="_blank"
            rel="noopener">
-            <?= $heroicons->printerHtml('inline-block', 20, 20); ?>
-            <span class="inline-block ml-1 underline"><?= $escaper->escapeHtml(__('Print Invoice')) ?></span>
+            <?= $lucideIcons->renderHtml('printer', 'inline-block', 20, 20, ['aria-hidden' => 'true']); ?>
+            <span class="inline-block ms-1 underline"><?= $escaper->escapeHtml(__('Print Invoice')) ?></span>
         </a>
     </div>
     <?= $block->getInvoiceCommentsHtml($invoice) ?>
@@ -37,7 +37,7 @@ $order = $block->getOrder();
             <div class="p-2 col-span-2"><?= $escaper->escapeHtml(__('Product Name')) ?></div>
             <div class="p-2"><?= $escaper->escapeHtml(__('Price')) ?></div>
             <div class="p-2"><?= $escaper->escapeHtml(__('Qty Invoiced')) ?></div>
-            <div class="p-2 text-right"><?= $escaper->escapeHtml(__('Subtotal')) ?></div>
+            <div class="p-2 text-end"><?= $escaper->escapeHtml(__('Subtotal')) ?></div>
         </div>
         <?php $items = $invoice->getAllItems(); ?>
         <?php foreach ($items as $item): ?>
@@ -49,7 +49,7 @@ $order = $block->getOrder();
             }
             ?>
             <div class="<?= ($parentItem) ?
-                'child-item ml-2 px-4 mb-2 border-l-4 border-gray-300 text-sm' :
+                'child-item ms-2 px-4 mb-2 border-s-4 border-gray-300 text-sm' :
                 'parent-item mb-2'
             ?>">
                 <?= $block->getItemHtml($item) ?>

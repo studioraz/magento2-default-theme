@@ -1,8 +1,7 @@
 <?php
 /**
- * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
 
 declare(strict_types=1);
@@ -14,22 +13,25 @@ use Hyva\Theme\ViewModel\Wishlist;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
+use Hyva\Theme\ViewModel\SvgIcons;
 
 /** @var Template $block */
 /** @var Escaper $escaper */
 /** @var ViewModelRegistry $viewModels */
+/** @var SvgIcons $icons */
+$icons = $viewModels->require(SvgIcons::class);
 
 /** @var Wishlist $wishlistViewModel */
 $wishlistViewModel = $viewModels->require(Wishlist::class);
-
-/** @var LucideIcons $lucideIcons */
-$lucideIcons = $viewModels->require(LucideIcons::class);
 
 /** @var CurrentProduct $currentProduct */
 $currentProduct = $viewModels->require(CurrentProduct::class);
 
 /** @var Product $product */
 $product = $currentProduct->get();
+
+/** @var LucideIcons $lucideIcons */
+$lucideIcons = $viewModels->require(LucideIcons::class);
 
 if (!$product->getId() || !$wishlistViewModel->isEnabled()) {
     return;
@@ -42,10 +44,22 @@ $updateParams = $block->getUpdateParams() ?: null;
 $uniqueId = '_' . uniqid();
 ?>
 <script>
-    function initWishlist<?= /** @noEscape */ $uniqueId ?>() {
+    function initWishlist<?= /** @noEscape */ $uniqueId ?>(productId) {
         return {
-            addToWishlist(productId) {
+            isInWishlist: null,
+            productId: productId,
 
+            init() {
+                window.addEventListener('private-content-loaded', this.onPrivateContentLoaded.bind(this));
+            },
+            onPrivateContentLoaded(event) {
+                const sectionData = event.detail.data;
+
+                if (sectionData.wishlist && sectionData.wishlist.item_ids) {
+                    this.isInWishlist = sectionData.wishlist.item_ids.find(item => +item === this.productId) != undefined;
+                }
+            },
+            addToWishlist(productId) {
                 const postParams = <?php if ($updateParams): ?>
                     <?= /* @noEscape */ $updateParams ?>
                 <?php else: ?>
@@ -133,7 +147,7 @@ $uniqueId = '_' . uniqid();
     }
 </script>
 
-<button x-data="initWishlist<?= /** @noEscape */ $uniqueId ?>()"
+<button x-data="initWishlist<?= /** @noEscape */ $uniqueId ?>(<?= (int)$product->getId() ?>)"
         x-defer="intersect"
         @click.prevent="addToWishlist(<?= (int)$product->getId() ?>)"
         title="<?= $escaper->escapeHtmlAttr(
@@ -143,8 +157,8 @@ $uniqueId = '_' . uniqid();
             ($updateParams) ? __('Update Wish List') : __('Add to Wish List')
         ) ?>"
         id="add-to-wishlist"
-        class="btn p-2 rounded-full ml-4"
+        class="flex items-center justify-center w-10 h-10 rounded-full text-slate-500 bg-slate-200 hover:text-primary hover:bg-slate-100"
         data-addto="wishlist"
 >
-    <?= $lucideIcons->heartHtml('', 20, 20, ['aria-hidden' => 'true']) ?>
+    <?= $lucideIcons->renderHtml('heart', '', 20, 20, ['aria-hidden' => 'true']) ?>
 </button>

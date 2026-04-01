@@ -1,31 +1,51 @@
 <?php
 /**
- * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
 
 declare(strict_types=1);
 
-use Magento\Framework\View\Element\Template;
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\SvgIcons;
 use Magento\Framework\Escaper;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\View\Element\Template;
 
 /** @var Template $block */
 /** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+/** @var SvgIcons $icons */
+
+$icons = $viewModels->require(SvgIcons::class);
 ?>
-<div class="bg-gray-100 border-t border-gray-300 pb-16">
-    <div class="container py-8">
-        <div class="flex flex-wrap gap-y-16">
-            <?php foreach ($block->getChildNames() as $childName): ?>
-                <?= $childName !== 'footer-copyright' ? $block->getBlockHtml($childName) : '' ?>
-            <?php endforeach; ?>
+<div class="text-gray-600 text-base leading-6 bg-gray-100 relative">
+    <?= $block->getChildHtml('newsletter') ?>
+
+    <div class="bg-gray-100 lg:py-[32px]">
+        <div class="container mx-auto px-7 pt-3 pb-2 lb:pt-0 lg:pb-0 lg:flex lg:justify-between">
+            <?= $block->getChildHtml('menu-footer') ?>
+
+            <div class="lg:mb-[32px] lg:order-last">
+                <?= $block->getChildHtml('social.icons') ?>
+            </div>
         </div>
     </div>
-    <div class="bg-surface border-t border-b border-gray-300">
-        <div class="container py-6 flex items-center sm:flex-row flex-col">
-            <a href="https://hyva.io" class="text-xl font-medium">Hyvä Theme</a>
-            <p><?= $block->getChildHtml('copyright') ?></p>
+
+    <div class="py-3 mx-auto bg-[#070914] border-b border-t border-[#1F2937]">
+        <?= $block->getChildHtml('payment_icons') ?>
+        <div class="block lg:hidden">
+            <?= $block->getChildHtml('copyright') ?>
+        </div>
+    </div>
+
+    <div class="bg-[#070914] flex p-6">
+        <div class="w-full mx-auto flex items-center justify-center lg:justify-between">
+            <div class="hidden lg:block">
+                <?= $block->getChildHtml('copyright') ?>
+            </div>
+            <a href="https://studioraz.co.il/"
+               target="_blank"><?= $icons->renderHtml('studioraz-logo', 'text-white w-[113px] h-[31px]', 96, 50) ?></a>
         </div>
     </div>
 </div>
-

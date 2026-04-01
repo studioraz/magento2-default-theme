@@ -9,6 +9,10 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <update handle="default_hyva"/>
     <body>
+        <attribute name="x-data" value="initScrollLocker"/>
+        <attribute name="x-bind" value="eventListeners"/>
+        <attribute name=":class" value="{'overflow-hidden': isLocked}"/>
+
         <referenceContainer name="after.body.start">
             <block class="Magento\Framework\View\Element\FormKey" name="formkey" />
             <block class="Magento\Theme\Block\Html\Notices" name="global_notices" template="Magento_Theme::html/notices.phtml"/>
@@ -19,7 +23,13 @@
                    name="messages"
                    as="messages"
                    template="Magento_Theme::messages.phtml"
-            />
+            >
+                <block name="messages.markup" template="Magento_Theme::messages/toasts-ui-markup.phtml" as="markup">
+                    <block name="messages.item.markup" template="Magento_Theme::messages/toasts-item-ui-markup.phtml" as="item_markup"/>
+                </block>
+                <block name="messages.logic" template="Magento_Theme::messages/toasts-ui-logic.phtml" as="logic"/>
+                <block name="messages.item.logic" template="Magento_Theme::messages/toasts-item-ui-logic.phtml" as="item_logic"/>
+            </block>
         </referenceContainer>
 
         <referenceContainer name="main.content">
@@ -40,7 +50,7 @@
             <block name="header-content" template="Magento_Theme::html/header.phtml">
                 <arguments>
                     <argument name="show_compare" xsi:type="boolean">true</argument>
-                    <!-- <argument name="show_wishlist" xsi:type="boolean">true</argument> -->
+                    <argument name="show_wishlist" xsi:type="boolean">true</argument>
                 </arguments>
 
                 <block class="Magento\Theme\Block\Html\Header\Logo" name="logo">
@@ -56,10 +66,17 @@
                 <block name="header-compare" as="compare" template="Magento_Theme::html/header/compare.phtml"/>
                 
                 <block name="cart-drawer" template="Magento_Theme::html/cart/cart-drawer.phtml" ifconfig="checkout/sidebar/display">
+                    <block name="minicart.clear" as="clear_cart" template="Magento_Theme::html/cart/cart-clear.phtml"/>
+
                     <block name="cart-drawer-loading" as="loading" template="Hyva_Theme::ui/loading.phtml"/>
                     <container name="extra_actions"/>
                     <container name="cart-drawer.top"/>
                     <container name="cart-drawer.items.before"/>
+
+                    <container name="cart-drawer.items.scrollable.before"/>
+                    <container name="cart-drawer.items.scrollable.after"/>
+                    <container name="cart-drawer.items.after"/>
+
                     <container name="cart-drawer.totals.before"/>
                     <container name="cart-drawer.bottom"/>
                 </block>
@@ -87,11 +104,23 @@
         </referenceContainer>
 
         <referenceContainer name="top.container">
-            <block class="Magento\Theme\Block\Html\Breadcrumbs" name="breadcrumbs" as="breadcrumbs"/>
+            <block class="Magento\Theme\Block\Html\Breadcrumbs" name="breadcrumbs" as="breadcrumbs">
+                <arguments>
+                    <argument name="show_back_btn" xsi:type="boolean">true</argument> <argument name="overflow_style" xsi:type="string">normal</argument> </arguments>
+            </block>
         </referenceContainer>
 
         <referenceContainer name="columns.top">
-            <block class="Magento\Theme\Block\Html\Title" name="page.main.title" template="Magento_Theme::html/title.phtml"/>
+            <block class="Magento\Theme\Block\Html\Title" name="page.main.title" template="Magento_Theme::html/title.phtml">
+                <arguments>
+                    <argument name="wrapper_css_default" xsi:type="string">container</argument>
+                    <argument name="wrapper_container_css_default" xsi:type="string">page-title-container</argument>
+                    <argument name="wrapper_block_css_default" xsi:type="string"></argument>
+                    <argument name="wrapper_spacing_css_default" xsi:type="string">mb-3</argument>
+                    <argument name="text_css_default" xsi:type="string">page-title text-xl md:text-3xl leading-7 md:leading-9 font-bold</argument>
+                    <argument name="css_class" xsi:type="string">md:px-0</argument>
+                </arguments>
+            </block>
         </referenceContainer>
 
         <referenceContainer name="footer">
@@ -102,11 +131,25 @@
                         <argument name="block_id" xsi:type="string">footer_content</argument>
                     </arguments>
                 </block>
+
+                <block name="footer-newsletter" template="Magento_Theme::html/footer/newsletter.phtml" as="newsletter">
+                    <arguments>
+                        <argument name="viewModelRecaptcha" xsi:type="object">Hyva\Theme\ViewModel\ReCaptcha</argument>
+                    </arguments>
+                </block>
+                <block class="Magento\Cms\Block\Block" name="social.icons">
+                    <arguments>
+                        <argument name="block_id" xsi:type="string">footer_social_icons</argument>
+                    </arguments>
+                </block>
+                <block name="footer.payment.icons" template="Magento_Theme::html/footer/payment-icons.phtml" as="payment_icons"/>
+
                 <block
                     class="Magento\Theme\Block\Html\Footer"
                     name="footer-copyright"
                     template="Magento_Theme::html/footer/copyright.phtml"
                     as="copyright"
+                    display="true"
                 />
             </block>
         </referenceContainer>
@@ -118,8 +161,32 @@
 
         <referenceContainer name="before.body.end">
             <block class="Magento\Theme\Block\Html\Footer" name="absolute_footer" template="Magento_Theme::html/absolute_footer.phtml" />
+
+            <block name="body.scroll.locker" template="Magento_Theme::body-scroll-locker.phtml"/>
+            <block name="studioraz.tooltip" template="Magento_Theme::tooltip/studioraz-tooltip.phtml"/>
+            <block name="cart.clear.js" template="Magento_Theme::js/cart-clear-js.phtml"/>
+            <block name="header.promo.init" template="Magento_Theme::js/header-promo-init.phtml"/>
+            <block class="Magento\Framework\View\Element\Template"
+                   name="swiper.manager.js"
+                   template="Magento_PageBuilder::swiper/init.phtml"/>
         </referenceContainer>
 
         <block name="head.additional" as="head.additional" template="Magento_Theme::html/container.phtml"/>
+
+        <referenceBlock name="script-alpine-js">
+            <block name="alpine-plugin-ajax-cart" template="Magento_Theme::page/js/plugins/ajax-cart.phtml">
+                <arguments>
+                    <argument name="enabled" xsi:type="boolean">true</argument>
+                    <argument name="delay" xsi:type="number">4000</argument> <argument name="show_sku" xsi:type="boolean">false</argument> <argument name="display_on_success" xsi:type="string">false</argument> </arguments>
+                <block name="alpine-plugin-ajax-cart-ui" as="ui"
+                       template="Magento_Theme::page/js/plugins/ajax-cart-ui.phtml"/>
+                <block name="alpine-plugin-ajax-cart-logic" as="logic"
+                       template="Magento_Theme::page/js/plugins/ajax-cart-logic.phtml"/>
+            </block>
+        </referenceBlock>
+
+        <referenceBlock name="hero" remove="true"/>
+        <referenceBlock name="slider-1" remove="true"/>
+        <referenceBlock name="slider-2" remove="true"/>
     </body>
 </page>

@@ -6,7 +6,7 @@
  */
 
 use Hyva\Theme\Model\ViewModelRegistry;
-use Hyva\Theme\ViewModel\HeroiconsOutline;
+use Hyva\Theme\ViewModel\LucideIcons;
 use Magento\Customer\Block\Address\Grid;
 use Magento\Framework\Escaper;
 
@@ -14,8 +14,8 @@ use Magento\Framework\Escaper;
 /** @var Escaper $escaper */
 /** @var ViewModelRegistry $viewModels */
 
-/** @var HeroiconsOutline $heroicons */
-$heroicons = $viewModels->require(HeroiconsOutline::class);
+/** @var LucideIcons $lucideIcons */
+$lucideIcons = $viewModels->require(LucideIcons::class);
 ?>
 
 <div class="block block-addresses-list">
@@ -67,13 +67,13 @@ $heroicons = $viewModels->require(HeroiconsOutline::class);
                                 'customer/address/edit',
                                 ['id' => $address->getId()]
                             )) ?>">
-                            <?= $heroicons->pencilAltHtml('', 24, 24, ['aria-hidden' => true]); ?>
+                            <?= $lucideIcons->renderHtml('pencil', '', 24, 24, ['aria-hidden' => true]); ?>
                             <span></span>
                         </a>
-                        <a class="action delete ml-2 inline-block text-sm underline"
+                        <a class="action delete ms-2 inline-block text-sm underline"
                            title="<?= $escaper->escapeHtmlAttr(__('Delete')) ?>"
                            @click.prevent="deleteAddressById(<?= $escaper->escapeJs($address->getId()) ?>)" href="#">
-                            <?= $heroicons->trashHtml('', 24, 24, ['aria-hidden' => true]); ?>
+                            <?= $lucideIcons->renderHtml('trash', '', 24, 24, ['aria-hidden' => true]); ?>
                         </a>
                     </div>
                 <?php endforeach; ?>

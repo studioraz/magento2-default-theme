@@ -1,8 +1,7 @@
 <?php
 /**
- * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
 
 declare(strict_types=1);
@@ -98,19 +97,19 @@ $jsTemplate = 'Magento_Catalog::product/widget/viewed/js/recently-viewed-product
                         aria-label="Previous Slide"
                         data-prev
                         disabled
-                    ><?= $lucideIcons->arrowLeftHtml('rtl:-rotate-180', 18, 18, ['aria-hidden' => 'true']); ?></button>
+                    ><?= $lucideIcons->arrowLeftHtml('', 18, 18, ['aria-hidden' => 'true']); ?></button>
                     <button
                         class="btn btn-secondary p-2 invisible"
                         aria-label="Next Slide"
                         data-next
                         disabled
-                    ><?= $lucideIcons->arrowRightHtml('rtl:-rotate-180', 18, 18, ['aria-hidden' => 'true']); ?></button>
+                    ><?= $lucideIcons->arrowRightHtml('', 18, 18, ['aria-hidden' => 'true']); ?></button>
                 </div>
             </div>
 
             <div class="<?= $escaper->escapeHtmlAttr($sliderClasses) ?>" data-track tabindex="0" aria-live="polite">
                 <template x-for="product in products">
-                    <div class="item product product-item card card-interactive grow flex flex-col w-full">
+                    <div class="item product product-item grow flex flex-col w-full grow py-4  bg-white relative py-1 h-auto">
                         <?php if (in_array("image", $widgetAttributesToShow)): ?>
                             <a
                                 :href="productUrl"
@@ -128,48 +127,17 @@ $jsTemplate = 'Magento_Catalog::product/widget/viewed/js/recently-viewed-product
                             </a>
                         <?php endif; ?>
                         <div class="product-info flex flex-col grow">
-                            <?php if (in_array("name", $widgetAttributesToShow)): ?>
-                                <p class="mt-2 mb-1 items-center justify-center font-semibold text-lg text-center">
-                                    <a :href="productUrl" class="product-item-link">
-                                        <span x-html="product.name"></span>
-                                    </a>
-                                </p>
-                            <?php endif; ?>
-                            <?php if (in_array("price", $widgetAttributesToShow)): ?>
-                                <div class="price-container pt-1">
-                                    <div class="price-box price-final_price">
-                                        <span class="price-wrapper">
-                                            <span class="price" x-text="productPrice"></span>
-                                        </span>
-                                    </div>
-                                    <?php if ($productPrice->displayPriceInclAndExclTax()): ?>
-                                        <template x-if="product.price_range.minimum_price.base_price">
-                                            <div class="final-price-excl-tax">
-                                                <span>
-                                                    <span><?= $escaper->escapeHtml(__('Excl. Tax')) ?>:</span>
-                                                    <span class="price" x-text="productTaxPrice"></span>
-                                                </span>
-                                            </div>
-                                        </template>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endif; ?>
-                            <div class="mt-auto pt-3 flex flex-wrap items-center gap-y-4 gap-x-2">
-                                <?php if (in_array("learn_more", $widgetAttributesToShow)): ?>
-                                    <a :href="productUrl" class="btn btn-primary text-sm me-auto">
-                                        <?= $escaper->escapeHtml(__('View Product')) ?>
-                                    </a>
-                                <?php endif; ?>
-                                <div class="flex flex-wrap gap-2">
+                            <div class="mb-2 flex flex-wrap gap-2">
+                                <div class="ms-auto flex gap-2">
                                     <?php if ($wishlistViewModel->isEnabled() && in_array("add_to_wishlist", $widgetButtonsToShow)): ?>
                                         <button
                                             @click.prevent="addToWishlist"
                                             aria-label="<?= $escaper->escapeHtmlAttr(__('Add to Wish List')) ?>"
                                             type="button"
-                                            class="btn p-2 rounded-full"
+                                            class="rounded-full w-8 h-8 inline-flex shrink-0 items-center justify-center text-slate-500 bg-slate-200 hover:text-primary hover:bg-slate-100"
                                             data-addto="wishlist"
                                         >
-                                            <?= $lucideIcons->heartHtml('', 20, 20, ['aria-hidden' => 'true']) ?>
+                                            <?= $lucideIcons->heartHtml('', 16, 16, ['aria-hidden' => 'true']) ?>
                                         </button>
                                     <?php endif; ?>
 
@@ -178,13 +146,55 @@ $jsTemplate = 'Magento_Catalog::product/widget/viewed/js/recently-viewed-product
                                             @click.prevent="addToCompare"
                                             aria-label="<?= $escaper->escapeHtmlAttr(__('Add to Compare')) ?>"
                                             type="button"
-                                            class="btn p-2 rounded-full"
+                                            class="rounded-full w-8 h-8 inline-flex shrink-0 items-center justify-center text-slate-500 bg-slate-200 hover:text-primary hover:bg-slate-100"
                                             data-addto="compare"
                                         >
-                                            <?= $lucideIcons->scaleHtml('', 20, 20, ['aria-hidden' => 'true']) ?>
+                                            <?= $lucideIcons->scaleHtml('', 16, 16, ['aria-hidden' => 'true']) ?>
                                         </button>
                                     <?php endif; ?>
                                 </div>
+                            </div>
+
+                            <div class="mb-[3px] flex flex-wrap items-center text-xs">
+                                <div class="product-info-sku me-auto flex text-slate-500">
+                                    <div class="product-info-sku-label"><?= __('SKU') ?></div>
+                                    <div class="product-info-sku-separator me-[2px]">:</div>
+                                    <div class="product-info-sku-value" x-html="product.sku"></div>
+                                </div>
+                            </div>
+
+                            <?php if (in_array("name", $widgetAttributesToShow)): ?>
+                                <div class="product-name mb-[2px] md:mb-0 text-sm md:text-base text-slate-800 hover:underline">
+                                    <a :href="productUrl" class="product-item-link">
+                                        <span x-html="product.name"></span>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                            <?php if (in_array("price", $widgetAttributesToShow)): ?>
+                                <div class="price-container mt-auto">
+                                    <div class="price-box price-final_price">
+                                        <span class="price-wrapper">
+                                            <span class="price" x-text="productPrice"></span>
+                                        </span>
+                                    </div>
+                                    <?php if ($productPrice->displayPriceInclAndExclTax()): ?>
+                                        <template x-if="product.price_range.minimum_price.base_price">
+                                            <div class="baseprice text-xs text-slate-400 leading-[16px] mt-1">
+                                                    <span class="font-regular text-slate-600">
+                                                        <span><?= $escaper->escapeHtml(__('Excl. Tax')) ?>:</span>
+                                                        <span class="price" x-html="hyva.formatPrice(product.price_range.minimum_price.base_price.value)"></span>
+                                                    </span>
+                                            </div>
+                                        </template>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+                            <div class="actions pt-2 w-full flex items-center">
+                                <?php if (in_array("learn_more", $widgetAttributesToShow)): ?>
+                                    <a :href="productUrl" class="btn btn-primary text-sm h-10 w-full">
+                                       <?= $escaper->escapeHtml(__('View Product')) ?>
+                                    </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -199,4 +209,3 @@ $jsTemplate = 'Magento_Catalog::product/widget/viewed/js/recently-viewed-product
         </section>
     </template>
 </div>
-

@@ -1,4 +1,4 @@
-/* @preserve
+ /* @preserve
     _____ __ _     __                _
    / ___// /(_)___/ /___  ____      (_)___
   / (_ // // // _  // -_)/ __/_    / /(_-<
@@ -492,7 +492,7 @@
 
   gliderPrototype.handleMouse = function (e) {
     var _ = this
-    if (_.mouseDown) {
+      if (_.mouseDown) {
       _.isDrag = true
        _.scrollLeft +=
         (_.mouseDown - e.clientX) * (_.opt.dragVelocity || 3.3)

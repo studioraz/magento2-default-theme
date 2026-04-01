@@ -1,14 +1,13 @@
 <?php
 /**
- * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
 
 declare(strict_types=1);
 
 use Hyva\Theme\Model\ViewModelRegistry;
-use Hyva\Theme\ViewModel\HeroiconsOutline;
+use Hyva\Theme\ViewModel\LucideIcons;
 use Magento\Catalog\Block\Product\ProductList\Toolbar;
 use Magento\Framework\Escaper;
 
@@ -16,15 +15,37 @@ use Magento\Framework\Escaper;
 /** @var Escaper $escaper */
 /** @var ViewModelRegistry $viewModels */
 
-/** @var HeroiconsOutline $heroicons */
-$heroicons = $viewModels->require(HeroiconsOutline::class);
+/** @var LucideIcons $lucideIcons */
+$lucideIcons = $viewModels->require(LucideIcons::class);
+$availableOrders = $block->getAvailableOrders();
+$currentOrderCode = $block->getCurrentOrder();
+$currentOrderLabel = $availableOrders[$currentOrderCode] ?? null;
+
+if ($currentOrderLabel === null) {
+    $currentOrderLabel = reset($availableOrders);
+}
+
+if ($currentOrderLabel === false || $currentOrderLabel === null) {
+    $currentOrderLabel = __('Sort results by');
+}
+
+$currentOrderLabel = (string)$currentOrderLabel;
+
+$options = [];
+foreach ($availableOrders as $orderCode => $orderLabel) {
+    $options[] = [
+        'title' => $orderLabel,
+        'value' => $orderCode,
+        'disabled' => false,
+        'selected' => $block->isOrderCurrent($orderCode)
+    ];
+}
 ?>
-<div class="toolbar-sorter sorter flex items-center order-1 col-span-3 sm:col-span-6
-        md:col-span-3 lg:col-span-6 justify-end">
-    <label class="inline-block mr-3">
+<div class="toolbar-sorter sorter flex items-center lg:justify-end lg:me-4">
+    <label class="inline-block">
         <select data-role="sorter"
-                name="sorter"
-                class="form-select sorter-options"
+                id="toolbar_sorter"
+                class="form-select sorter-options me-3 hidden"
                 aria-label="<?= $escaper->escapeHtmlAttr(__('Sort By')) ?>"
                 @change="changeUrl(
                     'product_list_order',
@@ -42,23 +63,200 @@ $heroicons = $viewModels->require(HeroiconsOutline::class);
             <?php endforeach; ?>
         </select>
     </label>
-    <?php if ($block->getCurrentDirection() == 'desc'): ?>
-        <button
-            title="<?= $escaper->escapeHtmlAttr(__('Set Ascending Direction')) ?>"
-            type="button"
-            class="action sorter-action sort-desc"
-            @click.prevent="changeUrl('product_list_dir', 'asc', options.directionDefault)"
-        >
-            <?= $heroicons->sortAscendingHtml('', 24, 24, ['aria-hidden' => 'true']); ?>
+    <div x-data="{...customSelectUi(<?= htmlentities(json_encode($options)) ?>), ...{selectId: $id('select')}}"
+         x-init="initComponent()"
+         @keydown.escape="if(selectOpen){ selectOpen=false; }"
+         @keydown.down="if(selectOpen){ selectableItemActiveNext(); } else { selectOpen=true; } event.preventDefault();"
+         @keydown.up="if(selectOpen){ selectableItemActivePrevious(); } else { selectOpen=true; } event.preventDefault();"
+         @keydown.enter="selectedItem=selectableItemActive; selectOpen=false;"
+         @keydown="selectKeydown($event);"
+         x-cloak
+         class="relative z-20">
+        <button x-ref="selectButton" @click="selectOpen=!selectOpen"
+                id="select-button"
+                class="relative flex items-center justify-between py-2 pe-10 text-start cursor-default bg-slate-100 focus:outline-none filter-dropdown-button">
+            <span class="overflow-hidden whitespace-nowrap text-sm font-semibold leading-5 tracking-[0.35px]"
+                  :class="{ 'text-slate-600': selectOpen }"
+            ><?= $escaper->escapeHtmlAttr(__('Sort results by')) ?></span>
+            <span class="inset-y-0 end-0 flex items-center ps-3 pointer-events-none text-slate-600 fill-slate-600"
+                  :class="{ 'text-slate-600 fill-slate-600': selectOpen }"
+            >
+                <?= $lucideIcons->renderHtml(
+                    'chevron-down',
+                    'transition-transform transform duration-300 ease-in-out',
+                    12,
+                    12,
+                    [
+                        ":class" => "{ 'rotate-180': selectOpen }",
+                        "aria-hidden" => "true",
+                        "focusable" => "false"
+                    ]
+                ) ?>
+            </span>
         </button>
-    <?php else: ?>
-        <button
-            type="button"
-            title="<?= $escaper->escapeHtmlAttr(__('Set Descending Direction')) ?>"
-            class="action sorter-action sort-asc"
-            @click.prevent="changeUrl('product_list_dir', 'desc', options.directionDefault)"
-        >
-            <?= $heroicons->sortDescendingHtml('', 24, 24, ['aria-hidden' => 'true']); ?>
-        </button>
-    <?php endif; ?>
+        <ul x-show="selectOpen"
+            x-ref="selectableItemsList"
+            id="selectable-items-list"
+            @click.away="selectOpen = false"
+            x-transition:enter="transition ease-out duration-50"
+            x-transition:enter-start="opacity-0 -translate-y-1"
+            x-transition:enter-end="opacity-100"
+            :class="{ 'bottom-0 mb-10' : selectDropdownPosition == 'top', 'top-0 mt-[42px]' : selectDropdownPosition == 'bottom' }"
+            class="absolute w-full mt-1 overflow-auto text-sm bg-white rounded-[10px] max-h-56 focus:outline-none
+                   border border-slate-300 min-w-48 max-w-[300px] text-slate-800 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.10),0_4px_6px_-2px_rgba(0,0,0,0.05)] end-0 lg:start-0"
+            x-cloak>
+            <template x-for="item in selectableItems" :key="item.value">
+                <li
+                        @click="onOptionClick(item)"
+                        :id="item.value + '-' + selectId"
+                        :data-disabled="item.disabled"
+                        @mouseover="$el.classList.add('bg-gray-50')"
+                        @mouseleave="$el.classList.remove('bg-gray-50')"
+                        @mousemove="selectableItemActive=item"
+                        class="relative flex items-center h-full py-2.5 px-3 cursor-default select-none data-[disabled]:opacity-50 data-[disabled]:pointer-events-none"
+                >
+                    <label class="flex items-center gap-2 w-full cursor-pointer" :for="item.value + '-' + selectId + '-radio'">
+                        <input type="radio"
+                               class="h-4 w-4 border-slate-300 focus:ring-primary"
+                               :name="'toolbar-sorter-' + selectId"
+                               :id="item.value + '-' + selectId + '-radio'"
+                               :value="item.value"
+                               :checked="item.selected"
+                               :disabled="item.disabled"
+                               @change.stop="onOptionClick(item)"
+                        >
+                        <span class="block text-sm font-normal leading-5 text-slate-800 truncate" x-text="item.title"></span>
+                    </label>
+                </li>
+            </template>
+        </ul>
+    </div>
 </div>
+
+<script>
+    function customSelectUi (options) {
+        return {
+            selectOpen: false,
+            selectedItem: '',
+            selectableItems: options,
+            selectableItemActive: null,
+            selectKeydownValue: '',
+            selectKeydownTimeout: 1000,
+            selectKeydownClearTimeout: null,
+            selectDropdownPosition: 'bottom',
+            optionsList: '<?= \Laminas\Json\Json::encode($availableOrders) ?>',
+            selectLabel: <?= \Laminas\Json\Json::encode($currentOrderLabel) ?>,
+            selectableItemIsActive(item) {
+                return this.selectableItemActive && this.selectableItemActive.value===item.value;
+            },
+            selectableItemActiveNext(){
+                let index = this.selectableItems.indexOf(this.selectableItemActive);
+                if(index < this.selectableItems.length-1){
+                    this.selectableItemActive = this.selectableItems[index+1];
+                    this.selectScrollToActiveItem();
+                }
+            },
+            selectableItemActivePrevious(){
+                let index = this.selectableItems.indexOf(this.selectableItemActive);
+                if(index > 0){
+                    this.selectableItemActive = this.selectableItems[index-1];
+                    this.selectScrollToActiveItem();
+                }
+            },
+            selectScrollToActiveItem (){
+                if(this.selectableItemActive){
+                    activeElement = document.getElementById(this.selectableItemActive.value + '-' + this.selectId)
+                    if (activeElement && document.getElementById('selectable-items-list')) {
+                        newScrollPos = (activeElement.offsetTop + activeElement.offsetHeight) - document.getElementById('selectable-items-list').offsetHeight;
+                        if(newScrollPos > 0){
+                            this.$refs.selectableItemsList.scrollTop=newScrollPos;
+                        } else {
+                            this.$refs.selectableItemsList.scrollTop=0;
+                        }
+                    }
+                }
+            },
+            selectKeydown(event){
+                if (event.keyCode >= 65 && event.keyCode <= 90) {
+                    this.selectKeydownValue += event.key;
+                    selectedItemBestMatch = this.selectItemsFindBestMatch();
+                    if(selectedItemBestMatch){
+                        if(this.selectOpen){
+                            this.selectableItemActive = selectedItemBestMatch;
+                            this.selectScrollToActiveItem();
+                        } else {
+                            this.selectedItem = this.selectableItemActive = selectedItemBestMatch;
+                        }
+                    }
+                    if(this.selectKeydownValue !== ''){
+                        clearTimeout(this.selectKeydownClearTimeout);
+                        this.selectKeydownClearTimeout = setTimeout(() => {
+                            this.selectKeydownValue = '';
+                        }, this.selectKeydownTimeout);
+                    }
+                }
+            },
+            selectItemsFindBestMatch(){
+                typedValue = this.selectKeydownValue.toLowerCase();
+                var bestMatch = null;
+                var bestMatchIndex = -1;
+                for (var i = 0; i < this.selectableItems.length; i++) {
+                    var title = this.selectableItems[i].title.toLowerCase();
+                    var index = title.indexOf(typedValue);
+                    if (index > -1 && (bestMatchIndex === -1 || index < bestMatchIndex) && !this.selectableItems[i].disabled) {
+                        bestMatch = this.selectableItems[i];
+                        bestMatchIndex = index;
+                    }
+                }
+                return bestMatch;
+            },
+            selectPositionUpdate(){
+                selectDropdownBottomPos = document.getElementById('select-button').getBoundingClientRect().top + document.getElementById('select-button').offsetHeight + parseInt(window.getComputedStyle(document.getElementById('selectable-items-list')).maxHeight);
+                if(window.innerHeight < selectDropdownBottomPos){
+                    this.selectDropdownPosition = 'top';
+                } else {
+                    this.selectDropdownPosition = 'bottom';
+                }
+            },
+            select(option) {
+                let itemSelected = option;
+                this.selectLabel = JSON.parse(JSON.stringify(this.selectableItems))[option];
+                let $toolbarSorter = document.getElementById('toolbar_sorter');
+                $toolbarSorter.value = option;
+                this.selectableItems.forEach(item => {
+                    if (item.value === itemSelected) {
+                        item.selected = true;
+                    } else {
+                        item.selected = false;
+                    }
+
+                    if (item.selected === true) {
+                        return;
+                    }
+                } )
+
+                $toolbarSorter.dispatchEvent(new Event('change'));
+            },
+            initComponent () {
+                this.$watch('selectOpen', () => {
+                    if(!this.selectedItem){
+                        this.selectableItemActive=this.selectableItems[0];
+                    } else {
+                        this.selectableItemActive=this.selectedItem;
+                    }
+                    setTimeout(() => {
+                        this.selectScrollToActiveItem();
+                    }, 10);
+                    this.selectPositionUpdate();
+                    window.addEventListener('resize', (event) => { this.selectPositionUpdate(); });
+                });
+            },
+            onOptionClick (item) {
+                this.selectedItem=item;
+                this.selectOpen=false;
+                this.$refs.selectButton.focus();
+                this.select(item.value);
+            }
+        }
+    }
+</script>

@@ -29,7 +29,7 @@
                         <item name="template" xsi:type="string">Magento_PageBuilder::widgets/buttons.phtml</item>
                     </item>
                     <item name="page_builder.carousel" xsi:type="array">
-                        <item name="regex" xsi:type="string">/data-appearance="carousel"|data-content-type="slider"/</item>
+                        <item name="regex" xsi:type="string">/data-appearance="carousel"|data-content-type="slider"|data-content-type="products-slider"|data-slider-type="generic"/</item>
                         <item name="template" xsi:type="string">Magento_PageBuilder::widgets/carousel.phtml</item>
                     </item>
                     <item name="page_builder.map" xsi:type="array">
@@ -55,5 +55,7 @@
                 </argument>
             </arguments>
         </referenceBlock>
+
+        <move element="pagebuilder.carousel" destination="before.body.end" before="-"/>
     </body>
 </page>

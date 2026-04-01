@@ -25,12 +25,12 @@ $title = $block->getData('title') ? __($block->getData('title')) : $block->getTi
 
 ?>
 <?php if (count($block->getItems())): ?>
-    <dl class="my-6">
-        <dt class="mb-2 font-bold"><?= $escaper->escapeHtml($title) ?></dt>
+    <dl class="mb-1">
+        <dt class="inline-block mb-2 lg:mb-4 font-bold"><?= $escaper->escapeHtml($title) ?></dt>
         <?php foreach ($block->getItems() as $additionalInfo): ?>
-            <dd>
+            <dd class="inline-block rounded-md px-3 py-1 bg-slate-100 text-slate-600">
                 <a
-                    class="hover:underline"
+                    class="!no-underline"
                     href="<?= $escaper->escapeUrl($block->getLink($additionalInfo->getQueryText())) ?>"
                 >
                     <span><?= $escaper->escapeHtml($additionalInfo->getQueryText()) ?></span>

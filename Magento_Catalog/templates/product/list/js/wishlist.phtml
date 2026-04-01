@@ -1,9 +1,10 @@
 <?php
 /**
- * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
+
+declare(strict_types=1);
 
 use Hyva\Theme\Model\ViewModelRegistry;
 use Hyva\Theme\ViewModel\Wishlist;
@@ -16,12 +17,25 @@ use Magento\Framework\Escaper;
 $wishlistViewModel = $viewModels->require(Wishlist::class);
 ?>
 <?php if ($wishlistViewModel->isEnabled()): ?>
-<script>
-    function initWishlist() {
-        return {
-            addToWishlist(productId) {
-                const formKey = hyva.getFormKey();
-                const postUrl = BASE_URL + 'wishlist/index/add/';
+    <script>
+        function initWishlist(productId) {
+            return {
+                productId: productId,
+                isInWishlist: null,
+
+                init() {
+                    window.addEventListener('private-content-loaded', this.onPrivateContentLoaded.bind(this));
+                },
+                onPrivateContentLoaded(event) {
+                    const sectionData = event.detail.data;
+
+                    if (sectionData.wishlist && sectionData.wishlist.item_ids) {
+                        this.isInWishlist = sectionData.wishlist.item_ids.find(item => item === this.productId) != undefined;
+                    }
+                },
+                addToWishlist(productId) {
+                    const formKey = hyva.getFormKey();
+                    const postUrl = BASE_URL + 'wishlist/index/add/';
 
                 fetch(postUrl, {
                     "headers": {

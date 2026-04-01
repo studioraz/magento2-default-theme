@@ -1,49 +1,61 @@
 <?php
 /**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- *
- * Modifications by Hyvä Themes (https://hyva.io) under the terms of the AFL 3.0.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
 
 declare(strict_types=1);
 
 use Magento\Framework\Escaper;
 use Magento\Checkout\Block\Onepage\Success;
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\LucideIcons;
 
 /** @var Success $block */
 /** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+/** @var LucideIcons $lucideIcons */
+
+$lucideIcons = $viewModels->require(LucideIcons::class);
 ?>
-<div class="checkout-success py-4">
-    <?php if ($block->getOrderId()): ?>
-        <?php if ($block->getCanViewOrder()): ?>
-            <p>
+<div class="checkout-success text-center shadow-[0_4px_6px_-1px_rgba(0,0,0,0.10),0_2px_4px_-1px_rgba(0,0,0,0.06)] rounded-xl my-20 md:my-30 md:max-w-100 mx-auto">
+    <div class="bg-primary text-white p-6 rounded-t-xl">
+        <div class="flex justify-center mb-2">
+            <?= $lucideIcons->circleCheckHtml('', 33, 33, ['aria-hidden' => 'true']); ?>
+        </div>
+        <h1 class="text-sm font-semibold md:text-base"><?= __('Your order has been received')?></h1>
+    </div>
+    <div class="px-6 py-8 text-[#1E293B]">
+        <?php if ($block->getOrderId()): ?>
+            <?php if ($block->getCanViewOrder()): ?>
+                <div class="flex flex-col text-sm md:text-base font-bold mb-4">
+                    <?= $escaper->escapeHtml(
+                        __(
+                            'Your order number is %1.',
+                            sprintf(
+                                '<a href="%s" class="order-number text-lg md:text-2xl"><strong>%s</strong></a>',
+                                $escaper->escapeUrl($block->getViewOrderUrl()),
+                                $block->getOrderId()
+                            )
+                        ),
+                        ['a', 'strong']
+                    ) ?>
+                </div>
+            <?php  else: ?>
+                <div class="flex flex-col text-sm md:text-base font-bold mb-4">
+                    <?= $escaper->escapeHtml(__('Your order # is: <span class="text-lg md:text-2xl">%1</span>.', $block->getOrderId()), ['span']) ?>
+                </div>
+            <?php endif;?>
+            <div class="text-sm font-normal mb-4">
                 <?= $escaper->escapeHtml(
-                    __(
-                        'Your order number is: %1.',
-                        sprintf(
-                            '<a href="%s" class="order-number"><strong>%s</strong></a>',
-                            $escaper->escapeUrl($block->getViewOrderUrl()),
-                            $block->getOrderId()
-                        )
-                    ),
-                    ['a', 'strong']
+                    __('An order confirmation email will be sent to you shortly. You can track the status of your order in your personal account.')
                 ) ?>
-            </p>
-        <?php  else: ?>
-            <p><?= $escaper->escapeHtml(__('Your order # is: <span>%1</span>.', $block->getOrderId()), ['span']) ?></p>
-        <?php endif;?>
-        <p>
-            <?= $escaper->escapeHtml(
-                __('We\'ll email you an order confirmation with details and tracking info.')
-            ) ?>
-        </p>
-    <?php endif; ?>
+            </div>
+        <?php endif; ?>
 
-    <?= $block->getAdditionalInfoHtml() ?>
+        <?= $block->getAdditionalInfoHtml() ?>
 
-    <div class="my-4">
-        <a class="btn btn-primary inline-flex" href="<?= $escaper->escapeUrl($block->getContinueUrl()) ?>">
+        <a class="inline-flex py-[10px] px-5 text-sm md:text-base text-primary hover:underline" href="<?= $escaper->escapeUrl($block->getContinueUrl()) ?>">
             <span><?= $escaper->escapeHtml(__('Continue Shopping')) ?></span>
         </a>
     </div>

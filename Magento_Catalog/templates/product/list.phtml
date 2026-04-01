@@ -1,9 +1,10 @@
 <?php
 /**
- * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
+
+declare(strict_types=1);
 
 use Hyva\Theme\Model\ViewModelRegistry;
 use Hyva\Theme\ViewModel\CurrentCategory;
@@ -33,7 +34,7 @@ $productCollection = $block->getLoadedProductCollection();
         </div>
     </div>
 <?php else: ?>
-    <section class="py-8" id="product-list" aria-label="<?= $escaper->escapeHtmlAttr(__('Product list')) ?>" tabindex="-1">
+    <section class="product-listing-wrapper pb-8" id="product-list" aria-label="<?= $escaper->escapeHtmlAttr(__('Product list')) ?>" tabindex="-1">
         <?= $block->getToolbarHtml() ?>
         <?= $block->getAdditionalHtml() ?>
         <?php
@@ -56,8 +57,8 @@ $productCollection = $block->getLoadedProductCollection();
         <div class="products wrapper mode-<?= /* @noEscape */$viewMode ?> products-<?= /* @noEscape */$viewMode ?>">
             <ul
                 role="list"
-                class="mx-auto pt-4 pb-12 grid gap-4 grid-cols-1 <?= /* @noEscape */$viewMode === 'grid'
-                    ? 'sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3'
+                class="mx-auto pt-0 grid gap-4 md:gap-5 grid-cols-1 mb-5 <?= /* @noEscape */$viewMode === 'grid'
+                    ? 'min-[390px]:grid-cols-2 md:grid-cols-3'
                     : '' ?>"
             >
                 <?php
@@ -67,7 +68,7 @@ $productCollection = $block->getLoadedProductCollection();
                         $product->setData('image_custom_attributes', ['loading' => 'eager', 'fetchpriority' => 'high']);
                     }
                     ?>
-                    <li class="flex flex-col">
+                    <li class="flex flex-col h-auto">
                         <?= $productListItemViewModel->getItemHtml(
                             $product,
                             $block,

@@ -1,27 +1,46 @@
 <?php
 /**
- * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
 
 declare(strict_types=1);
 
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\SvgIcons;
 use Magento\Checkout\Block\Cart;
 use Magento\Framework\Escaper;
 
 /** @var Cart $block */
 /** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+/** @var SvgIcons $icons */
+
+$icons = $viewModels->require(SvgIcons::class);
 ?>
-<div class="cart-empty">
+<div class="cart-empty mt-5 px-4 flex flex-col items-center">
     <?= $block->getChildHtml('checkout_cart_empty_widget') ?>
-    <div>
-        <p><?= $escaper->escapeHtml(__('You have no items in your shopping cart.')) ?></p>
-        <p class="mt-4">
-            <a href="<?= $escaper->escapeUrl($block->getContinueShoppingUrl()) ?>" class="btn btn-primary">
-                <?= $escaper->escapeHtml(__('Click here to continue shopping.')) ?>
-            </a>
-        </p>
+    <div class="mb-12">
+        <svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-20 h-20 sm:w-auto sm:h-auto">
+            <g clip-path="url(#clip0_5951_17575)">
+                <circle cx="96" cy="96" r="95" stroke="var(--color-primary)" stroke-width="2" stroke-dasharray="8 8"/>
+                <circle cx="96" cy="96" r="88" fill="var(--color-slate-100)"/>
+                <path d="M54 52C50.6863 52 48 54.6863 48 58C48 61.3137 50.6863 64 54 64H61.3153L63.1487 71.3335C63.1679 71.4182 63.189 71.5024 63.2118 71.5857L71.3552 104.159L65.9997 109.515C58.4401 117.074 63.7941 130 74.485 130H126C129.313 130 132 127.314 132 124C132 120.686 129.313 118 126 118L74.485 118L80.485 112H120C122.273 112 124.35 110.716 125.367 108.683L143.367 72.6833C144.297 70.8234 144.197 68.6145 143.104 66.8456C142.011 65.0767 140.079 64 138 64H73.6847L71.8209 56.5448C71.1531 53.8738 68.7532 52 66 52H54Z" fill="var(--color-primary)"/>
+                <path d="M132 145C132 149.971 127.971 154 123 154C118.029 154 114 149.971 114 145C114 140.029 118.029 136 123 136C127.971 136 132 140.029 132 145Z" fill="var(--color-primary)"/>
+                <path d="M75 154C79.9706 154 84 149.971 84 145C84 140.029 79.9706 136 75 136C70.0294 136 66 140.029 66 145C66 149.971 70.0294 154 75 154Z" fill="var(--color-primary)"/>
+            </g>
+            <defs>
+                <clipPath id="clip0_5951_17575">
+                    <rect width="192" height="192" fill="white"/>
+                </clipPath>
+            </defs>
+        </svg>
+
     </div>
+    <p class="mb-12 text-base sm:text-2xl leading-6 sm:leading-8 font-bold text-black"><?= $escaper->escapeHtml(__('Your cart is empty')) ?></p>
+    <a class="btn btn-primary px-6 h-12 w-full sm:w-[380px] max-w-full text-lg sm:text-xl leading-7 font-bold"
+       href="<?= $escaper->escapeHtmlAttr($block->getContinueShoppingUrl()) ?>"
+    ><?= $escaper->escapeHtml(__('Continue shopping')) ?></a>
     <?= $block->getChildHtml('shopping.cart.table.after') ?>
 </div>
+<style>.page-title {display: none}</style>

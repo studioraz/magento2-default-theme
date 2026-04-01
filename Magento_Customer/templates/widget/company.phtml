@@ -1,9 +1,10 @@
 <?php
 /**
- * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
+
+declare(strict_types=1);
 
 use Magento\Customer\Block\Widget\Company;
 use Magento\Customer\Helper\Address as AddressHelper;
@@ -18,10 +19,7 @@ use Magento\Framework\Escaper;
 $validationClass = $this->helper(AddressHelper::class)->getAttributeValidationClass('company');
 
 ?>
-<div class="field field-reserved company <?= $block->isRequired() ? 'required' : '' ?>">
-    <label for="company" class="label">
-        <span><?= $escaper->escapeHtml(__('Company')) ?></span>
-    </label>
+<div class="field field-reserved floating-labels company <?= $block->isRequired() ? 'required' : '' ?>">
     <div class="control">
         <input type="text"
                name="company"
@@ -31,7 +29,11 @@ $validationClass = $this->helper(AddressHelper::class)->getAttributeValidationCl
                <?php endif; ?>
                value="<?= $escaper->escapeHtmlAttr($block->getCompany()) ?>"
                title="<?= $escaper->escapeHtmlAttr(__('Company')) ?>"
-               class="form-input w-full <?= $escaper->escapeHtmlAttr($validationClass) ?>"
-         >
+               placeholder=" "
+               class="form-input w-full peer <?= $escaper->escapeHtmlAttr($validationClass) ?>"
+        >
+        <label for="company" class="label floating-labels-label">
+            <?= $escaper->escapeHtml(__('Company')) ?>
+        </label>
     </div>
 </div>

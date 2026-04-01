@@ -1,3 +1,6 @@
+web/css/styles.css
+web/css/styles.css.map
+web/tailwind/package-lock.json
 /web/tailwind/node_modules/
 /vendor/
 grumphp.yml

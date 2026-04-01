@@ -12,19 +12,27 @@ use Hyva\Theme\ViewModel\HyvaCsp;
 use Hyva\Theme\ViewModel\LucideIcons;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
+use Hyva\Theme\ViewModel\Customer;
 
 /** @var Escaper $escaper */
 /** @var Template $block */
 /** @var ViewModelRegistry $viewModels */
 /** @var HyvaCsp $hyvaCsp */
+/** @var Customer $customer */
 
 /** @var LucideIcons $lucideIcons */
 $lucideIcons = $viewModels->require(LucideIcons::class);
+$customer = $viewModels->require(Customer::class);
 ?>
 
 <a
+    <?php if ($customer->customerLoggedIn()): ?>
     href="<?= $escaper->escapeUrl($block->getUrl('wishlist')) ?>"
-    class="relative hidden md:inline-flex btn bg-transparent border-transparent p-1"
+    <?php else: ?>
+    href="javascript:void(0);"
+    @click="$dispatch('toggle-authentication');"
+    <?php endif; ?>
+    class="relative inline-flex btn bg-transparent border-transparent p-1"
     x-data="initWishlistHeader"
     @private-content-loaded.window="receiveWishlistData"
     aria-label="<?= $escaper->escapeHtmlAttr(__('My Wish List')); ?>"

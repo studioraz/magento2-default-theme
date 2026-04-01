@@ -1,8 +1,7 @@
 <?php
 /**
- * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
 
 declare(strict_types=1);
@@ -19,6 +18,7 @@ use Hyva\Theme\ViewModel\ProductPage;
 
 /** @var ProductPage $productViewModel */
 $productViewModel = $viewModels->require(ProductPage::class);
+
 /** @var Product $product */
 $product = $productViewModel->getProduct();
 
@@ -26,9 +26,10 @@ if (!$product->getDescription()) {
     return;
 }
 
-$cssClasses = $block->getData('css_classes') ?? 'prose';
-
+$cssClasses = $block->getData('css_classes')
+    ?? 'prose prose-slate max-w-full prose-h2:text-xl prose-h3:text-lg prose-h4:text-base prose-headings:first:mt-0';
 ?>
+
 <div class="<?= $escaper->escapeHtmlAttr($cssClasses) ?>">
     <?= $productViewModel->productAttributeHtml($product, $product->getDescription(), 'description') ?>
 </div>

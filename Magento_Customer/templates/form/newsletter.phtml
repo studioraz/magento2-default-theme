@@ -11,7 +11,7 @@ declare(strict_types=1);
 /** @var \Magento\Framework\Escaper $escaper */
 ?>
 <?= $block->getChildHtml('form_before') ?>
-    <form class="form form-newsletter-manage"
+    <form class="form form-newsletter-manage max-w-[600px]"
           action="<?= $escaper->escapeUrl($block->getAction()) ?>"
           method="post"
           id="form-validate">
@@ -27,7 +27,7 @@ declare(strict_types=1);
                        title="<?= $escaper->escapeHtmlAttr(__('General Subscription')) ?>"
                         <?php if ($block->getIsSubscribed()): ?> checked<?php endif; ?>
                        class="checkbox"
-                       role="switch">
+                       role=switch>
                 <label for="subscription" class="label">
                     <span>
                         <?= $escaper->escapeHtml(__('General Subscription')) ?>
@@ -41,7 +41,7 @@ declare(strict_types=1);
             <div class="primary">
                 <button type="submit"
                         title="<?= $escaper->escapeHtmlAttr(__('Save')) ?>"
-                        class="action save btn btn-primary"
+                        class="action save primary btn btn-primary"
                 >
                     <span>
                         <?= $escaper->escapeHtml(__('Save')) ?>

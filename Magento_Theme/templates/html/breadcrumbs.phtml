@@ -7,66 +7,151 @@
 
 declare(strict_types=1);
 
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\HyvaCsp;
+use Hyva\Theme\ViewModel\LucideIcons;
 use Magento\Theme\Block\Html\Breadcrumbs;
 use Magento\Framework\Escaper;
 
 /** @var Escaper $escaper */
 /** @var Breadcrumbs $block */
+/** @var ViewModelRegistry $viewModels */
+/** @var HyvaCsp $hyvaCsp */
 /** @var array[] $crumbs */
+
+/** @var LucideIcons $lucideIcons */
+$lucideIcons = $viewModels->require(LucideIcons::class);
 
 if (!$crumbs && !is_array($crumbs)) {
     return '';
 }
 
+$crumbsCount = 1;
+$crumbsTotalItem = count($crumbs);
+
+$currentPageUrl = preg_replace('/[?#].*$/', '', $block->getUrl('', ['_current' => true, '_use_rewrite' => true]));
+
 // The rendering of the application/ld+json BreadcrumbList can be disabled by setting this flag in layout XML
 $skipLinkedDataJsonSchema = $block->getData('skip_ld_json_schema');
 $schemaBreadcrumbs = [];
-$crumbsCount = 1;
-$currentPageUrl = preg_replace('/[?#].*$/', '', $block->getUrl('', ['_current' => true, '_use_rewrite' => true]));
+
+$showBackBtn = $block->getShowBackBtn() !== null ? (bool) $block->getShowBackBtn() : true;
+$overflowStyleSticky = $block->getOverflowStyle() === "sticky";
+
 ?>
 
-<nav class="breadcrumbs bg-surface shadow-sm" aria-label="Breadcrumb">
-    <div class="container">
-        <ol class="items list-reset py-4 rounded flex flex-wrap text-grey text-sm">
+    <nav class="breadcrumbs" aria-label="Breadcrumb" <?php if ($overflowStyleSticky): ?>x-data="initBreadcrumbs"<?php endif; ?>>
+        <?php if ($showBackBtn && $crumbsTotalItem > 1): ?>
+            <?php $crumbSecondLastItem = array_values($crumbs)[$crumbsTotalItem - 2]; ?>
+            <div class="container py-3 sm:hidden">
+                <a
+                        href="<?= $escaper->escapeUrl($crumbSecondLastItem['link']) ?>"
+                        class="group max-w-full inline-flex align-middle items-center gap-1 text-sm leading-5 font-medium text-slate-700 hover:text-primary whitespace-nowrap"
+                        aria-label="<?= $escaper->escapeHtmlAttr(__('Back to %1', $crumbSecondLastItem['label'])) ?>"
+                >
+                    <?= $lucideIcons->renderHtml(
+                            'chevron-left',
+                            'text-slate-400 group-hover:text-inherit group-hover:-translate-x-0.5 transition rtl:rotate-180',
+                            16,
+                            16,
+                            ['aria-hidden' => 'true']
+                    ); ?>
+                    <span class="text-ellipsis overflow-hidden"><?= $escaper->escapeHtml($crumbSecondLastItem['label']) ?></span>
+                </a>
+            </div>
+        <?php endif; ?>
+
+        <ol class="container py-4 overflow-x-auto overscroll-x-contain snap mask-overflow text-sm text-slate-700 <?= $showBackBtn ? 'hidden sm:flex' : 'flex' ?>">
             <?php foreach ($crumbs as $crumbName => $crumbInfo): ?>
-                <li class="item flex <?= $escaper->escapeHtmlAttr($crumbName) ?>">
-                <?php if (!$crumbInfo['first']): ?>
-                    <span aria-hidden="true" class="separator text-fg-secondary px-2">/</span>
-                <?php endif; ?>
-                <?php if ($crumbInfo['link']): ?>
-                    <a
-                        href="<?= $escaper->escapeUrl($crumbInfo['link']) ?>"
-                        <?php if ($crumbInfo['title']): ?>
-                            aria-label="<?= $escaper->escapeHtmlAttr($crumbInfo['title']) ?>"
+                <li
+                        class="item flex items-center whitespace-nowrap <?= $escaper->escapeHtmlAttr($crumbName) ?>"
+                        <?php if ($overflowStyleSticky && $crumbInfo['last']): ?>
+                            x-ref="lastItem"
+                            :class="setIsStickyClasses"
                         <?php endif; ?>
-                    ><?= $escaper->escapeHtml($crumbInfo['label']) ?></a>
-                <?php elseif ($crumbInfo['last']): ?>
-                    <a
-                        href="<?= $escaper->escapeUrl($currentPageUrl) ?>"
-                        class="text-fg-secondary"
-                        aria-current="page"
-                    ><?= $escaper->escapeHtml($crumbInfo['label']) ?></a>
-                <?php else: ?>
-                    <?= $escaper->escapeHtml($crumbInfo['label']) ?>
-                <?php endif; ?>
+                >
+                    <?php if (!$crumbInfo['first']): ?>
+                        <?= $lucideIcons->renderHtml(
+                                'chevron-right',
+                                'separator shrink-0 mx-1 text-slate-400 rtl:rotate-180',
+                                12,
+                                12,
+                                ['aria-hidden' => 'true']
+                        ); ?>
+                    <?php endif; ?>
+
+                    <?php if ($overflowStyleSticky && $crumbInfo['last']): ?>
+                        <span
+                                aria-hidden="true"
+                                class="separator block ms-2.5 ps-2.5 border-s border-slate-400 h-full"
+                                x-show="isSticky"
+                                x-cloak
+                        ></span>
+                    <?php endif; ?>
+
+                    <?php if ($crumbInfo['link'] || $crumbInfo['last']): ?>
+                        <a
+                                href="<?= $escaper->escapeUrl($crumbInfo['last'] ? $currentPageUrl : $crumbInfo['link']) ?>"
+                                class="flex items-center gap-1 w-full hover:text-primary hover:underline aria-[current=page]:text-slate-500 hover:aria-[current=page]:text-primary"
+                                <?php if ($crumbInfo['title']): ?>
+                                    aria-label="<?= $escaper->escapeHtmlAttr($crumbInfo['title']) ?>"
+                                <?php endif; ?>
+                                <?php if ($crumbInfo['last']): ?>
+                                    aria-current="page"
+                                <?php endif; ?>
+                        >
+                            <span class="text-ellipsis overflow-hidden"><?= $escaper->escapeHtml($crumbInfo['label']) ?></span>
+                        </a>
+                    <?php else: ?>
+                        <?= $escaper->escapeHtml($crumbInfo['label']) ?>
+                    <?php endif; ?>
                 </li>
                 <?php if (! $skipLinkedDataJsonSchema) {
                     $schemaBreadcrumbs[] = [
-                        "@type" => "ListItem",
-                        "position" => $crumbsCount,
-                        "item" => [
-                            "@id" => $crumbInfo['last'] ? $currentPageUrl : $crumbInfo['link'],
-                            "name" => $crumbInfo['label']
-                        ]
+                            "@type" => "ListItem",
+                            "position" => $crumbsCount,
+                            "item" => [
+                                    "@id" => $crumbInfo['last'] ? $currentPageUrl : $crumbInfo['link'],
+                                    "name" => $crumbInfo['label']
+                            ]
                     ];
                 } ?>
-            <?php $crumbsCount++; endforeach ?>
+                <?php $crumbsCount++; endforeach; ?>
         </ol>
-    </div>
-</nav>
+    </nav>
 
 <?php if (! $skipLinkedDataJsonSchema): ?>
     <script type="application/ld+json">
         { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": <?= /* @noEscape */ json_encode($schemaBreadcrumbs) ?> }
     </script>
+<?php endif; ?>
+
+<?php if ($overflowStyleSticky): ?>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('initBreadcrumbs', () => ({
+                isSticky: false,
+                init() {
+                    this.checkIfIsSticky();
+                },
+                setIsStickyClasses() {
+                    const baseClasses = 'sticky bg-container end-[calc((theme(container.padding)*-1)-1px)]'
+                        + ' after:absolute after:inset-y-0 after:start-full after:w-[theme(container.padding)] after:bg-container';
+                    const isStickyClasses = '[&>svg]:hidden pe-[theme(container.padding)] before:absolute before:inset-y-0 before:end-full before:w-8'
+                        + ' before:bg-gradient-to-l before:from-[theme(backgroundColor.container.DEFAULT)]';
+
+                    return this.isSticky ? baseClasses + ' ' + isStickyClasses : baseClasses;
+                },
+                checkIfIsSticky() {
+                    const el = this.$refs.lastItem;
+                    if (!el) return;
+
+                    new IntersectionObserver(([e]) => {
+                        this.isSticky = e.intersectionRatio < 1;
+                    }, { threshold: [0, 1] }).observe(el);
+                }
+            }));
+        });
+    </script>
+    <?php $hyvaCsp->registerInlineScript() ?>
 <?php endif; ?>

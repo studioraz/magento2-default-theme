@@ -32,8 +32,8 @@ if ($productPriceViewModel->displayPriceInclAndExclTax()) {
 }
 ?>
 
-<div class="flex flex-col sm:flex-row border-t border-gray-300 py-2 last:mb-6 last:border-b w-full items-center">
-    <label class="label text-gray-700 text-left w-full sm:w-1/2"
+<div class="flex flex-col py-2 last:pb-0 w-full text-slate-800">
+    <label class="label text-slate-800 font-semibold leading-5 text-start w-full"
            for="options_<?= $escaper->escapeHtmlAttr($optionId) ?>_text"
            x-html="updateOptionPrice('<?= $escaper->escapeJs($optionId) ?>', $el)"
     >
@@ -44,7 +44,7 @@ if ($productPriceViewModel->displayPriceInclAndExclTax()) {
         <span><?= /* @noEscape */ $block->getFormattedPrice() ?></span>
     </label>
 
-    <div class="sm:ml-2 text-gray-900 text-left w-full sm:w-1/2">
+    <div class="text-start w-full">
         <?php if ($option->getType() == ProductCustomOptionInterface::OPTION_TYPE_FIELD): ?>
             <input type="text"
                    id="options_<?= $escaper->escapeHtmlAttr($optionId) ?>_text"

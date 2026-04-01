@@ -33,34 +33,35 @@ $validationClass = $addressViewModel->addressGetAttributeValidationClass('dob');
 ?>
 
 <div
-    class="field field-reserved date <?= $block->isRequired() ? 'required' : '' ?>"
+    class="field field-reserved floating-labels date <?= $block->isRequired() ? 'required' : '' ?>"
     x-data="initDatePicker"
 >
-    <label for="<?= $escaper->escapeHtmlAttr($block->getHtmlId()) ?>_picker" class="label">
-        <span><?= $escaper->escapeHtml($block->getStoreLabel('dob')) ?></span>
-    </label>
     <div class="control">
         <input
             type="date"
             id="<?= $escaper->escapeHtmlAttr($block->getHtmlId()) ?>_picker"
             name="<?= $escaper->escapeHtmlAttr($block->getHtmlId()) ?>_picker"
-            class="form-input <?= $escaper->escapeHtmlAttr($validationClass) ?: '' ?>"
-            placeholder="<?= $escaper->escapeHtml($block->getDateFormat()) ?>"
+            class="form-input peer rtl:flex rtl:justify-end <?= $escaper->escapeHtmlAttr($validationClass) ?: '' ?>"
+            placeholder=" "
             autocomplete="off"
             :value="valuePicker"
             @change="setValuePicker"
             :min="getMinDate"
             :max="getMaxDate"
         >
-        <input
-            type="hidden"
-            name="<?= $escaper->escapeHtmlAttr($block->getFieldName('dob')) ?>"
-            :value="value"
-            <?php if ($block->isRequired()): ?>
-                required
-            <?php endif; ?>
-        >
+        <label for="<?= $escaper->escapeHtmlAttr($block->getHtmlId()) ?>_picker"
+               class="label floating-labels-label">
+            <span><?= $escaper->escapeHtml($block->getStoreLabel('dob')) ?></span>
+        </label>
     </div>
+    <input
+        type="hidden"
+        name="<?= $escaper->escapeHtmlAttr($block->getFieldName('dob')) ?>"
+        :value="value"
+        <?php if ($block->isRequired()): ?>
+            required
+        <?php endif; ?>
+    >
 </div>
 <script>
     function initDatePicker() {

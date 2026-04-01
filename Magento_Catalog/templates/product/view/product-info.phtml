@@ -1,8 +1,7 @@
 <?php
 /**
- * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
 
 declare(strict_types=1);
@@ -15,6 +14,7 @@ use Hyva\Theme\ViewModel\Wishlist;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
+use Hyva\Theme\ViewModel\SvgIcons;
 
 /** @var Template $block */
 /** @var Escaper $escaper */
@@ -22,71 +22,56 @@ use Magento\Framework\View\Element\Template;
 
 /** @var ProductPage $productViewModel */
 $productViewModel = $viewModels->require(ProductPage::class);
-
 /** @var ProductAttributes $attributesViewModel */
 $attributesViewModel = $viewModels->require(ProductAttributes::class);
-
 /** @var Product $product */
 $product = $productViewModel->getProduct();
 $productType = $product->getTypeId();
 
+$addToCartBlock = $block->getChildBlock('add_to_cart');
+$reviewHtml = trim($block->getChildHtml('product.info.review'));
 ?>
-<div class="card mb-6">
-    <?= $block->getChildHtml('product.info.title') ?>
+<div class="w-full mb-6">
 
-    <div class="my-2 flex">
-        <?= $block->getChildHtml('product.info.review') ?>
+    <div class="hidden md:block text-xs font-normal leading-4 mb-4">
+        <span class="text-slate-700"><?= __('SKU:') ?> </span><span class="text-slate-500"><?= $product->getSku() ?></span>
     </div>
 
-    <?php if ($shortDescription = $productViewModel->getShortDescription()): ?>
-        <div class="my-4 leading-relaxed product-description prose"><?= /* @noEscape */ $shortDescription ?></div>
-    <?php endif; ?>
+    <div role="group"
+         aria-label="<?= $escaper->escapeHtmlAttr('Price') ?>"
+         class="product-info-price mb-1">
+        <?= $block->getChildHtml("product.info.price") ?>
+    </div>
 
-    <div class="flex flex-col sm:flex-row justify-between my-4">
-        <div class="inline-flex flex-wrap items-center gap-x-6">
+    <div class="flex mb-3 md:mb-5">
+        <span class="flex text-sm font-normal leading-5 text-slate-700">
             <?= $block->getChildHtml("product.info.stockstatus") ?>
-            <?= $block->getChildHtml("product.info.stockqty") ?>
-        </div>
-        <?= $block->getChildHtml("alert.urls") ?>
+        </span>
+        <?php if ($reviewHtml): ?>
+            <span class="mx-1 text-sm text-slate-700">|</span>
+            <?= $reviewHtml ?>
+        <?php endif; ?>
     </div>
 
-    <dl id="product-details">
-        <?php foreach ($block->getAttributes() as $attributeConfig):
-            $attribute = $attributesViewModel->getAttributeFromLayoutConfig($attributeConfig); ?>
-            <?php if ($value = $attribute['value'] ?? null): ?>
-                <div class="flex border-t border-gray-300 py-2 last:mb-6 last:border-b attribute-<?=/* @noEscape */ $attribute['code'] ?: "" ?>">
-                    <dt class="w-1/2 text-left text-gray-700 product-detail-label">
-                        <?= $escaper->escapeHtml($attribute['label']) ?>
-                    </dt>
-                    <dd class="w-1/2 ml-2 text-left text-gray-900 product-detail-value">
-                        <?= $escaper->escapeHtml($value) ?>
-                    </dd>
-                </div>
-            <?php endif ?>
-        <?php endforeach; ?>
-    </dl>
+    <?php if ($shortDescription = $productViewModel->getShortDescription(false, false)) { ?>
+        <div class="mb-4 product-description prose text-sm font-normal leading-5 text-slate-700">
+            <?= /* @noEscape */ $shortDescription ?>
+        </div>
+    <?php } ?>
 
-    <?= $block->getChildHtml('product.info.form') ?>
-
-    <div class="flex flex-col sm:flex-row items-end my-4">
-
+    <div class="static-add-to-cart flex">
         <?php if ($productType === 'bundle'): ?>
             <span class="sr-only">
                 <?= $escaper->escapeHtml(__('The price depends on the chosen options')) ?>
             </span>
         <?php endif; ?>
 
-        <div role="group" aria-label="<?= $escaper->escapeHtmlAttr('Price') ?>">
-            <?= $block->getChildHtml("product.info.price") ?>
-        </div>
-
-        <div class="flex gap-2 mt-4 ml-auto sm:mt-0">
-            <?php if ($product->isSaleable()): ?>
-                <?= $block->getChildHtml("product.info.quantity") ?>
-                <?= $block->getChildHtml("product.info.addtocart") ?>
-            <?php endif; ?>
-        </div>
-
+        <?php if ($addToCartBlock): ?>
+            <?= $addToCartBlock->setProduct($product)->toHtml(); ?>
+        <?php else: ?>
+            <?= $block->getChildHtml("product.info.quantity") ?>
+            <?= $block->getChildHtml("product.info.form") ?>
+        <?php endif; ?>
     </div>
 
     <?php if ($product->isSaleable() && $block->getChildHtml('addtocart.shortcut.buttons')): ?>
@@ -96,8 +81,14 @@ $productType = $product->getTypeId();
     <?php endif; ?>
 
     <?php if ($additionalActions = $block->getChildHtml('product.info.additional.actions')): ?>
-        <div class="flex mt-4 justify-end">
+        <div class="flex gap-[14px] mt-3 mb-5 md:mb-4">
             <?= /** @noEscape */ $additionalActions; ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if($posAvailability = $block->getChildHtml("pos_availability")): ?>
+        <div class="max-lg:my-2">
+            <?= $posAvailability ?>
         </div>
     <?php endif; ?>
 
@@ -107,5 +98,10 @@ $productType = $product->getTypeId();
         </div>
     <?php endif; ?>
 
+    <?= $block->getChildHtml("mst_brand_product_page_logo") ?>
+
     <?= $block->getChildHtml("product.info.additional") ?>
 </div>
+
+<?php include($block->getTemplateFile('Magento_Catalog::product/view/add-to-cart-panel.phtml')) ?>
+<?php include($block->getTemplateFile('Magento_Catalog::product/js/add-to-cart-panel.phtml')) ?>

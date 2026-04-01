@@ -1,9 +1,10 @@
 <?php
 /**
- * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
+
+declare(strict_types=1);
 
 use Magento\Customer\Block\Widget\Telephone;
 use Magento\Framework\Escaper;
@@ -12,10 +13,7 @@ use Magento\Framework\Escaper;
 /** @var Telephone $block */
 ?>
 
-<div class="field field-reserved telephone <?= $block->isRequired() ? 'required' : '' ?>">
-    <label for="telephone" class="label">
-        <span><?= $escaper->escapeHtml(__('Phone Number')) ?></span>
-    </label>
+<div class="field field-reserved floating-labels telephone <?= $block->isRequired() ? 'required' : '' ?>">
     <div class="control">
         <input type="tel"
                name="telephone"
@@ -25,9 +23,13 @@ use Magento\Framework\Escaper;
                data-validate='{"telephone": true}'
                value="<?= $escaper->escapeHtmlAttr($block->getTelephone()) ?>"
                title="<?= $escaper->escapeHtmlAttr(__('Phone Number')) ?>"
-               class="form-input w-full <?= $escaper->escapeHtmlAttr(
+               placeholder=" "
+               class="form-input peer <?= $escaper->escapeHtmlAttr(
                    $block->getAttributeValidationClass('telephone')
                ) ?>"
         >
+        <label for="telephone" class="label floating-labels-label">
+            <?= $escaper->escapeHtml(__('Phone Number')) ?>
+        </label>
     </div>
 </div>

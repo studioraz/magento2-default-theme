@@ -1,8 +1,7 @@
 <?php
 /**
- * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
 
 declare(strict_types=1);
@@ -12,25 +11,38 @@ use Magento\Framework\Escaper;
 
 /** @var View $block */
 /** @var Escaper $escaper */
-?>
 
-<section
-    class="pb-6 md:py-6 grid grid-cols-1 gap-4 md:items-start md:grid-cols-[42%_minmax(0px,1fr)] lg:grid-cols-2 lg:gap-x-10"
-    aria-label="<?= $escaper->escapeHtmlAttr(__('Product Info')) ?>"
->
-    <?= $block->getChildHtml('product.media') ?>
-    <?= $block->getChildHtml('product.info') ?>
+$product = $block->getProduct();
+?>
+<section class="flex flex-col md:flex-row md:gap-4 lg:gap-4 2xl:gap-11">
+    <h1 class="md:hidden text-2xl font-bold leading-6 text-slate-700 mb-1">
+        <?= $escaper->escapeHtml($product->getName()) ?>
+    </h1>
+
+    <div class="md:hidden text-xs font-normal leading-4 mb-5">
+        <span class="text-slate-700"><?= __('SKU:') ?> </span><span class="text-slate-500"><?= $product->getSku() ?></span>
+    </div>
+
+    <div class="w-full md:w-1/2">
+        <?= $block->getChildHtml('product.media') ?>
+    </div>
+    <div class="w-full md:w-1/2">
+        <div class="hidden md:block">
+            <?= $block->getChildHtml('product.title') ?>
+        </div>
+        <?= $block->getChildHtml('product.info') ?>
+    </div>
 </section>
 
-<?= $block->getChildHtml('product_options_wrapper_bottom') ?>
+<section>
+    <?= $block->getChildHtml('product_options_wrapper_bottom') ?>
+</section>
 
 <?= $block->getChildHtml('product.info.details'); ?>
 
-<?= $block->getChildHtml('related') ?>
-
-<?= $block->getChildHtml('upsell') ?>
-
-<section aria-label="<?= $escaper->escapeHtmlAttr(__('Product Reviews')) ?>">
+<section>
+    <?= $block->getChildHtml('related') ?>
+    <?= $block->getChildHtml('upsell') ?>
     <?= $block->getChildHtml('review_list') ?>
     <?= $block->getChildHtml('review_form') ?>
 </section>

@@ -26,6 +26,10 @@
             <arguments>
                 <argument name="css_classes" xsi:type="string">text-3xl font-semibold mb-8 text-center md:sr-only</argument>
                 <argument name="add_base_attribute" xsi:type="string">itemprop=name</argument>
+                <argument name="css_class" xsi:type="string">product px-0</argument>
+                <argument name="wrapper_block_css" xsi:type="string"></argument>
+                <argument name="wrapper_spacing_css" xsi:type="string">mb-1</argument>
+                <argument name="text_css" xsi:type="string">text-slate-700 text-3xl font-bold leading-8</argument>
             </arguments>
         </referenceBlock>
 
@@ -33,6 +37,12 @@
             <arguments>
                 <argument name="add_attribute" xsi:type="string">itemscope itemtype="https://schema.org/Product"
                 </argument>
+            </arguments>
+        </referenceBlock>
+
+        <referenceBlock name="product.view.add.to.cart.qty.spinner">
+            <arguments>
+                <argument name="container_css_additional" xsi:type="string">qty-spinner-container-product-info-main</argument>
             </arguments>
         </referenceBlock>
 
@@ -190,6 +200,9 @@
                     <block class="Magento\Catalog\Block\Product\View\Details"
                            name="product.info.details"
                            template="Magento_Catalog::product/view/sections/product-sections.phtml">
+                        <arguments>
+                            <argument name="divider" xsi:type="boolean">false</argument> </arguments>
+
                         <block name="product.section.title.renderer" template="Magento_Catalog::product/view/sections/default-section-title.phtml"/>
 
                         <block name="description"
@@ -198,6 +211,7 @@
                             <arguments>
                                 <argument name="title_template" xsi:type="string">Magento_Catalog::product/view/sections/description-section-title.phtml</argument>
                                 <argument name="sort_order" xsi:type="number">-20</argument>
+                                <argument name="title" xsi:type="string" translate="true">Description</argument>
                             </arguments>
                         </block>
 
@@ -232,6 +246,9 @@
         </referenceContainer>
 
         <move element="alert.urls" destination="product.info" as="alert.urls"/>
+        <move element="page.main.title" destination="product.detail.page" as="product.title" />
+        <move element="product.info.addtocart" destination="product.info.form"/>
+        <move element="mst_brand_product_page_logo" destination="product.info"/>
 
         <referenceContainer name="before.body.end">
             <block name="recently_viewed_products.register_view"

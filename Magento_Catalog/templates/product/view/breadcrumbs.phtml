@@ -1,13 +1,14 @@
 <?php
 /**
- * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
 
 declare(strict_types=1);
 
 use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\HyvaCsp;
+use Hyva\Theme\ViewModel\LucideIcons;
 use Hyva\Theme\ViewModel\CurrentProduct;
 use Hyva\Theme\ViewModel\Navigation;
 use Hyva\Theme\ViewModel\StoreConfig;
@@ -16,13 +17,24 @@ use Magento\CatalogUrlRewrite\Model\ProductUrlPathGenerator;
 use Magento\Framework\Escaper;
 use Magento\Theme\Block\Html\Breadcrumbs as BreadcrumbsBlock;
 
-/** @var ViewModelRegistry $viewModels */
 /** @var Escaper $escaper */
 /** @var BreadcrumbsBlock $block */
+/** @var ViewModelRegistry $viewModels */
+/** @var HyvaCsp $hyvaCsp */
 
+/** @var LucideIcons $lucideIcons */
+$lucideIcons = $viewModels->require(LucideIcons::class);
+
+/** @var StoreConfig $storeConfigViewModel */
 $storeConfigViewModel = $viewModels->require(StoreConfig::class);
+
+/** @var Breadcrumbs $breadcrumbsViewModel */
 $breadcrumbsViewModel = $viewModels->require(Breadcrumbs::class);
+
+/** @var Navigation $navigationViewModel */
 $navigationViewModel = $viewModels->require(Navigation::class);
+
+/** @var CurrentProduct $currentProductViewModel */
 $currentProductViewModel = $viewModels->require(CurrentProduct::class);
 
 $productUrlSuffix = $storeConfigViewModel->getStoreConfig(ProductUrlPathGenerator::XML_PATH_PRODUCT_URL_SUFFIX);
@@ -33,112 +45,196 @@ $skipLinkedDataJsonSchema = $block->getData('skip_ld_json_schema');
 
 $product = $currentProductViewModel->exists() ? $currentProductViewModel->get() : null;
 
+$showBackBtn = $block->getShowBackBtn() !== null ? (bool) $block->getShowBackBtn() : true;
+$overflowStyleSticky = $block->getOverflowStyle() === "sticky";
+
 ?>
-<nav class="breadcrumbs bg-surface shadow-sm" aria-label="Breadcrumb">
-    <div class="container">
-        <ol
-            x-data="initBreadcrumbsProduct()"
-            class="items list-reset -mx-3 py-4 rounded flex flex-nowrap text-grey text-sm overflow-x-auto relative"
-        >
-            <li
-                class="shrink-0 sticky inset-y-0 left-0 w-3 bg-gradient-to-r from-surface"
-                aria-hidden="true"
-            >&ZeroWidthSpace;</li>
-            <template x-for="item in breadcrumbs">
-                <li class="item inline-flex whitespace-nowrap">
-                    <template x-if="item.name !== 'home'">
-                        <span aria-hidden="true" class="separator text-fg-secondary px-2">/</span>
-                    </template>
-                    <template x-if="item.name === 'product'">
-                        <a :href="item.link" class="text-fg-secondary" aria-current="page" x-text="item.label"></a>
-                    </template>
-                    <template x-if="item.name !== 'product'">
-                        <a :href="item.link" :aria-label="item.title" x-text="item.label"></a>
-                    </template>
-                </li>
+<nav class="breadcrumbs" aria-label="Breadcrumb" x-data="initBreadcrumbs">
+    <?php if ($showBackBtn): ?>
+        <div class="container py-3 sm:hidden">
+            <span aria-hidden="true">&ZeroWidthSpace;</span>
+            <template x-if="previousPage.link">
+                <a
+                    class="group max-w-full inline-flex align-middle items-center gap-1 text-sm leading-5 font-medium text-slate-700 hover:text-primary whitespace-nowrap"
+                    :href="previousPage.link"
+                    :aria-label="previousPageAriaLabel"
+                >
+                    <?= $lucideIcons->renderHtml(
+                        'chevron-left',
+                        'text-slate-400 group-hover:text-inherit group-hover:-translate-x-0.5 transition rtl:rotate-180',
+                        16,
+                        16,
+                        ['aria-hidden' => 'true']
+                    ); ?>
+                    <span class="text-ellipsis overflow-hidden" x-text="previousPage.label"></span>
+                </a>
             </template>
+        </div>
+    <?php endif; ?>
+
+    <ol class="container py-4 overflow-x-auto overscroll-x-contain snap mask-overflow text-sm text-slate-700 <?= $showBackBtn ? 'hidden sm:flex' : 'flex' ?>">
+        <li aria-hidden="true">&ZeroWidthSpace;</li>
+        <template x-for="item in breadcrumbs">
             <li
-                class="shrink-0 sticky inset-y-0 right-0 w-3 bg-gradient-to-l from-surface"
-                aria-hidden="true"
-            >&ZeroWidthSpace;</li>
-        </ol>
-    </div>
+                class="flex items-center whitespace-nowrap"
+                <?php if ($overflowStyleSticky): ?>
+                    :data-type="item.name"
+                    :class="setIsStickyClasses"
+                <?php endif; ?>
+            >
+                <template x-if="isItemNotHome">
+                    <?= $lucideIcons->renderHtml(
+                        'chevron-right',
+                        'separator shrink-0 mx-1 text-slate-400 rtl:rotate-180',
+                        12,
+                        12,
+                        ['aria-hidden' => 'true']
+                    ); ?>
+                </template>
+                <?php if ($overflowStyleSticky): ?>
+                    <template x-if="isItemNotHome">
+                        <span
+                            aria-hidden="true"
+                            class="separator block ms-2.5 ps-2.5 border-l border-slate-400 h-full"
+                            x-show="isSticky"
+                        ></span>
+                    </template>
+                <?php endif; ?>
+                <template x-if="isItemNotHome">
+                    <a
+                        class="flex items-center gap-1 w-full text-ellipsis overflow-hidden text-slate-500 hover:text-primary hover:underline"
+                        :href="item.link"
+                        aria-current="page"
+                    >
+                        <span class="text-ellipsis overflow-hidden" x-text="item.label"></span>
+                    </a>
+                </template>
+                <template x-if="isItemNotProduct">
+                    <a
+                        class="flex items-center gap-1 w-full text-ellipsis overflow-hidden hover:text-primary hover:underline"
+                        :href="item.link"
+                        :aria-label="item.title"
+                    >
+                        <span class="text-ellipsis overflow-hidden" x-text="item.label"></span>
+                    </a>
+                </template>
+            </li>
+        </template>
+    </ol>
 </nav>
+
 <script>
-    function initBreadcrumbsProduct() {
-
+    function getBreadcrumbs() {
         const categories = <?= /** @noEscape */ json_encode($navigationViewModel->getCategories()) ?>;
-
         const breadcrumbs = [{
             name: 'home',
             label: '<?= $escaper->escapeJs(__('Home')) ?>',
             title: '<?= $escaper->escapeJs(__('Go to Home Page')) ?>',
-            link: BASE_URL || ''
+            link: BASE_URL || '/',
         }];
-
-        function getProductCategoryUrl() {
+        const categoryUrl = (() => {
             <?php if ($breadcrumbsViewModel->isCategoryUsedInProductUrl()): ?>
-            const productUrl = window.location.href.split('?')[0];
-            return productUrl.substring(0, productUrl.lastIndexOf('/')) + '<?= $escaper->escapeJs($categoryUrlSuffix) ?>';
+                const productUrl = window.location.href.split('?')[0];
+                return productUrl.substring(0, productUrl.lastIndexOf('/')) + '<?= $escaper->escapeJs($categoryUrlSuffix) ?>';
             <?php else: ?>
-            return document.referrer.split('?')[0]
+                return document.referrer.split('?')[0]
             <?php endif; ?>
-        }
-
-        const categoryUrl = getProductCategoryUrl();
-
+        })();
         const category = Object.values(categories).find(cat => cat.url === categoryUrl);
 
         if (category) {
             let parts = category.path.split('/');
-            // remove root category
-            parts.splice(0, 2)
+            parts.splice(0, 2);
+
             for (let i in parts) {
                 breadcrumbs.push({
                     name: 'category',
                     label: categories['c' + parts[i]]['name'],
                     title: null,
-                    link: categories['c' + parts[i]]['url']
+                    link: categories['c' + parts[i]]['url'],
                 });
             }
         }
 
-        // add current product to breadcrumbs
         <?php if ($product): ?>
-        breadcrumbs.push({
-            name: 'product',
-            label: '<?= $escaper->escapeJs($product->getName()) ?>',
-            title: null,
-            link: BASE_URL + '<?= $escaper->escapeJs($product->getUrlKey()) ?>' + '<?= $escaper->escapeJs($productUrlSuffix) ?>'
-        });
+            breadcrumbs.push({
+                name: 'product',
+                label: '<?= $escaper->escapeJs($product->getName()) ?>',
+                title: null,
+                link: BASE_URL + '<?= $escaper->escapeJs($product->getUrlKey()) ?>' + '<?= $escaper->escapeJs($productUrlSuffix) ?>',
+            });
         <?php endif; ?>
 
-        <?php if (! $skipLinkedDataJsonSchema): ?>
-        function addJsonBreadcrumbsHead(breadcrumbs) {
-            const script = document.createElement('script');
-            script.type = 'application/ld+json';
+        return breadcrumbs;
+    }
 
-            const itemListElement = breadcrumbs.map((crumb, i) => {
-                return {
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('initBreadcrumbs', () => ({
+            breadcrumbs: [],
+            previousPage: {},
+            isSticky: false,
+            init() {
+                this.breadcrumbs = getBreadcrumbs();
+                this.previousPage = this.breadcrumbs[this.breadcrumbs.length - 2];
+
+                <?php if (! $skipLinkedDataJsonSchema): ?>
+                    this.createJsonLd(this.breadcrumbs);
+                <?php endif; ?>
+
+                <?php if ($overflowStyleSticky): ?>
+                    this.$nextTick(() => this.checkIfIsSticky())
+                <?php endif; ?>
+            },
+            createJsonLd(breadcrumbs) {
+                const script = document.createElement('script');
+                script.type = 'application/ld+json';
+
+                const itemListElement = breadcrumbs.map((crumb, i) => ({
                     "@type": "ListItem",
                     "position": i + 1,
-                    "name": crumb.label,
-                    "item": crumb.link
-                }
-            });
+                    "item": { "@id": crumb.link, "name": crumb.label }
+                }));
 
-            script.appendChild(document.createTextNode(JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "BreadcrumbList",
-                "itemListElement": itemListElement
-            })));
+                script.appendChild(document.createTextNode(JSON.stringify({
+                    "@context": "https://schema.org",
+                    "@type": "BreadcrumbList",
+                    "itemListElement": itemListElement
+                })));
 
-            document.head.appendChild(script);
-        }
+                document.head.appendChild(script);
+            },
+            setIsStickyClasses() {
+                if (this.$el.getAttribute('data-type') !== 'product') return;
 
-        addJsonBreadcrumbsHead(breadcrumbs);
-        <?php endif; ?>
+                const baseClasses = 'sticky bg-container end-[calc((theme(container.padding)*-1)-1px)]'
+                    + ' after:absolute after:inset-y-0 after:start-full after:w-[theme(container.padding)] after:bg-container';
+                const isStickyClasses = '[&>svg]:hidden pe-[theme(container.padding)] before:absolute before:inset-y-0 before:end-full before:w-8'
+                    + ' before:bg-gradient-to-l before:from-[theme(backgroundColor.container.DEFAULT)]';
 
-        return {breadcrumbs};
-    }
+                return this.isSticky ? baseClasses + ' ' + isStickyClasses : baseClasses;
+            },
+            checkIfIsSticky() {
+                const el = document.querySelector('[data-type="product"]');
+                if (!el) return;
+
+                new IntersectionObserver(([e]) => {
+                    const rect = e.target.getBoundingClientRect();
+                    this.isSticky = e.intersectionRatio < 1;
+                }, { threshold: [0, 1] }).observe(el);
+            },
+            isItemProduct() {
+                return this.item.name === 'product'
+            },
+            isItemNotProduct() {
+                return this.item.name !== 'product'
+            },
+            isItemNotHome() {
+                return this.item.name !== 'home'
+            },
+            previousPageAriaLabel() {
+                return hyva.str("<?= $escaper->escapeHtmlAttr(__('Back to %1')) ?>", this.previousPage.label)
+            },
+        }));
+    });
 </script>
+<?php $hyvaCsp->registerInlineScript() ?>

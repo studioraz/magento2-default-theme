@@ -1,8 +1,7 @@
 <?php
 /**
- * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
 
 declare(strict_types=1);
@@ -72,8 +71,9 @@ if (!$product->getId() || !$compareViewModel->showOnProductPage()) {
         title="<?= $escaper->escapeHtmlAttr(__('Add to Compare')) ?>"
         aria-label="<?= $escaper->escapeHtmlAttr(__('Add to Compare')) ?>"
         id="add-to-compare"
-        class="btn p-2 rounded-full ml-2"
+        class="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center
+            justify-center text-slate-500 bg-slate-200 hover:text-primary hover:bg-slate-100 ms-2 me-auto"
         data-addto="compare"
 >
-    <?= $lucideIcons->scaleHtml('', 20, 20, ['aria-hidden' => 'true']) ?>
+    <?= $lucideIcons->chartBarHtml('', 20, 20, ['aria-hidden' => 'true']) ?>
 </button>

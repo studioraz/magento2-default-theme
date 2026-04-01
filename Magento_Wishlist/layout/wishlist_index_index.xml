@@ -10,6 +10,15 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <update handle="customer_account"/>
     <body>
+        <referenceBlock name="customer.wishlist.button.update" display="false"/>
+        <referenceBlock name="catalog.list.item.wishlist" remove="true"/>
+
+        <referenceBlock name="catalog.list.item.addto">
+            <block class="Magento\Catalog\Block\Product\ProductList\Item\Container"
+                   name="wishlist.list.item.remove"
+                   template="Magento_Wishlist::item/remove.phtml"/>
+        </referenceBlock>
+
         <referenceContainer name="content">
             <block class="Magento\Wishlist\Block\Customer\Wishlist" name="customer.wishlist" template="Magento_Wishlist::view.phtml" cacheable="false">
                 <block class="Magento\Theme\Block\Html\Pager" name="wishlist_item_pager"/>

@@ -1,39 +1,45 @@
 <?php
 /**
- * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
 
 declare(strict_types=1);
 
 use Hyva\Theme\Model\ViewModelRegistry;
-use Hyva\Theme\ViewModel\LucideIcons;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
+use Hyva\Theme\ViewModel\SvgIcons;
+use Hyva\Theme\ViewModel\LucideIcons;
 
 /** @var Template $block */
 /** @var Escaper $escaper */
 /** @var ViewModelRegistry $viewModels */
 
-/** @var LucideIcons $lucideIcons */
+/**
+ * @var SvgIcons $icons
+ * @var LucideIcons $lucideIcons
+ */
+$icons = $viewModels->require(SvgIcons::class);
 $lucideIcons = $viewModels->require(LucideIcons::class);
-
-$buttonLabel = $block->getData('is_cart_configure')
-    ? __('Update item')
-    : __('Add to Cart');
 ?>
 
-<button
-    type="submit"
-    form="product_addtocart_form"
-    aria-label="<?= $escaper->escapeHtmlAttr($buttonLabel) ?>"
-    class="btn btn-primary"
-    id="product-addtocart-button"
-    data-addto="cart"
+<button type="submit"
+        form="product_addtocart_form"
+        title="<?= $escaper->escapeHtmlAttr(__('Add to Cart')) ?>"
+        class="btn btn-primary text-sm h-10 w-full relative w-full sm:w-auto lg:w-[344px] gap-[6px]"
+        id="product-addtocart-button"
+        data-addto="cart"
 >
-    <?= $lucideIcons->shoppingCartHtml('', 24, 24, ['aria-hidden' => 'true']); ?>
-    <span class="hidden sm:block md:hidden lg:block"><?= $escaper->escapeHtml($buttonLabel) ?></span>
+    <template x-if="isLoading">
+        <span class="absolute inset-0 flex justify-center items-center loader rounded-md text-primary-darker bg-white/75 shadow-[0_0_3px_2px_#fff]">
+            <?= $icons->spinnerHtml('h-full w-auto'); ?>
+        </span>
+    </template>
+    <?= $lucideIcons->renderHtml('shopping-cart', '', 17, 17, ["aria-hidden" => "true"]) ?>
+    <?= $block->getData('is_cart_configure') ?
+            $escaper->escapeHtml(__('Update item')) :
+            $escaper->escapeHtml(__('Add to Cart')) ?>
 </button>
 
 <?= $block->getChildHtml('', true) ?>

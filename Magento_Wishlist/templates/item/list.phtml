@@ -1,41 +1,64 @@
 <?php
 /**
- * Hyvä Themes - https://hyva.io
- * Copyright © Hyvä Themes. All rights reserved.
- * See COPYING.txt for license details.
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
  */
 
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\CurrentCategory;
+use Hyva\Theme\ViewModel\ProductListItem;
+use Hyva\Theme\ViewModel\ProductPage;
+use Magento\Catalog\Block\Product\ListProduct;
 use Magento\Framework\Escaper;
 use Magento\Wishlist\Block\Customer\Wishlist\Items;
 
+/** @var ListProduct $block */
 /** @var Escaper $escaper */
 /** @var Items $block */
+/** @var ViewModelRegistry $viewModels */
+/** @var ProductPage $productViewModel */
+/** @var CurrentCategory $currentCategoryViewModel */
+/** @var \Magento\Catalog\Model\Product $product */
+
+$productViewModel = $viewModels->require(ProductPage::class);
+$productListItemViewModel = $viewModels->require(ProductListItem::class);
+$currentCategoryViewModel = $viewModels->require(CurrentCategory::class);
 $columns = $block->getColumns();
 ?>
 
-<div class="products-grid wishlist">
-    <?php if (count($block->getItems())): ?>
-    <ol role="list" class="product-items grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-        <?php foreach ($block->getItems() as $item): ?>
-            <li
-                id="item_<?= $escaper->escapeHtmlAttr($item->getId()) ?>"
-                data-row="product-item"
-                class="product-item"
-            >
-                <div class="product-item-info card card-interactive" data-container="product-grid">
-                    <?php foreach ($columns as $column): ?>
-                        <?= $column->setItem($item)->toHtml();?>
-                    <?php endforeach; ?>
-                </div>
-            </li>
-        <?php endforeach; ?>
-    </ol>
-    <?php else: ?>
-        <div class="message info empty">
-            <span><?= $escaper->escapeHtml(__('This Wish List has no Items')) ?></span>
-        </div>
-    <?php endif; ?>
-</div>
+<?php if (!count($block->getItems())): ?>
+    <div class="message info empty">
+        <span><?= $escaper->escapeHtml(__('This Wish List has no Items')) ?></span>
+    </div>
+<?php else: ?>
+    <div class="products products-grid wishlist">
+        <ul role="list"
+            class="mx-auto pt-0 grid gap-4 md:gap-5 grid-cols-1 min-[390px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
+        >
+            <?php foreach ($block->getItems() as $item): ?>
+                <?php
+                $product = $item->getProduct();
+                $product->setData('_render_context_data', [
+                    'scope' => 'wishlist',
+                    'item' => $item,
+                ]);
+                ?>
+                <li class="flex flex-col h-auto">
+                    <?= $productListItemViewModel->getItemHtml(
+                        $product,
+                        $block,
+                        'grid',
+                        \Magento\Catalog\Block\Product\ReviewRendererInterface::SHORT_VIEW,
+                        'category_page_grid',
+                        false
+                    ); ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
 
 <?php foreach ($columns as $column): ?>
     <?= $column->getAdditionalHtml() ?>

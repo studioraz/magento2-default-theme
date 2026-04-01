@@ -26,5 +26,20 @@
                 ifconfig="catalog/frontend/show_sidebar_in_list"
             />
         </referenceContainer>
+
+        <referenceBlock name="catalog.compare.link.logged.in" display="false"/>
+
+        <referenceBlock name="header.customer.logged.out.links">
+            <block name="catalog.compare.link.logged.out" template="Magento_Catalog::product/compare/link.phtml">
+                <arguments>
+                    <argument name="sort_order" xsi:type="number">0</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+
+        <referenceContainer name="before.body.end">
+            <block name="product.addtocart.init" template="Magento_Catalog::product/js/add-to-cart.phtml"/>
+            <block name="pagebuilder.image.carousel" template="Magento_PageBuilder::widgets/image-carousel.phtml"/>
+        </referenceContainer>
     </body>
 </page>
