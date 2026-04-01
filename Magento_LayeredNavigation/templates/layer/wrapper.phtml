@@ -1,0 +1,164 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\LucideIcons;
+
+// phpcs:disable Generic.Files.LineLength.TooLong
+
+/** @var Template $block */
+/** @var ViewModelRegistry $viewModels */
+
+/** @var LucideIcons $lucideIcons */
+$lucideIcons = $viewModels->require(LucideIcons::class);
+
+$filtersHtml = (string) $block->getChildHtml('catalog.leftnav')
+    . (string) $block->getChildHtml('catalogsearch.leftnav');
+
+if (trim($filtersHtml) === '') {
+    return;
+}
+
+$selfName = $block->getNameInLayout();
+$parentName = $block->getLayout()->getParentName($selfName);
+$isSideBar = $parentName === 'sidebar.main';
+?>
+<script>
+    function initLayeredNavigationModal(options = {}) {
+        return {
+            isMobile: false,
+            desktopAllowed: Boolean(options.desktopAllowed || false),
+            blockOpen: false,
+            checkIsMobileResolution() {
+                this.isMobile = window.matchMedia('(max-width: 1024px)').matches;
+                // Close if we move to desktop where drawer is not allowed
+                if (!this.isMobile && !this.desktopAllowed && this.blockOpen) {
+                    this.closeDrawer();
+                }
+            },
+            toggleDrawer(event) {
+                const detail = event && event.detail ? event.detail : {};
+                const isOpen = typeof detail.isOpen === 'boolean' ? detail.isOpen : true;
+                if (isOpen) {
+                    this.openDrawer();
+                } else {
+                    this.closeDrawer();
+                }
+                this.headerFixToggle();
+            },
+            openDrawer() {
+                if (this.isMobile || this.desktopAllowed) {
+                    this.blockOpen = true;
+                    this.$nextTick(() => {
+                        this.$refs && this.$refs.layeredNavDialog && hyva.trapFocus(this.$refs.layeredNavDialog);
+                    });
+                }
+            },
+            closeDrawer() {
+                this.blockOpen = false;
+                this.$refs && this.$refs.layeredNavDialog && hyva.releaseFocus(this.$refs.layeredNavDialog);
+            },
+            headerFixToggle() {
+                const header = document.querySelector('#header');
+                header.classList.toggle('z-30', !this.blockOpen);
+            }
+        }
+    }
+    window.initLayeredNavigationModal = initLayeredNavigationModal;
+    // Optional: helper to open/close from anywhere: dispatch 'toggle-layered-nav' with {isOpen: true/false}
+</script>
+
+<section x-cloak
+         x-data="initLayeredNavigationModal({ desktopAllowed: true })"
+         x-init="checkIsMobileResolution()"
+         @resize.window="checkIsMobileResolution()"
+         @toggle-layered-nav.window="toggleDrawer($event)"
+         @keydown.escape="closeDrawer">
+
+    <?php // Inline desktop output for 2columns-left (no drawer on desktop) ?>
+    <?php if ($isSideBar): ?>
+        <div class="hidden lg:block">
+            <?= $block->getChildHtml('catalog.leftnav') ?>
+            <?= $block->getChildHtml('catalogsearch.leftnav') ?>
+        </div>
+    <?php endif; ?>
+
+    <div role="dialog"
+         aria-labelledby="layered-navigation-drawer-title"
+         aria-modal="true"
+         :aria-hidden="!(blockOpen && (isMobile || desktopAllowed))"
+         class="fixed inset-y-0 z-40 flex max-w-[90%] md:max-full end-0">
+
+        <div class="backdrop"
+             x-show="blockOpen && (isMobile || desktopAllowed)"
+             x-transition:enter="ease-in-out duration-500"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in-out duration-500"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             role="button"
+             @click="closeDrawer"
+             aria-label="<?= $block->escapeHtmlAttr(__('Close filters')) ?>"></div>
+
+        <div class="relative w-[480px] md:w-[420px] max-w-[480px] md:max-w-[420px] top-0 md:top-0 start-0 md:start-0 bg-white shadow-xl rounded-ss-2xl rounded-es-2xl"
+             x-show="blockOpen && (isMobile || desktopAllowed)"
+             x-cloak
+             x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700"
+             x-transition:enter-start="translate-x-full rtl:-translate-x-full"
+             x-transition:enter-end="translate-x-0"
+             x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700"
+             x-transition:leave-start="translate-x-0"
+             x-transition:leave-end="translate-x-full rtl:-translate-x-full"
+             x-ref="layeredNavDialog"
+             role="region"
+             :tabindex="blockOpen ? 0 : -1"
+             aria-label="<?= $block->escapeHtmlAttr(__('Filters')) ?>">
+
+            <div
+                x-show="blockOpen"
+                x-transition:enter="ease-in-out duration-500"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="ease-in-out duration-500"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="absolute end-0 pe-3 md:pe-6 pt-3 md:pt-6 flex items-center ps-3">
+                <button @click="closeDrawer"
+                        class="btn bg-transparent border-transparent p-2"
+                        aria-label="<?= $block->escapeHtmlAttr(__('Close filters')) ?>">
+                    <?= $lucideIcons->renderHtml('x', '', 24, 24, ['title' => __('Close')]) ?>
+                </button>
+            </div>
+
+            <div class="flex flex-col h-full md:h-full bg-white rounded-ss-2xl rounded-es-2xl">
+                <header class="bg-white mb-[3px] p-[12px] h-[64px] md:h-[88px] md:p-[24px] shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] flex items-center rounded-ss-2xl">
+                    <div class="flex items-center w-full leading-[normal]">
+                        <div id="layered-navigation-drawer-title">
+                            <strong class="text-2xl"><?= $block->escapeHtml(__('Shop By')) ?></strong>
+                        </div>
+                    </div>
+                </header>
+                <div class="layered-navigation-drawer-body px-3 pb-3 overflow-y-auto h-[calc(100vh-180px)] md:h-[calc(100vh-190px)]">
+                    <?= $block->getChildHtml('catalog.leftnav') ?>
+                    <?= $block->getChildHtml('catalogsearch.leftnav') ?>
+                </div>
+                <div class="absolute bottom-0 w-full pt-2 pb-3 px-4 md:py-6 bg-white grid grid-cols-1 md:grid-cols-2 md:gap-4 shadow-[0_-2px_4px_0_rgba(0,0,0,0.06)] rounded-es-2xl">
+                    <button
+                        @click="closeDrawer"
+                        class="btn btn-primary w-full mb-2"
+                        aria-label="<?= $block->escapeHtmlAttr(__('Show results')) ?>">
+                        <span><?= $block->escapeHtmlAttr(__('Show results')) ?></span>
+                    </button>
+                    <?= $block->getChildHtml('clear.all.leftnav') ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

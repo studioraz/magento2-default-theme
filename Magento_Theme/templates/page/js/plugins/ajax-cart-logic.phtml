@@ -1,0 +1,137 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\StoreConfig;
+use Magento\Checkout\Block\Cart\Sidebar as SidebarCart;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var ViewModelRegistry $viewModels */
+
+/** @var StoreConfig $storeConfig */
+$storeConfig = $viewModels->require(StoreConfig::class);
+$ajaxCartOptionDelay = $block->getDelay() ?: 500;
+$ajaxCartOptionShowSku = (bool) $block->getShowSku() === true ? 'true' : 'false';
+$showMiniCart = $block->getDisplayOnSuccess() === 'minicart' && $storeConfig->getStoreConfig(SidebarCart::XML_PATH_CHECKOUT_SIDEBAR_DISPLAY);
+$showAjaxCartModal = $block->getDisplayOnSuccess() === 'modal' || $block->getDisplayOnSuccess() === null;
+
+?>
+
+<?php if ($showAjaxCartModal || $showMiniCart): ?>
+    <script>
+        function initAjaxCartModal() {
+            return {
+                open: false,
+                cart: {},
+                initialTotalCartAmount: 0,
+                totalCartAmount: 0,
+                cartItem: null,
+                showSku: <?= $escaper->escapeHtmlAttr($ajaxCartOptionShowSku) ?>,
+                init() {
+                    window.addEventListener('private-content-loaded', (event) => {
+                        const cartData = event.detail.data && event.detail.data.cart;
+                        if (!cartData) return;
+
+                        this.cart = cartData;
+                        this.totalCartAmount = this.cart.summary_count;
+                        this.initialTotalCartAmount = this.cart.summary_count;
+                    }, { once: true });
+                },
+                sortObjectByNumberKey(obj) {
+                    let keys = Object.keys(obj).map(Number).sort((a, b) => a - b);
+                    let sortedObj = {};
+                    keys.forEach(key => sortedObj[key] = obj[key]);
+                    return sortedObj;
+                },
+                setNewCartData(event) {
+                    const productData = event.detail;
+                    window.addEventListener('private-content-loaded', (event) => {
+                        const cartData = event.detail.data && event.detail.data.cart;
+                        if (!cartData) return;
+                        this.cart = cartData;
+                        this.totalCartAmount = this.cart.summary_count;
+
+                        if (!productData) return;
+                        this.getCurrentProductFromCart(productData);
+
+                        <?php if ($showMiniCart): ?>
+                            window.dispatchEvent(new CustomEvent('toggle-cart'));
+                        <?php endif; ?>
+                        <?php if ($showAjaxCartModal): ?>
+                            this.openDialog();
+                        <?php endif; ?>
+                    }, { once: true });
+                },
+                getCurrentProductFromCart(productData) {
+                    if (!this.cart.items) return;
+                    this.cartItem = this.cart.items.filter((item) => {
+                        if (item.product_id !== productData.productId) return;
+                        if (item.product_type !== "configurable") {
+                            return item;
+                        }
+
+                        let cartItemOptions = {};
+                        for (const option of item.options) {
+                            const filterOptions = { [option.option_id]: option.option_value };
+                            cartItemOptions = { ...cartItemOptions, ...filterOptions }
+                        }
+
+                        const cartItemOptionsCompare = JSON.stringify(this.sortObjectByNumberKey(cartItemOptions));
+                        const productDataOptionsCompare = JSON.stringify(this.sortObjectByNumberKey(productData.options));
+                        if (cartItemOptionsCompare === productDataOptionsCompare) {
+                            return item;
+                        }
+                    });
+
+                    if (this.cartItem > 1) {
+                        this.cartItem = this.cartItem.slice(0, 1);
+                    }
+
+                    this.cartItem = this.cartItem[0];
+                },
+                getItemCountText() {
+                    if (this.totalCartAmount > 1) {
+                        return hyva.str('(<?= $escaper->escapeJs(__('%1 items')) ?>)', this.totalCartAmount);
+                    }
+
+                    return hyva.str('(<?= $escaper->escapeJs(__('%1 item')) ?>)', this.totalCartAmount);
+                },
+                openDialog() {
+                    if (!this.cartItem) return;
+                    this.$root.showModal();
+                    this.open = true;
+                    this.scrollLock(this.open);
+
+                    setTimeout(() => {
+                        this.closeDialog();
+                    }, <?= $ajaxCartOptionDelay ?>);
+                },
+                closeDialog() {
+                    this.$root.close();
+                    this.open = false;
+                    this.scrollLock(this.open);
+                },
+                scrollLock(use = true) {
+                    document.body.style.overflow = use ? "hidden" : "";
+                },
+                onDialogBackdropClickHelper(event, target = this.$root) {
+                    const rect = target.getBoundingClientRect();
+                    const isInDialog =
+                        rect.top <= event.clientY &&
+                        event.clientY <= rect.top + rect.height &&
+                        rect.left <= event.clientX &&
+                        event.clientX <= rect.left + rect.width;
+                    return isInDialog;
+                }
+            }
+        }
+    </script>
+<?php endif; ?>

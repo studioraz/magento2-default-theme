@@ -1,0 +1,32 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Magento\Catalog\Model\Layer\Filter\AbstractFilter;
+use Mirasvit\LayeredNavigation\Block\Renderer\SwatchRenderer;
+
+/**
+ * @var SwatchRenderer $block
+ * @var AbstractFilter $filter
+ */
+
+$swatchData = $block->getSwatchData();
+$attributeCode = $swatchData['attribute_code'];
+$attributeId = $swatchData['attribute_id'];
+$filter = $block->getSwatchFilter();
+$useAlphabeticalIndex = strpos(get_class($filter), 'AttributeFilter') !== false && $filter->isUseAlphabeticalIndex();
+$checkedItemsCount = 0;
+$letter = '';
+?>
+<?php if ($filter->getData('placement') === 'sidebar'): ?>
+    <?php include($block->getTemplateFile('Mirasvit_LayeredNavigation::renderer/placement/swatchRendererSidebar.phtml')) ?>
+<?php endif; ?>
+
+<?php if ($filter->getData('placement') === 'horizontal'): ?>
+    <?php include($block->getTemplateFile('Mirasvit_LayeredNavigation::renderer/placement/swatchRendererHorizontal.phtml')) ?>
+<?php endif; ?>
+

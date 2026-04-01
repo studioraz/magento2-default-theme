@@ -1,0 +1,56 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\CurrentProduct;
+use Magento\Catalog\Model\Product;
+use Magento\CatalogInventory\Block\Stockqty\DefaultStockqty;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+// phpcs:disable Magento2.Templates.ThisInTemplate.FoundThis
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+/** @var DefaultStockqty $block */
+
+/** @var CurrentProduct $currentProduct */
+$currentProduct = $viewModels->require(CurrentProduct::class);
+
+/** @var Product $product */
+$product = $block->hasData('product')
+    ? $block->getData('product')
+    : $currentProduct->get();
+
+if (!$product || !$product->getId()) {
+    return;
+}
+
+$inStock = $product->getIsSalable();
+$stockQtyBlock = $block->getChildBlock('stock_qty');
+$isQtyMsgVisible = $stockQtyBlock && $stockQtyBlock->isMsgVisible();
+$stockMessage = '';
+$stockCss = '';
+
+if ($isQtyMsgVisible) {
+    $stockMessage = __('Only %1 left', ($stockQtyBlock->getStockQtyLeft()));
+    $stockCss = 'only-x-left before:bg-yellow-500';
+} else {
+    $stockMessage = $inStock ? __('In stock') : __('Out of stock');
+    $stockCss = $inStock ? 'available before:bg-green-500' : 'unavailable before:bg-red-500';
+}
+?>
+
+<?php if ($isQtyMsgVisible || $block->getParentBlock()->displayProductStockStatus()): ?>
+    <div class="availability w-full">
+        <p class="stock h-10 flex justify-center items-center rounded-md text-sm text-slate-700 bg-slate-200 <?= $stockCss ?>"
+           title="<?= $escaper->escapeHtmlAttr(__('Availability')) ?>"
+        ><?= $escaper->escapeHtml($stockMessage) ?></p>
+    </div>
+<?php endif; ?>

@@ -1,0 +1,43 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+/** @var Escaper $escaper */
+
+/** @var Menu $block */
+
+use Magento\Framework\Escaper;
+use Snowdog\Menu\Block\Menu;
+
+if (!$block->getMenu() || (int)$block->getLevel() !== 1) {
+    return;
+}
+
+$parentNode = $block->getParentNode();
+$parentNodeIndex = (int)$parentNode->getId();
+$title = $parentNode->getTitle();
+?>
+
+<div x-ref="submenu-<?= $parentNodeIndex ?>"
+     class="absolute top-full z-30 mt-[1px] min-w-[180px] rounded-md shadow-md bg-white flex"
+     x-show="isSubmenuOpened('<?= $parentNodeIndex ?>')"
+     x-transition:enter="transition ease-out duration-300 delay-300"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-cloak
+>
+    <ul class="menu-list-2nd-level-dropdown w-full flex flex-col gap-1 py-3"
+        title="Submenu for <?= $escaper->escapeHtmlAttr($title) ?>"
+    >
+        <?php foreach ($block->getSubmenuNodes() as $node): ?>
+            <?php $nodeClasses = $node->getClasses(); ?>
+            <li class="menu-list-item-2nd-level-dropdown <?= $escaper->escapeHtmlAttr($nodeClasses) ?>">
+                <?= $block->renderMenuNode($node) ?>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+</div>

@@ -1,0 +1,31 @@
+<?php
+/**
+ * Copyright © 2023 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ */
+?>
+
+<div x-data="initCustomerOtpAuthFormMessages()"
+     x-bind="eventListeners"
+     x-show="messages.length > 0"
+     class="mt-5"
+>
+    <template x-if="messages.length > 0">
+        <template x-for="message in messages">
+            <div class="message"
+                 :class="{ [message.type]: true }"
+                 x-html="message.text"
+            ></div>
+        </template>
+    </template>
+</div>

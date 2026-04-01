@@ -1,0 +1,521 @@
+<?php
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Hyva\Theme\Model\ViewModelRegistry $viewModels */
+/** @var \Magento\Framework\Escaper $escaper */
+
+$storeConfig = $viewModels->require(\Hyva\Theme\ViewModel\StoreConfig::class);
+$sliderUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
+
+$navBlock = $block->getLayout()->createBlock(\Magento\Framework\View\Element\Template::class)
+        ->setTemplate('Magento_PageBuilder::carousel-nav.phtml')
+        ->setData('view_models', $viewModels);
+$navHtml = $navBlock->toHtml();
+
+$globalConfig = [
+        'products' => json_decode($storeConfig->getStoreConfig('sr_hyva_base/product_sliders/slider_config') ?: '{}', true),
+        'pb' => json_decode($storeConfig->getStoreConfig('sr_hyva_base/page_builder_sliders/slider_config') ?: '{}', true)
+];
+?>
+<script>
+    'use strict';
+    (() => {
+        // --- CONSTANTS & STATE ---
+        const FORCE_LOAD     = (window.self !== window.top);
+        const GLOBAL_CONFIG  = <?= json_encode($globalConfig) ?>;
+        const SWIPER_URL     = '<?= $escaper->escapeUrl($sliderUrl) ?>';
+        const NAV_HTML       = '<?= $escaper->escapeJs($navHtml) ?>';
+        const TEXT_DIRECTION = document.querySelector('html').dir || 'ltr';
+
+        let scriptLoaded  = typeof Swiper !== 'undefined';
+        let scriptLoading = false;
+        const initQueue   = new Set();
+        let vimeoPlayer   = null;
+
+        const deepMerge = (...objects) => {
+            const merged = {};
+            for (const obj of objects) {
+                for (const key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        if (typeof obj[key] === 'object' && obj[key] !== null && !(obj[key] instanceof HTMLElement) && !Array.isArray(obj[key])) {
+                            merged[key] = deepMerge(merged[key] || {}, obj[key]);
+                        } else {
+                            merged[key] = obj[key];
+                        }
+                    }
+                }
+            }
+            return merged;
+        };
+
+        const changeTagName = (element, newTagName) => {
+            const newElement = document.createElement(newTagName);
+            for (const attr of element.attributes) newElement.setAttribute(attr.name, attr.value);
+            while (element.firstChild) newElement.appendChild(element.firstChild);
+            element.replaceWith(newElement);
+            return newElement;
+        };
+
+        const getGalleryData = () => {
+            try {
+                return JSON.parse(localStorage.getItem('image-gallery-data')) || [];
+            } catch (e) {
+                return [];
+            }
+        };
+
+        const applySkeletonLayout = (element) => {
+            // Check if styles are already applied to avoid double processing
+            if (element.classList.contains('skeleton-applied')) return;
+            element.classList.add('skeleton-applied');
+
+            if (element.classList.contains('tabs-navigation')) {
+                element.classList.add('skeleton-auto-width');
+                return;
+            }
+
+            let baseConfig = {};
+            if (element.dataset.contentType === 'slider') baseConfig = GLOBAL_CONFIG.pb || {};
+            else if (element.dataset.contentType === 'products') baseConfig = GLOBAL_CONFIG.products || {};
+
+            let inlineConfig = {};
+            try {
+                if (element.dataset.breakpoints) inlineConfig = { breakpoints: JSON.parse(element.dataset.breakpoints) };
+                else if (element.dataset.sliderConfig) inlineConfig = JSON.parse(element.dataset.sliderConfig);
+            } catch (e) {}
+
+            const mergedConfig = deepMerge({}, baseConfig, inlineConfig);
+            const breakpoints  = mergedConfig.breakpoints || {};
+
+            const getConfigVal = (size, key, defaultVal) => {
+                const points = Object.keys(breakpoints).map(Number).sort((a,b) => a - b);
+                let match = points.filter(p => p <= size).pop();
+
+                if (match !== undefined && breakpoints[match] && breakpoints[match][key] !== undefined) {
+                    return breakpoints[match][key];
+                }
+                if (mergedConfig[key] !== undefined) return mergedConfig[key];
+                return defaultVal;
+            };
+
+            const setVars = (suffix, size) => {
+                const cols = getConfigVal(size, 'slidesPerView', 2);
+                const gap  = getConfigVal(size, 'spaceBetween', 20);
+                const isDecimal = typeof cols === 'number' && cols % 1 !== 0;
+
+                if (cols === 'auto' || isDecimal) {
+                    element.style.setProperty('--sk-display-' + suffix, 'flex');
+                    element.style.removeProperty('--sk-cols-' + suffix);
+
+                    if (isDecimal) {
+                        const widthPercent = (100 / cols) - 2;
+                        element.style.setProperty('--sk-item-width-' + suffix, widthPercent + '%');
+                    } else {
+                        element.style.setProperty('--sk-item-width-' + suffix, 'auto');
+                    }
+                } else {
+                    element.style.setProperty('--sk-display-' + suffix, 'grid');
+                    element.style.setProperty('--sk-cols-' + suffix, cols);
+                    element.style.setProperty('--sk-item-width-' + suffix, '0');
+                }
+                element.style.setProperty('--sk-gap-' + suffix, gap + 'px');
+            };
+
+            setVars('mob', 320);
+            setVars('tab', 768);
+            setVars('desk', 1280);
+        };
+
+        const cleanupSkeletonStyles = (node) => {
+            const target = node.closest('.skeleton-applied');
+            if (!target) return;
+
+            const props = [
+                '--sk-display-mob', '--sk-cols-mob', '--sk-gap-mob', '--sk-item-width-mob',
+                '--sk-display-tab', '--sk-cols-tab', '--sk-gap-tab', '--sk-item-width-tab',
+                '--sk-display-desk', '--sk-cols-desk', '--sk-gap-desk', '--sk-item-width-desk'
+            ];
+            props.forEach(p => target.style.removeProperty(p));
+            target.classList.remove('skeleton-auto-width');
+        };
+
+        const getVideoData = (index) => {
+            const images = getGalleryData();
+            const videoUrl = images[index]?.videoUrl;
+            if (!videoUrl) return false;
+
+            let id, type, useNoCookie = false;
+
+            if (videoUrl.match(/youtube\.com|youtu\.be|youtube-nocookie.com/)) {
+                type = 'youtube';
+                const ytRegex = /^.*(?:(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/)|(?:(?:watch)?\?v(?:i)?=|\&v(?:i)?=))([^#\&\?]*).*/;
+                id = videoUrl.match(ytRegex)[1];
+                if (videoUrl.match(/youtube-nocookie.com/)) useNoCookie = true;
+            } else if (videoUrl.match(/vimeo\.com/)) {
+                type = 'vimeo';
+                const vimeoRegex = /https?:\/\/(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|video\/|)(\d+)(?:$|\/|\?)/;
+                id = videoUrl.match(vimeoRegex)[3];
+            }
+            return id ? { id, type, useNoCookie } : false;
+        };
+
+        const initYoutubeAPI = (videoData) => {
+            if (document.getElementById('loadYoutubeAPI')) return;
+            const script = document.createElement('script');
+            script.src = 'https://www.youtube.com/iframe_api';
+            script.id = 'loadYoutubeAPI';
+            document.head.appendChild(script);
+
+            const host = videoData.useNoCookie ? 'https://www.youtube-nocookie.com' : 'https://www.youtube.com';
+            window.onYouTubeIframeAPIReady = () => {
+                window.youtubePlayer = new YT.Player('youtube-player', {
+                    host: host, videoId: videoData.id, playerVars: { rel: 0 }
+                });
+            };
+        };
+
+        const initVimeoVideo = (videoData) => {
+            const container = document.querySelector('[data-media-type="external-video"]');
+            if (!container || !videoData.id) return;
+
+            const preview = container.querySelector('img');
+            if (preview) preview.remove();
+
+            const timestamp = new Date().getTime();
+            const src = `https://player.vimeo.com/video/${videoData.id}?api=1&player_id=vimeo${videoData.id}${timestamp}`;
+            container.innerHTML = `<iframe id="vimeo${videoData.id}${timestamp}" src="${src}" width="640" height="500" allowfullscreen allow="autoplay" class="w-full"></iframe>`;
+            vimeoPlayer = container.firstChild;
+        };
+
+        const activateVideo = (index) => {
+            const videoData = getVideoData(index);
+            if (!videoData) return;
+
+            if (videoData.type === 'youtube') {
+                window.youtubePlayer ? window.youtubePlayer.loadVideoById(videoData.id) : initYoutubeAPI(videoData);
+            } else if (videoData.type === 'vimeo') {
+                initVimeoVideo(videoData);
+            }
+        };
+
+        const alignSliderArrows = function (swiper) {
+            const hasNav = swiper.navigation?.prevEl && swiper.navigation?.nextEl;
+            const activeSlide = swiper.el.querySelector('.' + swiper.params.slideActiveClass);
+            if (!hasNav || !activeSlide) return;
+
+            const photo = activeSlide.querySelector('.product-item-photo');
+            const navs = swiper.el.parentElement.querySelectorAll('.swiper-button-prev, .swiper-button-next');
+
+            if (!navs.length) return;
+
+            let topPos = 0;
+            if (photo && photo.clientHeight > 2) {
+                topPos = photo.clientHeight / 2;
+            }
+
+            navs.forEach(nav => {
+                if (topPos > 0) {
+                    nav.style.top = topPos + 'px';
+                }
+                nav.classList.remove('invisible');
+            });
+        };
+
+        const getBaseConfig = (slider) => {
+            const config = {};
+            const nextEl = slider.querySelector('.swiper-button-next');
+            const prevEl = slider.querySelector('.swiper-button-prev');
+            const paginationEl = slider.querySelector('.swiper-pagination');
+
+            if (slider.dataset.autoplay) {
+                config.autoplay = slider.dataset.autoplay === 'true'
+                    ? { delay: slider.dataset.autoplaySpeed, pauseOnMouseEnter: true } : false;
+            }
+            if (slider.dataset.infiniteLoop) config.loop = slider.dataset.infiniteLoop === 'true';
+
+            if (slider.dataset.showArrows === 'true') {
+                if (nextEl) nextEl.classList.remove('invisible');
+                if (prevEl) prevEl.classList.remove('invisible');
+                config.navigation = { nextEl, prevEl };
+            } else {
+                if (nextEl) nextEl.style.display = 'none';
+                if (prevEl) prevEl.style.display = 'none';
+                config.navigation = false;
+            }
+
+            if (slider.dataset.showDots === 'true') {
+                if (paginationEl) paginationEl.classList.remove('invisible');
+                config.pagination = { el: paginationEl, type: 'bullets', clickable: true };
+            } else {
+                if (paginationEl) paginationEl.style.display = 'none';
+                config.pagination = false;
+            }
+            return config;
+        };
+
+        const initializeSwiper = (slider, config) => {
+            if (slider.classList.contains('slider-instantiated')) return;
+            slider.classList.add('slider-instantiated');
+
+            const originalAfterInit = config.on?.afterInit;
+            config.on = config.on || {};
+            config.on.afterInit = function (swiper) {
+                if (originalAfterInit) originalAfterInit.call(this, swiper);
+                        alignSliderArrows.call(this, swiper);
+                cleanupSkeletonStyles(slider);
+            };
+            config.on.resize = function (swiper) {
+                        alignSliderArrows.call(this, swiper);
+        };
+
+            return new Swiper(slider, config);
+        };
+
+        const preparePbSliderStructure = (slider) => {
+            const container = document.createElement('div');
+            container.className = 'swiper glider-contain';
+            container.setAttribute('dir', TEXT_DIRECTION);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'swiper-wrapper';
+
+            slider.querySelectorAll('[data-content-type=slide]').forEach(slide => {
+                const slideWrapper = document.createElement('div');
+                slideWrapper.className = 'swiper-slide';
+                slide.parentNode.insertBefore(slideWrapper, slide);
+                slideWrapper.appendChild(slide);
+            });
+
+            wrapper.append(...slider.childNodes);
+            container.appendChild(wrapper);
+            slider.appendChild(container);
+            container.insertAdjacentHTML('beforeend', NAV_HTML);
+        };
+
+        const prepareProductCarouselStructure = (slider) => {
+            const container = slider.querySelector('.glider-contain') || slider;
+            let wrapper = slider.querySelector('[data-role="glider-content"]');
+
+            if (!wrapper) {
+                wrapper = document.createElement('div');
+                wrapper.className = 'swiper-wrapper';
+                container.querySelectorAll('.product-item').forEach(item => wrapper.appendChild(item));
+                container.insertAdjacentElement('afterbegin', wrapper);
+            } else {
+                wrapper.className = 'swiper-wrapper';
+                wrapper.removeAttribute('data-role');
+            }
+
+            container.classList.remove('glider-contain');
+            container.classList.add('swiper');
+            container.setAttribute('dir', TEXT_DIRECTION);
+
+            wrapper.querySelectorAll('.product-item').forEach(item => {
+                item.classList.remove('w-full');
+                item.classList.add('swiper-slide');
+            });
+
+            const internalNav = container.querySelector('.carousel-nav');
+            if (internalNav) {
+                internalNav.remove();
+            }
+
+            // 2. Add external nav if missing
+            if (!container.parentElement.querySelector(':scope > .carousel-nav')) {
+                container.insertAdjacentHTML('beforeend', NAV_HTML);
+            }
+        };
+
+        const prepareTabsStructure = (slider) => {
+            const container = document.createElement('div');
+            container.className = 'swiper glider-contain';
+            container.setAttribute('dir', TEXT_DIRECTION);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'swiper-wrapper';
+
+            slider.querySelectorAll('.tab-header').forEach(header => {
+                const slideWrapper = document.createElement('div');
+                slideWrapper.className = 'swiper-slide';
+                header.parentNode.insertBefore(slideWrapper, header);
+                header = changeTagName(header, 'div');
+                slideWrapper.appendChild(header);
+            });
+
+            wrapper.append(...slider.childNodes);
+            container.appendChild(wrapper);
+            slider.appendChild(container);
+            container.insertAdjacentHTML('beforeend', NAV_HTML);
+        };
+
+        const initSliderForElement = (element) => {
+            const type = element.dataset.contentType;
+
+            // 1. PageBuilder Banner Slider
+            if (type === 'slider') {
+                preparePbSliderStructure(element);
+                const config = deepMerge(
+                    { spaceBetween: 20 },
+                    GLOBAL_CONFIG.pb || {},
+                    { breakpoints: element.dataset.breakpoints ? JSON.parse(element.dataset.breakpoints) : {} },
+                    getBaseConfig(element)
+                );
+                initializeSwiper(element.querySelector('.swiper'), config);
+            }
+
+            // 2. Product Carousel
+            else if (type === 'products') {
+                prepareProductCarouselStructure(element);
+                const config = deepMerge(
+                    { on: { noSwipingSelector: '.product-item-add-to-cart' } },
+                    GLOBAL_CONFIG.products || {},
+                    element.dataset.sliderConfig ? JSON.parse(element.dataset.sliderConfig) : {},
+                    getBaseConfig(element)
+                );
+                initializeSwiper(element.querySelector('.swiper'), config);
+            }
+
+            // 3. Regular Product Slider
+            else if (type === 'products-slider') {
+                const wrapper = element.querySelector('.swiper-wrapper');
+                if (wrapper) wrapper.setAttribute('class', 'swiper-wrapper');
+
+                // Only inject fallback nav if the slider doesn't already have one built-in
+                if (!element.querySelector('.carousel-nav')) {
+                    element.insertAdjacentHTML('beforeend', NAV_HTML);
+                }
+
+                if (!element.querySelector('.carousel-nav')) {
+                    element.insertAdjacentHTML('beforeend', NAV_HTML);
+                }
+
+                const config = deepMerge(
+                    {on: {noSwipingSelector: '.product-item-add-to-cart'}},
+                    GLOBAL_CONFIG.products || {},
+                    getBaseConfig(element)
+                );
+
+                initializeSwiper(element.querySelector('.swiper'), config);
+            }
+
+            // 4. Image Gallery
+            else if (type === 'images') {
+                // Images: Nav Outside
+                if (!element.parentElement.querySelector(':scope > .carousel-nav')) element.insertAdjacentHTML('beforeend', NAV_HTML);
+                const swiperTarget = element.querySelector('.swiper') || element;
+                const config = {
+                    loop: true,
+                    lazy: true,
+                    spaceBetween: 10,
+                    pagination: {el: '.swiper-pagination', clickable: true},
+                    navigation: {nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev'},
+                    on: {
+                        slideChangeTransitionEnd: function() {
+                            if (window.youtubePlayer?.stopVideo) window.youtubePlayer.stopVideo();
+                            if (vimeoPlayer) vimeoPlayer.contentWindow.postMessage(JSON.stringify({ "method": "pause" }), "*");
+
+                            const slide = this.slides[this.activeIndex];
+                            if (slide?.getAttribute('data-media-type') === 'external-video' && !slide.querySelector('iframe')) {
+                                const realIndex = slide.getAttribute('data-swiper-slide-index') || this.activeIndex;
+                                activateVideo(realIndex);
+                            }
+                        }
+                    }
+                };
+                initializeSwiper(swiperTarget, config);
+            }
+
+            // 5. Tabs
+            else if (element.classList.contains('tabs-navigation')) {
+                const newEl = changeTagName(element, 'div');
+                prepareTabsStructure(newEl);
+                initializeSwiper(newEl.querySelector('.swiper'), {
+                    slidesPerView: 'auto', spaceBetween: 8, freeMode: true, grabCursor: true
+                });
+            }
+        };
+
+        const runQueue = () => {
+            if (typeof Swiper === 'undefined') return;
+            initQueue.forEach(el => initSliderForElement(el));
+            initQueue.clear();
+        };
+
+        const loadLibrary = () => {
+            if (scriptLoaded || scriptLoading) return;
+            // Global Lock to prevent duplicate downloads
+            if (window.hyvaSwiperLoading) {
+                const checkInterval = setInterval(() => {
+                    if (typeof Swiper !== 'undefined') {
+                        clearInterval(checkInterval);
+                        scriptLoaded = true;
+                        runQueue();
+                    }
+                }, 50);
+                return;
+            }
+            window.hyvaSwiperLoading = true;
+            scriptLoading = true;
+            const s = document.createElement('script');
+            s.src = SWIPER_URL;
+            s.async = true;
+            s.onload = () => {
+                scriptLoaded = true;
+                runQueue();
+            };
+            document.head.appendChild(s);
+        };
+
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    initQueue.add(el);
+                    obs.unobserve(el);
+                    scriptLoaded ? runQueue() : loadLibrary();
+                }
+            });
+        }, {rootMargin: '500px'});
+
+        const detectPageSliders = () => {
+            const selectors = [
+                '[data-content-type="products"][data-appearance="carousel"]',
+                '[data-content-type="slider"]',
+                '[data-content-type="products-slider"]',
+                '[data-content-type="images"]',
+                '[data-content-type="tabs"] .tabs-navigation'
+            ].join(',');
+
+            document.querySelectorAll(selectors).forEach(el => {
+                if (el.style.pointerEvents === 'none') {
+                    el.style.pointerEvents = '';
+                }
+
+                // 1. Apply Skeleton (LCP protection)
+                applySkeletonLayout(el);
+
+                // 2. Observe for Lazy Initialization
+                if (!el.classList.contains('slider-instantiated')) {
+                    if (FORCE_LOAD) {
+                        initQueue.add(el);
+                        scriptLoaded ? runQueue() : loadLibrary();
+                    } else {
+                        observer.observe(el);
+                    }
+                }
+            });
+        };
+
+        window.hyvaSwiperScan = detectPageSliders;
+
+        if (window.hyvaSwiperManager) {
+            detectPageSliders();
+            return;
+        }
+        window.hyvaSwiperManager = true;
+
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', detectPageSliders);
+        else detectPageSliders();
+
+        window.addEventListener('page-content-updated', detectPageSliders);
+    })();
+</script>

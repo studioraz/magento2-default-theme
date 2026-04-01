@@ -1,0 +1,98 @@
+<?php
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\LucideIcons;
+use Magento\Framework\Escaper;
+use Snowdog\Menu\Block\Menu;
+
+/** @var Escaper $escaper */
+/** @var Menu $block */
+/** @var ViewModelRegistry $viewModels */
+
+$lucideIcons = $viewModels->require(LucideIcons::class);
+?>
+<?php if ($block->getMenu()): ?>
+    <?php
+    $parentNode = $block->getParentNode();
+    $parentNodeIndex = 'node' . $parentNode->getId();
+    $title = $parentNode->getTitle();
+    ?>
+    <ul
+        <?php if (!($parentNode->getType() === 'wrapper' && $parentNode->getLevel() == 1)): ?>
+        x-ref="submenu-<?= /* @noEscape */ (string) $parentNodeIndex ?>"
+        class="pb-2 ps-4"
+        x-show="<?= /* @noEscape */ (string) $parentNodeIndex ?>"
+        x-collapse
+        :aria-hidden="<?= /* @noEscape */ (string) $parentNodeIndex ?> === false ? 'true' : 'false'"
+        <?php endif ?>
+        title="<?= $escaper->escapeHtmlAttr($title) ?>"
+    >
+    <?php if ($block->isViewAllLinkAllowed($parentNode->getType())): ?>
+        <li>
+            <?= $block->renderViewAllLink($parentNode) ?>
+        </li>
+        <?php endif ?>
+        <?php foreach ($block->getSubmenuNodes() as $node): ?>
+            <?php
+                $childrenLevel = $node->getLevel() + 1;
+                $children = $block->getNodes($childrenLevel, $node);
+                $node->setIsParent((bool)$children);
+                $indexId = 'node' . $node->getId();
+                $nodeTitle = $node->getTitle();
+                $nodeType = $node->getType();
+                $nodeClasses = $node->getClasses();
+                ?>
+                <?php if ($node->getType() === 'wrapper' && $node->getLevel() == 1): ?>
+                    <?php if ($node->getIsParent() && !$node->getIsViewAllLink()): ?>
+                        <?= /* @noEscape */ $block->renderSubmenu($children, $node, $childrenLevel) ?>
+                    <?php else: ?>
+                        <?= /* @noEscape */ $block->renderMenuNode($node) ?>
+                    <?php endif; ?>
+                <?php else: ?>
+                <li class="<?= /* @noEscape */ (string) $nodeType === 'wrapper' ? $escaper->escapeHtmlAttr($nodeClasses) : '' ?>"
+                    x-data="{ '<?= /* @noEscape */ (string) $indexId ?>': false }"
+                >
+                    <?php if ($node->getIsParent() && !$node->getIsViewAllLink()): ?>
+                        <?php
+                            $image = $node->getImage();
+                            $imageUrl = $image ? $block->getBaseUrl() . 'media/snowdog/menu/node/' . $image : '';
+                            $imageAltText = $node->getImageAltText();
+                            $imageWidth = $node->getImageWidth();
+                            $imageHeight = $node->getImageHeight();
+                        ?>
+                        <button class="flex items-center justify-between w-full px-8 py-4"
+                            @click="toggleSubmenu('<?= /* @noEscape */ (string) $indexId ?>')"
+                            aria-label="<?= $escaper->escapeHtmlAttr(__('Toggle submenu for %1', $nodeTitle)) ?>"
+                            aria-haspopup="true"
+                            :aria-expanded="<?= /* @noEscape */ (string) $indexId ?> === true"
+                            type="button"
+                        >
+                            <?php if ($image): ?>
+                                <img class="me-2"
+                                     src="<?= $escaper->escapeUrl($imageUrl) ?>"
+                                     alt="<?= $escaper->escapeHtmlAttr($imageAltText) ?>"
+                                     loading="lazy"
+                                     width="<?= $escaper->escapeHtmlAttr($imageWidth) ?>"
+                                     height="<?= $escaper->escapeHtmlAttr($imageHeight) ?>"
+                                />
+                            <?php endif; ?>
+                            <span>
+                                <?= $escaper->escapeHtml($nodeTitle) ?>
+                            </span>
+                            <div class="ms-auto transition-transform"
+                                :class="{'rotate-180' : <?= /* @noEscape */ (string) $indexId ?> === true}"
+                            >
+                                <?= $lucideIcons->chevronDownHtml('text-gray-500', 20, 20, ['aria-hidden' => 'true']); ?>
+                            </div>
+                        </button>
+                        <?= /* @noEscape */ $block->renderSubmenu($children, $node, $childrenLevel) ?>
+                    <?php else: ?>
+                        <div class="group">
+                            <?= /* @noEscape */ $block->renderMenuNode($node) ?>
+                        </div>
+                    <?php endif; ?>
+                </li>
+            <?php endif; ?>
+        <?php endforeach ?>
+    </ul>
+<?php endif; ?>

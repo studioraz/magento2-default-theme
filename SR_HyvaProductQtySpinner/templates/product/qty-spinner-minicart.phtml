@@ -1,0 +1,76 @@
+<?php
+/**
+ * Copyright © 2023 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\HeroiconsOutline;
+use Hyva\Theme\ViewModel\SvgIcons;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use SR\HyvaProductQtySpinner\ViewModel\ProductQtySpinner;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+/** @var HeroiconsOutline $heroIcons */
+/** @var SvgIcons $icons */
+/** @var ProductQtySpinner $productQtySpinner */
+
+$uniqId = uniqid();
+
+$icons = $viewModels->require(SvgIcons::class);
+$heroIcons = $viewModels->require(HeroiconsOutline::class);
+?>
+
+<div class="custom-number-input"
+     x-data="productQtySpinnerUiMinicart(item)">
+    <label for="custom-input-number" class="sr-only"><?= $escaper->escapeHtml(__('Counter Input')) ?></label>
+    <div class="max-w-[152px] flex flex-row items-center justify-between overflow-hidden bg-white">
+        <button data-action="decrement"
+                class="flex justify-center items-center text-black hover:enabled:bg-gray-200 outline-none w-10 h-10 px-2 grow shrink-0 bg-[#F8FAFC] rounded-lg"
+                :class="{
+                        'disabled:cursor-not-allowed': isDecrementDisabled && !isRequestInProgress,
+                        'disabled:cursor-wait': isRequestInProgress,
+                        'cursor-pointer': !isDecrementDisabled
+                    }"
+                @click="decrement()"
+                :disabled="isDecrementDisabled()"
+        >
+            <?= $heroIcons->minusHtml('', 16, 16); ?>
+        </button>
+        <label :for="'item_qty[' + item.item_id + ']'" class="sr-only">
+            <?= $escaper->escapeHtml(__('Quantity')) ?>
+        </label>
+        <input :name="'item_qty[' + item.item_id + ']'"
+               :id="'item_qty[' + item.item_id + ']'"
+               type="number"
+               pattern="[0-9]"
+               min="1"
+               inputmode="decimal"
+               @blur="onBlur"
+               @keydown="onKeyDown"
+               @keydown.window.prevent.enter=""
+               @input.debounce.750="onInput"
+               :disabled="isDisabled"
+               :value="qty"
+               class="no-spinner mx-1 form-input text-center invalid:ring-2 invalid:ring-red-500 w-14 h-10 p-0 rounded-lg text-[13px] text-black font-semibold border-[#CBD5E1] shadow-none"
+               readonly
+        />
+        <button data-action="increment"
+                class="flex justify-center items-center text-black hover:enabled:bg-gray-200 outline-none w-10 h-10 px-2 grow shrink-0 bg-[#F8FAFC] rounded-lg"
+                :class="{
+                        'disabled:cursor-not-allowed': isIncrementDisabled && !isRequestInProgress,
+                        'disabled:cursor-wait': isRequestInProgress,
+                        'cursor-pointer': !isIncrementDisabled
+                    }"
+                @click="increment()"
+                :disabled="isIncrementDisabled()"
+        >
+            <?= $heroIcons->plusHtml('', 16, 16); ?>
+        </button>
+    </div>
+</div>
+

@@ -1,0 +1,44 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\LucideIcons;
+use Hyva\Theme\ViewModel\SvgIcons;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magento\Catalog\Helper\Output as CatalogOutputHelper;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ * @var ViewModelRegistry $viewModels
+ * @var LucideIcons $lucideIcons
+ * @var CatalogOutputHelper $catalogOutputHelper
+ */
+
+$catalogOutputHelper = $this->helper(CatalogOutputHelper::class);
+$lucideIcons = $viewModels->require(LucideIcons::class);
+$icons = $viewModels->require(SvgIcons::class);
+$viewIsGrid = $block->getData('view_is_grid');
+$product = $block->getProduct();
+$productName = $catalogOutputHelper->productAttribute($product, $product->getName(), 'name');
+?>
+<button
+    class="btn btn-primary text-sm h-10 w-full relative"
+    title="<?= $escaper->escapeHtmlAttr(__('Add to Cart') . ' ' . $productName) ?>"
+    aria-label="<?= $escaper->escapeHtmlAttr(__('Add to Cart') . ' ' . $productName) ?>"
+>
+    <template x-if="typeof isLoading !== 'undefined' && isLoading">
+        <span
+            class="absolute inset-0 flex justify-center items-center loader rounded-md text-primary-darker bg-white/75 shadow-[0_0_3px_2px_#fff]">
+            <?= $icons->spinnerHtml('h-full w-auto'); ?>
+        </span>
+    </template>
+    <?= $lucideIcons->renderHtml('shopping-cart', 'me-[6px]', 19, 19); ?>
+    <?= $escaper->escapeHtml(__('Add to Cart')) ?>
+</button>

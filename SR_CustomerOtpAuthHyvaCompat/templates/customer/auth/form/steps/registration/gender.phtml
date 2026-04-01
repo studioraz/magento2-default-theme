@@ -1,0 +1,43 @@
+<?php
+/**
+ * Hyvä Themes - https://hyva.io
+ * Copyright © Hyvä Themes. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+declare(strict_types=1);
+
+use Magento\Customer\Block\Widget\Gender;
+use Magento\Customer\Helper\Address as AddressHelper;
+use Magento\Framework\Escaper;
+
+// phpcs:disable Magento2.Templates.ThisInTemplate.FoundHelper
+
+/** @var Escaper $escaper */
+/** @var Gender $block */
+
+?>
+<div class="field field-reserved floating-labels gender<?= $block->isRequired() ? ' required' : ''?> mb-8 w-full">
+    <div class="control">
+        <select id="otp_<?= $escaper->escapeHtmlAttr($block->getFieldId('gender')) ?>"
+                name="<?= $escaper->escapeHtmlAttr($block->getFieldName('gender')) ?>"
+                title="<?= $escaper->escapeHtmlAttr($block->getStoreLabel('gender')) ?>"
+                class="form-select peer w-full"
+                @keydown.enter.prevent="submitForm($el.form);"
+                x-model.fill="gender"
+                x-ref="gender"
+            <?php if ($block->isRequired()): ?>:required="isStep('registration')"<?php endif; ?>>
+            <?php $options = $block->getGenderOptions(); ?>
+            <?php $value = $block->getGender(); ?>
+            <?php foreach ($options as $option): ?>
+                <option value="<?= $escaper->escapeHtmlAttr($option->getValue()) ?>"
+                    <?= ($option->getValue() == $value) ? 'selected="selected"' : '' ?>
+                ><?= $escaper->escapeHtml(__($option->getLabel())) ?></option>
+            <?php endforeach;?>
+        </select>
+        <label class="label floating-labels-label"
+               for="<?= $escaper->escapeHtmlAttr($block->getFieldId('gender')) ?>">
+            <?= $escaper->escapeHtml($block->getStoreLabel('gender')) ?>
+        </label>
+    </div>
+</div>

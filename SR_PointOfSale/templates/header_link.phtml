@@ -1,0 +1,27 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\LucideIcons;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Html\Link as Link;
+
+/**
+ * @var ViewModelRegistry $viewModels
+ * @var Link $block
+ * @var Escaper $escaper
+ * @var LucideIcons $lucideIcons
+ */
+
+$lucideIcons = $viewModels->require(LucideIcons::class);
+$class = $escaper->escapeHtmlAttr($block->getData('class'));
+$label = $escaper->escapeHtml($block->getData('label'));
+?>
+
+<a <?= $block->getLinkAttributes() ?> aria-label="<?= $escaper->escapeHtmlAttr($label); ?>">
+    <?= $lucideIcons->mapPinHtml('md:h-6 md:w-6', 24, 24, ["aria-hidden" => "true"]) ?>
+</a>

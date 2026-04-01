@@ -1,0 +1,110 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE.txt for license details.
+ * For more information contact us at dev@studioraz.co.il
+ */
+declare(strict_types=1);
+
+use SR\PointOfSale\Block\Index\PointOfSales;
+use SR\PointOfSale\ViewModel\PointOfSaleViewModel;
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\LucideIcons;
+use Magento\Framework\Escaper;
+
+/** @var PointOfSales $block */
+/** @var PointOfSaleViewModel $pointOfSaleViewModel */
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+/** @var LucideIcons $lucideIcons */
+
+$lucideIcons = $viewModels->require(LucideIcons::class);
+$pointOfSaleViewModel = $block->getData('pointofsale_view_model');
+$collection = $block->getPointOfSaleCollection();
+
+function wrapTextLinesInSpans(string $text): string
+{
+    $lines = explode("\n", trim($text));
+    return implode('', array_map(fn($line) => '<span class="bg-gray-100 py-[4px] px-[6px] mb-[2px] rounded-[8px] text-sm font-normal leading-5 inline-block whitespace-nowrap me-[4px]">' . $line . '</span>', $lines));
+}
+?>
+
+<?php if ($collection->getTotalCount() > 0): ?>
+    <div class="pointofsale-wrapper mb-5">
+        <?php foreach ($collection->getItems() as $pointOfSale): ?>
+            <?php $pointOfSaleViewModel->setPointOfSale($pointOfSale); ?>
+            <ul class="pointofsale-list m-0 first:lg:mt-[28px] mb-[15px] md:mb-[19px] lg:mb-[26px] rounded-[12px] list-none border border-zinc-200">
+                <li class="pointofsale">
+                    <div class="flex justify-between rounded-t-[12px] px-[16px] py-[12px] px-[24px] py-[16px] mb-[14px] bg-gray-100">
+                        <h3 class="title text-xl font-medium leading-7">
+                            <a href="<?= $pointOfSaleViewModel->getUrl() ?>" class="no-underline"><?= $escaper->escapeHtml($pointOfSale->getName()); ?></a>
+                        </h3>
+                    </div>
+                    <ul class="store-info flex text-base md:text-lg mt-[10px] [&>li]:flex-grow max-md:[&>li]:basis-0 [&>li]:mt-0 md:[&>li]:mb-[10px] px-[16px] lg:px-[24px]">
+                        <li class="address lg:basis-[15%]">
+                            <div class="title hidden lg:flex items-center lg:text-lg lg:font-medium lg:leading-7 lg:mb-[6px]">
+                                <a href="<?= $pointOfSaleViewModel->getGoogleMapUrl(); ?>" target="_blank" class="flex items-center">
+                                    <?= $lucideIcons->mapPinHtml('hidden lg:block me-[6px]', 22, 22, ['aria-hidden' => 'true']); ?>
+                                    <?= __('Address')?>
+                                </a>
+                            </div>
+                            <div class="content flex items-center mb-[6px] lg:pe-[6px]">
+                                <?= $lucideIcons->mapPinHtml('block lg:hidden me-[6px]', 18, 18, ['aria-hidden' => 'true']); ?>
+                                <span class="bg-gray-100 py-[4px] px-[6px] rounded-[8px] text-sm font-normal leading-5">
+                                    <?= $escaper->escapeHtml($pointOfSale->getAddress()); ?>, <?= $escaper->escapeHtml($pointOfSale->getCity()); ?>
+                                </span>
+                            </div>
+                            <div class="title hidden"><?= __('Phone')?></div>
+                            <div class="content flex items-center">
+                                <?= $lucideIcons->phoneHtml('block lg:hidden me-[6px]', 18, 18, ['aria-hidden' => 'true']); ?>
+                                <a class="no-underline bg-gray-100 py-[4px] px-[6px] rounded-[8px] text-sm font-normal leading-5 block lg:hidden"
+                                   href="tel:<?= $pointOfSale->getTelephone()?>"
+                                   target="_blank">
+                                    <?= $escaper->escapeHtml($pointOfSale->getTelephone()); ?>
+                                </a>
+                            </div>
+                        </li>
+                        <li class="phone lg:basis-[15%] max-lg:hidden">
+                            <div class="title mb-[7px] lg:mb-[6px] lg:text-lg lg:font-medium lg:leading-7 flex items-center">
+                                <?= $lucideIcons->phoneHtml('hidden lg:block me-[6px]', 22, 23, ['aria-hidden' => 'true']); ?>
+                                <?= __('Phone')?>
+                            </div>
+                            <div class="content">
+                                <a class="no-underline bg-gray-100 py-[4px] px-[6px] rounded-[8px] text-sm font-normal leading-5"
+                                   href="tel:<?= $pointOfSale->getTelephone()?>"
+                                   target="_blank">
+                                    <?= $escaper->escapeHtml($pointOfSale->getTelephone()); ?>
+                                </a>
+                            </div>
+                        </li>
+                        <li class="opening-hours hidden lg:block lg:basis-[35%]">
+                            <div class="title mb-[7px] lg:mb-[6px] text-lg not-italic font-medium leading-7 flex items-center">
+                                <?= $lucideIcons->clockHtml('hidden lg:block me-[6px]', 22, 23, ['aria-hidden' => 'true']); ?>
+                                <?= __('Opening Hours')?>
+                            </div>
+                            <div class="content font-normal">
+                                <?= wrapTextLinesInSpans($escaper->escapeHtml($pointOfSale->getOpeningHours())); ?>
+                            </div>
+                        </li>
+                        <li class="accessibility hidden lg:block lg:basis-[35%]">
+                            <div class="title mb-[6px] text-lg not-italic font-medium leading-7 flex items-center">
+                                <?= $lucideIcons->accessibilityHtml('hidden lg:block me-[6px]', 24, 25, ['aria-hidden' => 'true']); ?>
+                                <?= __('Accessibility')?>
+                            </div>
+                            <div class="content font-normal">
+                                <?= wrapTextLinesInSpans($escaper->escapeHtml($pointOfSale->getAccessibility())); ?>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="flex justify-end items-center px-[16px] pb-[14px] lg:px-[24px] lg:pt-[14px]">
+                        <a href="<?= $pointOfSaleViewModel->getUrl() ?>"
+                           class="no-underline text-sm lg:text-base font-medium inline-flex gap-[6px] items-center justify-between hover:text-primary">
+                            <span><?= __('More Details') ?></span>
+                            <?= $lucideIcons->arrowRightHtml('', 18, 18) ?>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>

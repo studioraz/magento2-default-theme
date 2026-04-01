@@ -1,0 +1,85 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\SvgIcons;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var ViewModelRegistry $viewModels */
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var SvgIcons $icons */
+
+$icons = $viewModels->require(SvgIcons::class);
+?>
+
+<li :id="toast.id"
+    x-data="initToastsItem"
+    x-bind="eventListeners"
+    class="absolute w-full duration-300 ease-out select-none"
+    :class="{ 'toast-no-description': !toast.description }"
+>
+    <span
+        class="message relative w-full transition-all duration-300 ease-out group"
+        :class="{
+            'p-2': !toast.html,
+            'p-0': toast.html,
+            <?php foreach ([
+                'success' => 'success',
+                'info' => 'info',
+                'warning' => 'warning',
+                'danger' => 'error',
+                'default' => 'default bg-gray-100',
+            ] as $messageType => $messageStyle): ?>
+                '<?= $messageStyle ?>': toast.type=='<?= $messageType ?>',
+            <?php endforeach; ?>
+        }"
+    >
+        <?php foreach (['success', 'info', 'warning', 'danger'] as $messageType): ?>
+            <template x-if="toast.type=='<?= $messageType ?>'">
+                <div class="p-1.5">
+                    <?= $icons->renderHtml(
+                        'toast-' . $messageType,
+                        '',
+                        18, 18
+                    ) ?>
+                </div>
+            </template>
+        <?php endforeach; ?>
+        <template x-if="!toast.html">
+            <div class="relative text-center flex-grow">
+                <p class="text-[15px] font-medium leading-none tracking-[0.38px]" x-html="toast.message"></p>
+                <p x-show="toast.description"
+                   :class="{ 'ps-5' : toast.type!='default' }"
+                   class="mt-1.5 text-xs leading-none opacity-70"
+                   x-html="toast.description">
+                </p>
+            </div>
+        </template>
+        <template x-if="toast.html">
+            <div x-html="toast.html" class="flex-grow"></div>
+        </template>
+        <span @click="burnToast(toast.id)"
+              class="p-1.5 rounded-full cursor-pointer hover:bg-gray-50"
+              :class="{
+                  <?php foreach ([
+                      'success' => 'hover:text-[#00ba85]',
+                      'info' => 'hover:text-blue-500',
+                      'warning' => 'hover:text-orange-400',
+                      'danger' => 'hover:text-[#da4343]',
+                      'default' => 'hover:text-gray-800',
+                  ] as $messageType => $messageStyle): ?>
+                   '<?= $messageStyle ?>': toast.type=='<?= $messageType ?>',
+                  <?php endforeach; ?>
+              }"
+        >
+            <?= $icons->renderHtml('toast-close', '', 18, 18) ?>
+        </span>
+    </span>
+</li>

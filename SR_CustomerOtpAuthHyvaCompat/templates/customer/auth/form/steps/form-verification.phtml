@@ -1,0 +1,87 @@
+<?php
+/**
+ * Copyright © 2023 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use SR\CustomerOtpAuth\ViewModel\OtpAuthForm;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ */
+
+/** @var ViewModelRegistry $viewModels */
+/** @var OtpAuthForm $otpAuthForm */
+
+
+$otpAuthForm = $viewModels->require(OtpAuthForm::class);
+$otpValueLength = $otpAuthForm->getOtpValueLength();
+$otpValueLengthPattern = '[0-9]{' . $otpValueLength . '}';
+?>
+
+<fieldset class="fieldset mt-0 flex-grow otp-verification"
+          x-show="isStep('otp')"
+>
+    <legend class="sr-only">
+        <?= $escaper->escapeHtml(__('OTP Verification')) ?>
+    </legend>
+    <div class="flex flex-col h-full">
+        <div class="mt-14 mx-auto px-3 text-center w-[304px] max-w-full">
+            <div class="field field-reserved floating-labels required otp-code mb-8">
+                <div class="control">
+                    <input name="otp[code]"
+                           class="form-input peer w-full"
+                           @keydown.enter.prevent="submitForm($el.form);"
+                           :required="isStep('otp')"
+                           value=""
+                           autocomplete="one-time-code"
+                           id="otp_code"
+                           type="text"
+                           pattern="<?= $escaper->escapeHtmlAttr($otpValueLengthPattern) ?>"
+                           data-msg-pattern="<?= $escaper->escapeHtmlAttr(
+                               __('Please enter %1-digit verification code.', $otpValueLength)
+                           ) ?>"
+                           title="<?= $escaper->escapeHtmlAttr(__('Verification Code')) ?>"
+                           placeholder=" "
+                           x-model="otpCode"
+                           x-ref="otpCode"
+                           data-1p-ignore
+                    />
+                    <label class="label floating-labels-label" for="otp_code">
+                        <span><?= $escaper->escapeHtml(__('Verification Code')) ?></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-7 mt-[26px]">
+                <button type="submit" class="btn btn-primary disabled:opacity-75">
+                    <?= $escaper->escapeHtml(__('Verify Code')) ?>
+                </button>
+            </div>
+
+            <div class="mb-2 text-[15px]">
+                <span class="text-gray-600"><?= __('Didn’t get the code?') ?></span>
+                <button type="button"
+                        class="text-primary font-medium hover:underline"
+                        @click="resendCode()">
+                    <?= $escaper->escapeHtml(__('send it to me again')) ?>
+                </button>
+            </div>
+
+            <div class="mb-2 text-[15px]">
+                <span class="text-gray-600"><?= $escaper->escapeHtml(__('Have you entered wrong number?')) ?></span>
+                <button type="button"
+                        class="text-primary font-medium hover:underline"
+                        @click="editPhoneNumber()">
+                    <?= $escaper->escapeHtml(__('start over')) ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</fieldset>
+

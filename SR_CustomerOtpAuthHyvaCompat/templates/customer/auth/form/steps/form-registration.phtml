@@ -1,0 +1,176 @@
+<?php
+/**
+ * Copyright © 2023 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use SR\CustomerOtpAuth\ViewModel\OtpAuthForm;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ * @var OtpAuthForm $otpViewModel
+ */
+
+/** @var ViewModelRegistry $viewModels */
+
+$formData = $block->getFormData();
+$otpViewModel = $viewModels->require(OtpAuthForm::class);
+$enableConsent = $otpViewModel->getOtpEnableConsentCheckbox();
+$consentCheckboxLabel = $otpViewModel->getOtpConsentCheckboxLabel();
+?>
+
+<fieldset class="fieldset mt-0 flex-grow otp-registration"
+          x-show="isStep('registration')"
+>
+    <legend class="sr-only">
+        <?= $escaper->escapeHtml(__('OTP Registration')) ?>
+    </legend>
+    <div class="flex flex-col h-full">
+        <p class="pt-10 mx-auto max-w-[295px] text-[15px] text-gray-600 text-center">
+            <?= $escaper->escapeHtml(
+                __('Please fill in your personal details to complete the sign-up')
+            ) ?>
+        </p>
+        <div class="mt-7 mx-auto px-3 w-[304px] max-w-full">
+            <div class="field field-reserved floating-labels mb-8 w-full phone-number-display required">
+                <div class="control">
+                    <input name="otp[phone_number_display]"
+                           class="form-input peer w-full disabled:bg-gray-100 disabled:border-gray-300 disabled:text-gray-900 disabled:cursor-not-allowed"
+                           id="otp_phone_number_display"
+                           type="tel"
+                           title="<?= $escaper->escapeHtmlAttr(__('Phone Number')) ?>"
+                           placeholder=" "
+                           :value="phoneNumber"
+                           form=""
+                           disabled
+                           readonly
+                    />
+                    <label class="label floating-labels-label" for="otp_phone_number_display">
+                        <span><?= $escaper->escapeHtml(__('Phone Number')) ?></span>
+                    </label>
+                </div>
+            </div>
+            <div class="field field-reserved floating-labels mb-8 w-full first-name required">
+                <div class="control">
+                    <input name="otp[first_name]"
+                           class="form-input peer w-full"
+                           @keydown.enter.prevent="submitForm($el.form);"
+                           :required="isStep('registration')"
+                           autocomplete="off"
+                           id="otp_first_name"
+                           type="text"
+                           title="<?= $escaper->escapeHtmlAttr(__('First Name')) ?>"
+                           placeholder=" "
+                           x-model="firstName"
+                           x-ref="firstName"
+                           x-focus-first
+                           data-1p-ignore
+                    />
+                    <label class="label floating-labels-label" for="otp_first_name">
+                        <span><?= $escaper->escapeHtml(__('First Name')) ?></span>
+                    </label>
+                </div>
+            </div>
+            <div class="field field-reserved floating-labels mb-8 w-full last-name required">
+                <div class="control">
+                    <input name="otp[last_name]"
+                           class="form-input peer w-full"
+                           @keydown.enter.prevent="submitForm($el.form);"
+                           :required="isStep('registration')"
+                           autocomplete="off"
+                           id="otp_last_name"
+                           type="text"
+                           title="<?= $escaper->escapeHtmlAttr(__('Last Name')) ?>"
+                           placeholder=" "
+                           x-model="lastName"
+                           x-ref="lastName"
+                           data-1p-ignore
+                    />
+                    <label class="label floating-labels-label" for="otp_last_name">
+                        <span><?= $escaper->escapeHtml(__('Last Name')) ?></span>
+                    </label>
+                </div>
+            </div>
+            <div class="field field-reserved floating-labels mb-8 w-full email required">
+                <div class="control">
+                    <input name="otp[email]"
+                           class="form-input peer w-full"
+                           @keydown.enter.prevent="submitForm($el.form);"
+                           :required="isStep('registration')"
+                           autocomplete="off"
+                           id="otp_email"
+                           type="email"
+                           title="<?= $escaper->escapeHtmlAttr(__('Email')) ?>"
+                           placeholder=" "
+                           x-model="email"
+                           x-ref="email"
+                           data-1p-ignore
+                    />
+                    <label class="label floating-labels-label" for="otp_email">
+                        <span><?= $escaper->escapeHtml(__('Email')) ?></span>
+                    </label>
+                </div>
+            </div>
+
+            <?php $dob = $block->getChildBlock('dob') ?>
+            <?php if ($dob->isEnabled()): ?>
+                <?= $dob->setDate($block->getFormData()->getDob())->toHtml() ?>
+            <?php endif ?>
+
+            <?php $taxvat = $block->getChildBlock('taxvat') ?>
+            <?php if ($taxvat->isEnabled()): ?>
+                <?= $taxvat->setTaxvat($block->getFormData()->getTaxvat())->toHtml() ?>
+            <?php endif ?>
+
+            <?php $gender = $block->getChildBlock('gender') ?>
+            <?php if ($gender->isEnabled()): ?>
+                <?= $gender->setGender($block->getFormData()->getGender())->toHtml() ?>
+            <?php endif ?>
+
+            <?= $block->getChildHtml('fieldset_create_info_additional') ?>
+
+            <div class="field field-reserved mb-8 w-full choice newsletter !items-start">
+                <div class="text-[0] mt-1">
+                    <input type="checkbox"
+                           name="is_subscribed"
+                           title="<?= __('I give my consent to receive marketing emails and SMSs') ?>"
+                           value="1"
+                           id="otp_is_subscribed"
+                           class="checkbox"
+                           checked
+                    />
+                </div>
+                <label for="otp_is_subscribed" class="label mb-1 text-sm text-gray-900">
+                    <span><?= __('I give my consent to receive marketing emails and SMSs') ?></span>
+                </label>
+            </div>
+
+            <?php if($enableConsent): ?>
+                <div class="field field-reserved required !mt-4 mb-8 w-full choice consent !grid grid-cols-[auto_1fr]">
+                    <div class="text-[0] row-start-1 row-end-1 col-start-1 col-end-1">
+                        <input type="checkbox"
+                               name="is_consented"
+                               title="<?= $escaper->escapeHtmlAttr(strip_tags($consentCheckboxLabel)) ?>"
+                               value="1"
+                               id="otp_is_consented"
+                               class="checkbox !me-3"
+                               required
+                        />
+                    </div>
+                    <label for="otp_is_consented" class="label mb-1 text-sm text-gray-900   row-start-1 row-end-2 col-start-2 col-end-3">
+                        <span><?= html_entity_decode($consentCheckboxLabel) ?></span>
+                    </label>
+                </div>
+            <?php endif ?>
+
+            <button type="submit" class="btn btn-primary mt-7">
+                <?= $escaper->escapeHtml(__('Sign Up')) ?>
+            </button>
+        </div>
+    </div>
+</fieldset>

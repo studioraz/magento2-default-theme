@@ -1,0 +1,113 @@
+<?php
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\LucideIcons;
+use Magento\Framework\Escaper;
+use Snowdog\Menu\Block\Menu;
+
+/** @var Menu $block */
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+
+/** @var LucideIcons $lucideIcons */
+$lucideIcons = $viewModels->require(LucideIcons::class);
+
+$menu = $block->getMenu();
+$uniqueId = '_' . uniqid();
+?>
+
+<?php if ($menu): ?>
+    <script>
+        'use strict';
+
+        const initTopmenuDesktop<?= $escaper->escapeHtml($uniqueId) ?> = () => ({
+            openSubmenuId: null,
+            backdropTop: 0,
+            init() {
+                const element = this.$el;
+                const rect = element.getBoundingClientRect();
+                this.backdropTop = rect.top + element.offsetHeight;
+            },
+            toggleSubmenu(show, menuNode) {
+                if (show === false || menuNode === this.openSubmenuId) {
+                    this.openSubmenuId = null;
+                    hyva.releaseFocus();
+                } else {
+                    this.openSubmenuId = menuNode;
+                }
+            },
+            onSubmenuEscape(event) {
+                event.stopPropagation()
+                this.$refs['sr-button-' + this.openSubmenuId]?.focus()
+                this.toggleSubmenu(false);
+            },
+            isSubmenuOpened(node) {
+                return this.openSubmenuId === node;
+            },
+            backdropPosition() {
+                return 'top: ' + this.backdropTop + 'px;';
+            }
+        })
+    </script>
+
+    <div x-data="initTopmenuDesktop<?= $escaper->escapeHtml($uniqueId) ?>()"
+         class="navigation hidden w-full lg:block border-b border-b-slate-100 <?= $escaper->escapeHtmlAttr($menu->getCssClass()) ?>"
+    >
+        <nav
+            class="snowdog-topmenu-desktop container lg:block"
+            aria-label="<?= $escaper->escapeHtmlAttr(__('Main menu')) ?>"
+        >
+            <div class="absolute bottom-0 left-0 right-0 bg-[var(--backdrop,hsl(0_0%_0%_/_20%))] shadow-lg z-10"
+                 :style="backdropPosition()"
+                 x-show="openSubmenuId !== null"
+                 x-transition:enter="transition ease-in duration-300 delay-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-cloak
+            ></div>
+
+            <ul class="menu-list menu-list-level-0 relative flex justify-between h-14">
+                <?php foreach ($block->getNodes() as $node): ?>
+                    <?php
+                    $childrenLevel = $node->getLevel() + 1;
+                    $children = $block->getNodes($childrenLevel, $node);
+                    $node->setIsParent((bool)$children);
+                    $additionalClasses = $node->getClasses() ? ' ' . $node->getClasses() : '';
+                    $nodeId = (string)$node->getId();
+                    $title = $node->getTitle();
+                    $nodeType = $node->getType();
+                    $nodeClasses = $node->getClasses();
+                    ?>
+                    <li class="menu-list-item menu-list-item-level-0 flex items-center justify-between px-3 first:ps-0 last:pe-0 <?= $escaper->escapeHtmlAttr($nodeClasses) ?>"
+                        @mouseenter="toggleSubmenu(true, '<?= $nodeId ?>')"
+                        @mouseleave="toggleSubmenu(false)"
+                        @keydown.escape="onSubmenuEscape"
+                    >
+                        <?= $block->renderMenuNode($node) ?>
+                        <?php if ($children): ?>
+                            <div class="relative">
+                                <button
+                                    type="button"
+                                    class="flex items-center ms-2 transition-transform duration-300"
+                                    :class="{
+                                        'rotate-180 text-primary': isSubmenuOpened('<?= $nodeId ?>')
+                                    }"
+                                    x-ref="sr-button-<?= $nodeId ?>"
+                                    :aria-expanded="isSubmenuOpened('<?= $nodeId ?>')"
+                                    @click="toggleSubmenu('<?= $nodeId ?>')"
+                                >
+                                    <?= $lucideIcons->renderHtml('chevron-down', '', 20, 20, ['aria-hidden' => 'true']) ?>
+                                    <span class="sr-only">
+                                        <?= $escaper->escapeHtml(__('Toggle submenu for %1', $title)) ?>
+                                    </span>
+                                </button>
+                            </div>
+                        <?php endif; ?>
+                        <?= /* @noEscape */
+                        $block->renderSubmenu($children, $node, $childrenLevel) ?>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </nav>
+    </div>
+<?php endif; ?>

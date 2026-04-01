@@ -1,0 +1,19 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+/**
+ * @var $block \Magenerds\BasePrice\Block\AfterPrice
+ */
+?>
+<?php if ($block->isEnabled()): ?>
+    <div class="baseprice text-xs text-slate-400 leading-[16px]">
+        <?php echo $block->getBasePrice() ?>
+    </div>
+<?php else: ?>
+    <div class="baseprice text-xs leading-[16px]"></div>
+<?php endif; ?>

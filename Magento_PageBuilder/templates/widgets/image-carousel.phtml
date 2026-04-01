@@ -1,0 +1,28 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Hyva\Theme\Model\ViewModelRegistry;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+
+$requestUri = $block->getRequest()->getRequestUri();
+$isAdminPreview = strpos($requestUri, 'pagebuilder/stage/preview') !== false;
+
+if ($isAdminPreview) {
+    echo $block->getLayout()
+            ->createBlock(Template::class)
+            ->setTemplate('Magento_PageBuilder::swiper/init.phtml')
+            ->setData('view_models', $viewModels)
+            ->setData('force_load', true)
+            ->toHtml();
+}
+?>

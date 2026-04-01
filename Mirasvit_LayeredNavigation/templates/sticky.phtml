@@ -1,0 +1,62 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+/**
+ * @var $block \Mirasvit\LayeredNavigation\Block\StickySidebar
+ */
+?>
+
+<?php if ($block->isStickySidebar()): ?>
+    <script>
+        function initStickySidebar() {
+            const sidebarMain = document.querySelector('.sidebar.sidebar-main');
+            if (!sidebarMain) return;
+
+            const filterContent = sidebarMain.querySelector('.filter-content');
+            const STICKY_CLASSES = ["sticky", "top-4", "z-10", "bg-white", "overflow-auto", "border", "rounded-sm"];
+            const OFFSET_PX = 32;
+            const mq = window.matchMedia('(min-width: 748px)');
+
+            const setSticky = (enabled) => {
+                STICKY_CLASSES.forEach(c => sidebarMain.classList.toggle(c, enabled));
+                sidebarMain.style.maxHeight = enabled ? `calc(100vh - ${OFFSET_PX}px)` : '';
+                if (filterContent) {
+                    // remove border/rounding only when sticky is enabled
+                    filterContent.classList.toggle('border', !enabled);
+                    filterContent.classList.toggle('rounded-sm', !enabled);
+                }
+            };
+
+            // initial apply
+            setSticky(mq.matches);
+
+            // react to breakpoint flips
+            const onChange = (e) => setSticky(e.matches);
+            mq.addEventListener('change', onChange);
+
+            // clean up on page hide (avoid leaks if this runs in partial navigations)
+            window.addEventListener('pagehide', () => {
+                mq.removeEventListener('change', onChange);
+            }, {once: true});
+        }
+    </script>
+
+    <style>
+        /* Cross-browser hidden scrollbar while keeping scrollability */
+        .sidebar-main {
+            -ms-overflow-style: none; /* IE/Edge legacy */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .sidebar-main::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Chromium/WebKit */
+    </style>
+<?php endif ?>

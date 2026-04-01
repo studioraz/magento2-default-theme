@@ -1,0 +1,28 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Hyva\PaymentIcons\ViewModel\PaymentIconsLight;
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+/** @var PaymentIconsLight $paymentIcons */
+
+$paymentIcons = $viewModels->require(PaymentIconsLight::class);
+?>
+
+<div class="text-center flex md:gap-4 flex-wrap justify-center mb-0">
+    <?= $paymentIcons->googlePayHtml('max-md:mx-2 max-md:mb-4', 48, 32) ?>
+    <?= $paymentIcons->applePayHtml('max-md:mx-2 max-md:mb-4', 48, 32) ?>
+    <?= $paymentIcons->mastercardHtml('max-md:mx-2 max-md:mb-4', 48, 32) ?>
+    <?= $paymentIcons->visaHtml('max-md:mx-2 max-md:mb-4', 48, 32) ?>
+    <?= $paymentIcons->americanExpressHtml('max-md:mx-2 max-md:mb-4', 48, 32) ?>
+</div>

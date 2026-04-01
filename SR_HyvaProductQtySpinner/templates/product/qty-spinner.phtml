@@ -1,0 +1,99 @@
+<?php
+/**
+ * Copyright © 2023 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\HeroiconsOutline;
+use Hyva\Theme\ViewModel\SvgIcons;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use SR\HyvaProductQtySpinner\ViewModel\ProductQtySpinner;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+/** @var HeroiconsOutline $heroIcons */
+/** @var SvgIcons $icons */
+/** @var ProductQtySpinner $productQtySpinner */
+
+$uniqId = uniqid();
+
+$icons = $viewModels->require(SvgIcons::class);
+$heroIcons = $viewModels->require(HeroiconsOutline::class);
+$productQtySpinner = $viewModels->require(ProductQtySpinner::class);
+
+$product = $block->getData('product');
+
+$productQtySpinner->setProduct($product);
+
+$productMaxQty = $productQtySpinner->getMaxQty();
+
+$blockCss = $productQtySpinner->getCssClass($block, 'block_css',
+    'qty-spinner-block relative flex flex-row items-center justify-between overflow-hidden border border-[#888787] bg-white', 'rounded-[14px] lg:rounded-[20px]');
+$buttonsCss = $productQtySpinner->getCssClass($block, 'buttons_css',
+    'qty-spinner-button max-w-[36px] lg:max-w-[80px] h-[26px] lg:h-[38px] px-2 flex shrink-0 grow justify-center items-center enabled:cursor-pointer outline-none hover:enabled:bg-gray-200');
+$buttonsSymbolCss = $productQtySpinner->getCssClass($block, 'buttons_symbol_css',
+    'w-4 h-4 lg:w-5 lg:h-5 text-black');
+$inputCss = $productQtySpinner->getCssClass($block, 'input_css',
+    'no-spinner w-[33px] h-[19px] lg:w-[60px] lg:h-[30px] mx-1 sm:mx-2 lg:mx-3 p-0 rounded-md text-[13px] lg:text-base text-center text-black bg-gray-200 border-none shadow-none');
+$loaderCss = $productQtySpinner->getCssClass($block, 'loader_css',
+    'h-full w-auto');
+
+try {
+    $loaderHtml = $icons->spinnerHtml($loaderCss);
+} catch (\Exception $e) {
+    $loaderHtml = $heroIcons->refreshHtml($loaderCss);
+}
+?>
+
+<div class="<?= $blockCss ?>">
+    <button type="button"
+            class="<?= $buttonsCss ?>"
+            :class="{
+                'disabled:cursor-not-allowed': isDecrementDisabled && !isRequestInProgress,
+                'disabled:cursor-wait': isRequestInProgress,
+            }"
+            @click="decrement()"
+            :disabled="isDecrementDisabled()"
+    >
+        <?= $heroIcons->minusHtml($buttonsSymbolCss); ?>
+    </button>
+
+    <input name="item[<?= $escaper->escapeHtmlAttr($product->getId()) ?>][qty][<?= $uniqId ?>]"
+           type="number"
+           inputmode="decimal"
+           size="4"
+           title="<?= $escaper->escapeHtmlAttr(__('Qty')) ?>"
+           class="<?= $inputCss ?>"
+           min="0"
+            <?php if ($productMaxQty): ?>
+           max="<?= $productMaxQty ?>"
+            <?php endif; ?>
+           @blur="onBlur"
+           @keydown="onKeyDown"
+           @keydown.prevent.enter=""
+           @input.debounce.750="onInput"
+           :value="qty"
+           :disabled="isDisabled"
+    />
+
+    <button type="button"
+            class="<?= $buttonsCss ?>"
+            :class="{
+                'disabled:cursor-not-allowed': isIncrementDisabled && !isRequestInProgress,
+                'disabled:cursor-wait': isRequestInProgress,
+            }"
+            @click="increment()"
+            :disabled="isIncrementDisabled()"
+    >
+        <?= $heroIcons->plusHtml($buttonsSymbolCss); ?>
+    </button>
+
+    <div class="absolute inset-0 flex justify-center items-center text-primary-darker bg-white/75 shadow-[0_0_3px_2px_#fff]"
+         :class="{'invisible': !isDisabled}">
+        <?= $loaderHtml ?>
+    </div>
+</div>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <move element="m.horizontal.navigation.container" destination="product_list_toolbar"/>
+        <block name="catalog.leftnav.wrapper" template="Magento_LayeredNavigation::layer/wrapper.phtml">
+            <block name="clear.all.leftnav"
+                   class="Mirasvit\LayeredNavigation\Block\Navigation\State"
+                   template="Magento_LayeredNavigation::layer/clear-all.phtml"
+                   after="-"/>
+        </block>
+    </body>
+</page>

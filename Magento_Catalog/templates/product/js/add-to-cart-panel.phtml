@@ -1,0 +1,73 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Catalog\Block\Product\View;
+
+/**
+ * @var View $block
+ * @var Escaper $escaper
+ * @var Product $product
+ */
+?>
+
+<?php if ($product->isSaleable()): ?>
+    <script>
+        function initStickyAddToCartPanel() {
+            return {
+                isSticky: false,
+                $footer: document.querySelector('.page-footer'),
+                staticAddToCart: document.querySelector('.static-add-to-cart'),
+                fixedAddToCart: document.querySelector('.fixed-add-to-cart'),
+                cssCompensatorName: '--add-to-cart-panel-height-compensator',
+                refreshState() {
+                    const isStaticVisible = this.staticAddToCart
+                        ? this.isElementPartiallyVisible(this.staticAddToCart)
+                        : false;
+                    const isFooterVisible = this.$footer
+                        ? this.isElementPartiallyVisible(this.$footer)
+                        : false;
+
+                    this.isSticky = !isStaticVisible && !isFooterVisible;
+
+                    /*if (this.isSticky) {
+                        const stickyHeight = this.fixedAddToCart ? this.fixedAddToCart.offsetHeight : 0;
+                        this.$footer.style.setProperty(this.cssCompensatorName, `${stickyHeight}px`);
+                    } else {
+                        this.$footer.style.removeProperty(this.cssCompensatorName);
+                    }*/
+                },
+                isElementPartiallyVisible(el) {
+                    const rect = el.getBoundingClientRect(),
+                        isInViewport = (
+                            rect.bottom > 0 &&
+                            rect.right > 0 &&
+                            rect.top < window.innerHeight &&
+                            rect.left < window.innerWidth
+                        );
+
+                    if (!isInViewport) {
+                        return false;
+                    }
+
+                    const points = [
+                        {x: rect.left + 1, y: rect.top + 1},
+                        {x: rect.right - 1, y: rect.top + 1},
+                        {x: rect.left + 1, y: rect.bottom - 1},
+                        {x: rect.right - 1, y: rect.bottom - 1},
+                        {x: rect.left + rect.width / 2, y: rect.top + rect.height / 2},
+                    ];
+
+                    return points.some(point => {
+                        const topmostElement = document.elementFromPoint(point.x, point.y);
+                        return el.contains(topmostElement) || topmostElement === el;
+                    });
+                }
+            }
+        }
+    </script>
+<?php endif; ?>

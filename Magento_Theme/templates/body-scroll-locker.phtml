@@ -1,0 +1,40 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var ViewModelRegistry $viewModels */
+/** @var Template $block */
+/** @var Escaper $escaper */
+?>
+
+<script>
+    function initScrollLocker() {
+        return {
+            isLocked: false,
+            lockersPool: [],
+
+            eventListeners: {
+                ['@lock-scrollbar.window'](event) {
+                    this.lockersPool.push(event.detail.name);
+                    this.refresh();
+                },
+                ['@release-scrollbar.window'](event) {
+                    this.lockersPool = this.lockersPool.filter((name) => name !== event.detail.name);
+                    this.refresh();
+                }
+            },
+
+            refresh() {
+                this.isLocked = this.lockersPool.length;
+            }
+        }
+    }
+</script>

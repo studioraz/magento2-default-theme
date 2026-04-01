@@ -1,0 +1,50 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Catalog\Block\Product\View;
+use SR\HyvaDeliveryInfo\ViewModel\DeliveryInfo;
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\LucideIcons;
+
+/**
+ * @var Escaper $escaper
+ * @var View $block
+ * @var DeliveryInfo $deliveryInfo
+ * @var ViewModelRegistry $viewModels
+ * @var LucideIcons $lucideIcons
+ */
+$deliveryInfo = $block->getData('srDeliveryInfo');
+$lucideIcons = $viewModels->require(LucideIcons::class);
+?>
+<?php if ($deliveryData = $deliveryInfo->getDeliveryInfo()) : ?>
+    <div class="delivery-wrapper border-t border-zinc-200 mt-5 pt-5">
+        <h3 class="mb-2 font-semibold text-base"><?= $escaper->escapeHtml(__('Pickup and delivery options:')); ?></h3>
+        <?php foreach ($deliveryData as $shipping) : ?>
+            <div class="product-delivery-info mb-2 flex items-center">
+                <div class="flex items-center gap-1">
+                    <?php if (!empty($shipping['icon'])) : ?>
+                        <img src="<?= $escaper->escapeUrl($shipping['icon']); ?>"
+                             alt="<?= $escaper->escapeHtmlAttr($shipping['title']); ?>" />
+                        <?php endif; ?>
+                    <span class="font-medium text-sm"><?= $escaper->escapeHtml($shipping['title']); ?> - </span>
+                    <div class="text-sm"><?= $escaper->escapeHtml($shipping['name']); ?></div>
+                    <?php if (!empty($shipping['rate'])) : ?>
+                        <div class="text-slate-800 text-sm">-&nbsp;<?= $escaper->escapeHtml($shipping['rate']); ?></div>
+                    <?php endif; ?>
+                </div>
+                <?php if (!empty($shipping['description'])) : ?>
+                    <span x-data="{ tooltip: '<?= $escaper->escapeHtml($shipping['description']); ?>' }" class="h-[16px] ms-2">
+                        <span class="studioraz-tooltip h-[16px]" x-tooltip="tooltip">
+                            <?= $lucideIcons->infoHtml('', 16, 16, ['aria-hidden' => 'true']); ?>
+                        </span>
+                    </span>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>

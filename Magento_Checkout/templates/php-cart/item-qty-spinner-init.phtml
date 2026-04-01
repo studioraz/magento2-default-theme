@@ -1,0 +1,50 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+?>
+
+<script>
+    function initCartItemQtySpinner(qty, itemId, productQtyConfig) {
+        return {
+            ...productQtySpinnerUiAbstract(),
+
+            qty: qty,
+            qtyConfig: productQtyConfig,
+            lastValidQty: qty,
+            step: productQtyConfig.qtyIncrements || 1,
+            init() {
+                this.spinnerActions = new ProductQtySpinnerActions(this.$dispatch);
+                this.spinnerValidator = new ProductQtySpinnerValidator(this.qtyConfig);
+
+                this.spinnerActions.setItemId(itemId);
+            },
+            makeChangeQtyRequest() {
+                this.setSpinnerState(true);
+
+                hyva.postCart(document.querySelector('#form-validate'))
+                    .then(response => {
+                        setTimeout(() => {
+                            typeof window.dispatchMessages !== 'undefined' && window.dispatchMessages(
+                                [{
+                                    type: 'success',
+                                    text: '<?= $escaper->escapeJs(__('Cart updated successfully.')) ?>'
+                                }], 10000
+                            );
+                        }, 0);
+                    });
+            },
+        };
+    }
+</script>

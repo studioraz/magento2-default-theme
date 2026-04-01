@@ -1,0 +1,40 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+/** @var \Mirasvit\LayeredNavigation\Block\Ajax $block */
+
+if (!$block->isAjaxEnabled()) {
+    return '';
+}
+?>
+
+<script>
+    function initDefaultAjaxToolbar () {
+        const toolbars = document.querySelectorAll('.toolbar.toolbar-products');
+
+        // init ajax toolbar
+        toolbars.forEach(function (toolbar) {
+            let xData = toolbar.getAttribute('x-data');
+            xData = '{...' + xData + ', ...initAjaxToolbar()}';
+
+            toolbar.setAttribute('x-data', xData);
+        });
+
+        // init ajax pager
+        let pagerItems = document.querySelectorAll('.toolbar.toolbar-products .pages-items a');
+
+        pagerItems.forEach(function (item) {
+            item.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                initApplier().apply(item.href);
+            });
+        });
+    }
+    initDefaultAjaxToolbar();
+</script>

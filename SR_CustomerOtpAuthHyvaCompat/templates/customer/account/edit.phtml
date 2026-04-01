@@ -1,0 +1,188 @@
+<?php
+/**
+ * Hyvä Themes - https://hyva.io
+ * Copyright © Hyvä Themes 2020-present. All rights reserved.
+ * This product is licensed per Magento install
+ * See https://hyva.io/license
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\LucideIcons;
+use Hyva\Theme\ViewModel\ReCaptcha;
+use Hyva\Theme\ViewModel\StoreConfig;
+use Magento\Customer\Block\Form\Edit as CustomerEdit;
+use Magento\Customer\Block\Widget\Name;
+use Magento\Framework\Escaper;
+use SR\CustomerOtpAuth\Model\Data\CustomerExtraField;
+
+// phpcs:disable Generic.Files.LineLength.TooLong
+
+/** @var CustomerEdit $block */
+/** @var Escaper $escaper */
+/** @var ReCaptcha|null $recaptcha */
+/** @var LucideIcons $lucideIcons */
+/** @var ViewModelRegistry $viewModels */
+
+// Do not replace this with $viewModels->require(ReCaptcha::class); that might break the dependency
+// on the Magento_ReCaptchaCustomer module
+$recaptcha = $block->getData('viewModelRecaptcha');
+$lucideIcons = $viewModels->require(LucideIcons::class);
+
+?>
+<form class="form form-edit-account max-w-[600px]"
+      action="<?= $escaper->escapeUrl($block->getUrl('customer/account/editPost')) ?>"
+      method="post" id="form-validate"
+      enctype="multipart/form-data"
+      x-data="Object.assign(hyva.formValidation($el), initForm())"
+      @submit.prevent="submitForm"
+      autocomplete="off">
+    <fieldset class="fieldset info">
+        <?= $block->getBlockHtml('formkey') ?>
+        <legend class="legend"><span><?= $escaper->escapeHtml(__('Account Information')) ?></span></legend>
+        <br>
+        <div class="md:grid grid-cols-2 gap-4">
+            <div class="field field-reserved floating-labels w-full field-mobile-phone required">
+                <div class="control">
+                    <input
+                        type="text"
+                        id="mobile_phone"
+                        name="mobile_phone"
+                        value="<?= $block->getCustomer()
+                            ->getCustomAttribute(CustomerExtraField::MOBILE_PHONE)
+                            ->getValue() ?>"
+                        required
+                        readonly
+                        title="<?= __('Mobile Phone'); ?>"
+                        placeholder=" "
+                        class="form-input required-entry peer bg-gray-100 border-gray-300 text-gray-900 cursor-not-allowed pointer-events-none"
+                        tabindex="-1"
+                    />
+                    <label class="label floating-labels-label" for="mobile_phone">
+                        <span><?= __('Mobile Phone'); ?></span>
+                    </label>
+                </div>
+            </div>
+            <?= $block->getLayout()->createBlock(Name::class)->setObject($block->getCustomer())->toHtml() ?>
+            <?php $dob = $block->getLayout()->createBlock(\Magento\Customer\Block\Widget\Dob::class) ?>
+            <?php $taxvat = $block->getLayout()->createBlock(\Magento\Customer\Block\Widget\Taxvat::class) ?>
+            <?php $gender = $block->getLayout()->createBlock(\Magento\Customer\Block\Widget\Gender::class) ?>
+            <?php if ($dob->isEnabled()): ?>
+                <?= $dob->setDate($block->getCustomer()->getDob())->toHtml() ?>
+            <?php endif ?>
+            <?php if ($taxvat->isEnabled()): ?>
+                <?= $taxvat->setTaxvat($block->getCustomer()->getTaxvat())->toHtml() ?>
+            <?php endif ?>
+            <?php if ($gender->isEnabled()): ?>
+                <?= $gender->setGender($block->getCustomer()->getGender())->toHtml() ?>
+            <?php endif ?>
+        </div>
+
+        <div class="field choice">
+            <input
+                type="checkbox"
+                role="switch"
+                name="change_email"
+                id="change-email"
+                value="1"
+                title="<?= $escaper->escapeHtmlAttr(__('Change Email')) ?>"
+                @change="handleCheckboxChange('email-fields')"
+                class="checkbox"
+                aria-describedby="change_email_description"
+            >
+            <label class="label" for="change-email">
+                <span><?= $escaper->escapeHtml(__('Change Email')) ?></span>
+            </label>
+            <span class="sr-only" id="change_email_description"><?= $escaper->escapeHtml(__('form appears when field is selected')) ?></span>
+        </div>
+
+        <template x-if="showEmailField">
+            <div
+                class="field field-reserved floating-labels email required md:w-[calc(50%_-_calc(var(--spacing)_*_2))]"
+                id="email-fields"
+            >
+                <div class="control">
+                    <input type="email"
+                           name="email"
+                           id="email"
+                           autocomplete="email"
+                           required
+                           value="<?= $escaper->escapeHtmlAttr($block->getCustomer()->getEmail()) ?>"
+                           title="<?= $escaper->escapeHtmlAttr(__('Email')) ?>"
+                           placeholder=" "
+                           class="form-input peer">
+                    <label class="label floating-labels-label" for="email">
+                        <span><?= $escaper->escapeHtml(__('Email')) ?></span>
+                    </label>
+                </div>
+            </div>
+        </template>
+
+        <?= $block->getChildHtml('fieldset_edit_info_additional') ?>
+    </fieldset>
+    <?= $block->getChildHtml('form_additional_info') ?>
+    <?= $recaptcha ? $recaptcha->getInputHtml(ReCaptcha::RECAPTCHA_FORM_ID_CUSTOMER_EDIT) : '' ?>
+    <div class="actions-toolbar">
+        <div class="primary">
+            <button type="submit" class="action save primary btn btn-primary" title="<?= $escaper->escapeHtmlAttr(__('Save')) ?>">
+                <span><?= $escaper->escapeHtml(__('Save')) ?></span>
+            </button>
+        </div>
+        <div class="secondary">
+            <a class="action back" href="<?= $escaper->escapeUrl($block->getBackUrl()) ?>">
+                <span><?= $escaper->escapeHtml(__('Go back')) ?></span>
+            </a>
+        </div>
+    </div>
+</form>
+<div class="w-full">
+    <?= $recaptcha ? $recaptcha->getLegalNoticeHtml(ReCaptcha::RECAPTCHA_FORM_ID_CUSTOMER_EDIT) : '' ?>
+</div>
+<script>
+    function initForm() {
+        return {
+            errors: 0,
+            hasCaptchaToken: 0,
+            displayErrorMessage: false,
+            errorMessages: [],
+            showEmailField: false,
+            setErrorMessages(messages) {
+                this.errorMessages = [messages]
+                this.displayErrorMessage = this.errorMessages.length
+            },
+            submitForm() {
+                this.validate()
+                    .then(() => {
+                        // Do not rename $form, the variable is expected to be declared in the recaptcha output
+                        const $form = document.querySelector('#form-validate');
+                        <?= $recaptcha ? $recaptcha->getValidationJsHtml(ReCaptcha::RECAPTCHA_FORM_ID_CUSTOMER_EDIT) : '' ?>
+
+                        if (this.errors === 0) {
+                            $form.submit();
+                        }
+                    })
+                    .catch((invalid) => {
+                        if (invalid.length > 0) {
+                            invalid[0].focus();
+                        }
+                    })
+            },
+            handleCheckboxChange(checkboxId) {
+                if(checkboxId === 'email-fields') {
+                    this.showEmailField = !this.showEmailField
+                }
+
+                this.$nextTick(() => {
+                    const firstFocusableElement = document.querySelector(`
+                        #${checkboxId} input,
+                        #${checkboxId} textarea,
+                        #${checkboxId} select
+                    `)
+
+                    firstFocusableElement && firstFocusableElement.focus()
+                })
+            }
+        }
+    }
+</script>

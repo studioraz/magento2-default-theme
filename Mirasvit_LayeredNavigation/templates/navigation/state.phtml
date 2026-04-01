@@ -1,0 +1,57 @@
+<?php
+/**
+ * @var $block \Mirasvit\LayeredNavigation\Block\Navigation\State
+ */
+
+$filters = $block->getActiveFilters();
+?>
+<?php if (!empty($filters)): ?>
+    <div class="filter-current mb-5 lg:mb-6 <?= $block->isHorizontalFilter() ? 'w-full' : '' ?>" data-mst-nav-part="state" x-data="initLabelRenderer()">
+
+        <ol class="items <?= $block->isHorizontalFilter() ? 'flex flex-wrap items-center gap-4' : '' ?>">
+
+            <?php foreach ($filters as $filter): ?>
+                <?php
+                $clearLinkUrl = $filter->getClearLinkUrl();
+                $filterName   = __($filter->getName());
+                $filterLabel  = __($block->stripTags($filter->getLabel()));
+                ?>
+                <li class="item mst-nav__state-filter cursor-pointer overflow-hidden text-ellipsis px-3 py-2 relative flex items-center gap-2 bg-slate-100 rounded-md border border-primary text-sm leading-5 text-slate-600<?= !$block->isHorizontalFilter() ? '-ps-5' : '' ?>" data-element="filter" @click="handleClick">
+
+                    <span class="filter-value font-semibold"><?= $filterLabel ?></span>
+
+                    <?php if ($clearLinkUrl): ?>
+                        <a class="action previous" rel="<?= $block->escapeHtmlAttr($block->getRelAttributeValue()) ?>" href="<?= $filter->getRemoveUrl() ?>" title="<?= __('Previous') ?>">
+                            <span>&#10005;</span>
+                        </a>
+
+                        <a class="action remove" rel="<?= $block->escapeHtmlAttr($block->getRelAttributeValue()) ?>"  title="<?= $block->escapeHtml($filter->getFilter()->getClearLinkText()) ?>" href="<?= $clearLinkUrl ?>">
+                            <span>&#10005;</span>
+                        </a>
+                    <?php else: ?>
+                        <a
+                            class="action remove <?= !$block->isHorizontalFilter() ? '-start-1 -top-px' : '' ?>"
+                            href="<?= $filter->getRemoveUrl() ?>"
+                            title="<?= __('Remove %1', $filterLabel) ?>"
+                            rel="<?= $block->escapeHtmlAttr($block->getRelAttributeValue()) ?>"
+                        >
+                            <span>&#10005;</span>
+                        </a>
+                    <?php endif ?>
+                </li>
+            <?php endforeach ?>
+
+            <?php if ($block->isHorizontalFilter()): ?>
+                <li class="item block-actions filter-actions text-sm font-semibold leading-5 text-primary" data-element="filter" @click="handleClick">
+                    <a href="<?= $block->getClearUrl() ?>" class="action clear filter-clear text-xs md:text-sm"><span><?= __('Clear All') ?></span></a>
+                </li>
+            <?php endif ?>
+
+            <?php if (!$block->isHorizontalFilter()): ?>
+                <li class="item block-actions filter-actions font-semibold" data-element="filter" @click="handleClick">
+                    <a href="<?= $block->getClearUrl() ?>" class="action clear filter-clear"><span><?= __('Clear All') ?></span></a>
+                </li>
+            <?php endif ?>
+        </ol>
+    </div>
+<?php endif ?>

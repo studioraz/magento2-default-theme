@@ -1,0 +1,33 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\HeroiconsOutline;
+use Hyva\Theme\ViewModel\SvgIcons;
+use Hyva\Theme\ViewModel\StoreConfig;
+use Magento\Checkout\Block\Cart\Sidebar as SidebarCart;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var ViewModelRegistry $viewModels */
+
+if (!$block->getData('enabled')) {
+    return '';
+}
+
+$_data = [
+    'delay' => $block->getData('delay'),
+    'show_sku' => $block->getData('show_sku'),
+    'display_on_success' => $block->getData('display_on_success'),
+];
+?>
+
+<?= $block->getChildBlock('ui')->setData($_data)->toHtml() ?>
+<?= $block->getChildBlock('logic')->setData($_data)->toHtml() ?>

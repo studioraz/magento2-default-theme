@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <move element="header.link.point.of.sale" destination="header-content"/>
+
+        <referenceBlock name="header.link.point.of.sale">
+            <arguments>
+                <argument name="class" xsi:type="string">point-of-sale-link inline-flex btn bg-transparent border-transparent p-1</argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>

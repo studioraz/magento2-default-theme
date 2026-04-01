@@ -1,0 +1,65 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+/** @var \Mirasvit\LayeredNavigation\Block\Renderer\Element\SearchBoxElement $block */
+if (!$block->isShowSearchBox()) {
+    return;
+}
+$filterAccessor = $block->getFilterAccessor();
+?>
+
+<div class="relative">
+    <input type="text"
+           placeholder="<?= __('Search')?>"
+           data-element="search"
+           x-data="initFilterSearch()"
+           class="w-full form-input py-[10px] ps-[40px] mb-[12px]"
+           @keyup="search"
+           @change="search"
+    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor"  class="absolute top-[12px] w-[20px] h-[20px] start-[14px] text-slate-900">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M8 4C5.79086 4 4 5.79086 4 8C4 10.2091 5.79086 12 8 12C10.2091 12 12 10.2091 12 8C12 5.79086 10.2091 4 8 4ZM2 8C2 4.68629 4.68629 2 8 2C11.3137 2 14 4.68629 14 8C14 9.29583 13.5892 10.4957 12.8907 11.4765L17.7071 16.2929C18.0976 16.6834 18.0976 17.3166 17.7071 17.7071C17.3166 18.0976 16.6834 18.0976 16.2929 17.7071L11.4765 12.8907C10.4957 13.5892 9.29583 14 8 14C4.68629 14 2 11.3137 2 8Z" fill="#BDC0D1"/>
+    </svg>
+</div>
+
+<script>
+    function initFilterSearch() {
+        return {
+            search: function () {
+                getEventManager().triggerEvent(this.$el.closest('.filter-option'), 'showhide'); // communicate with size limiter
+
+                let value = this.$el.value.trim().toLowerCase();
+
+                getEventManager().triggerEvent(this.$el.closest('.filter-option').querySelector('[data-mst-nav-filter]'), 'nested-toggle', {q: value}); // communicate with collapsible categories
+
+                this.$el.parentNode
+                    .querySelectorAll('[data-element = filter]')
+                    .forEach(function (filter) {
+                        if (!filter.getAttribute('data-value')) {
+                            filter.setAttribute('data-search-hidden', !!value);
+                            return;
+                        }
+
+                        let label = filter.tagName === 'A'
+                            ? filter.ariaLabel
+                            : filter.querySelector('a').ariaLabel;
+
+                        if (!label) {
+                            return;
+                        }
+
+                        label = label.trim().toLowerCase();
+
+                        filter.setAttribute('data-search-hidden', label.indexOf(value) < 0 || (value && filter.classList.contains('_disabled')));
+                    }.bind(this));
+
+                getEventManager().triggerEvent(this.$el.closest('.filter-option'), 'alphabetical'); // communicate with alphabetical index
+            },
+        }
+    }
+</script>

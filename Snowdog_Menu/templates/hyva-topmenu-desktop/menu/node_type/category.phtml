@@ -1,0 +1,51 @@
+<?php
+/** @var Category $block */
+
+/** @var Escaper $escaper */
+
+use Magento\Framework\Escaper;
+use Snowdog\Menu\Block\NodeType\Category;
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\LucideIcons;
+
+/** @var ViewModelRegistry $viewModels */
+/** @var LucideIcons $lucideIcons */
+$lucideIcons = $viewModels->require(LucideIcons::class);
+
+?>
+<?php
+$nodeId = $block->getId();
+$categoryUrl = $block->getCategoryUrl($nodeId) ?: '#';
+$imageUrl = $block->getImageUrl();
+$imageAltText = $block->getImageAltText();
+$imageWidth = $block->getImageWidth();
+$imageHeight = $block->getImageHeight();
+$title = $block->getTitle();
+$nodeClasses = $block->getNodeClasses();
+$nodeId = $block->getId();
+$level = (int)$block->getLevel();
+?>
+
+<a href="<?= $escaper->escapeUrl($categoryUrl) ?>"
+   class="snowdog-menu-link flex items-center gap-2 <?= $escaper->escapeHtmlAttr($nodeClasses) ?>"
+   :class="{
+       'text-primary': isSubmenuOpened('<?= $nodeId ?>')
+   }"
+    <?php if ($nodeId): ?>
+        data-menu="menu-<?= $escaper->escapeHtmlAttr($nodeId) ?>"
+    <?php endif; ?>
+>
+    <?php if ($imageUrl): ?>
+        <img class=""
+             src="<?= $escaper->escapeUrl($imageUrl) ?>"
+             alt="<?= $escaper->escapeHtmlAttr($imageAltText) ?>"
+             loading="lazy"
+             width="<?= $escaper->escapeHtmlAttr($imageWidth) ?>"
+             height="<?= $escaper->escapeHtmlAttr($imageHeight) ?>"
+        />
+    <?php endif; ?>
+    <span><?= $escaper->escapeHtml($title) ?></span>
+    <?php if ($level === 2): ?>
+        <?= $lucideIcons->renderHtml('chevron-right', '', 18, 18, ['aria-hidden' => 'true']); ?>
+    <?php endif; ?>
+</a>

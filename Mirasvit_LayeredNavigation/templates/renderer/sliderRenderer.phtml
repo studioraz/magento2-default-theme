@@ -1,0 +1,90 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+/**
+ * @var $block \Mirasvit\LayeredNavigation\Block\Renderer\SliderRenderer
+ */
+
+$attributeCode = $block->getAttributeCode();
+$style         = 'display: none;';
+$sliderData    = $block->getSliderData();
+
+if (!$sliderData) {
+    return;
+}
+
+$initParams = [
+    'paramTemplate' => $block->getSliderParamTemplate(),
+    'urlTemplate'   => $sliderData['url'],
+    'min'           => $sliderData['min'],
+    'max'           => $sliderData['max'],
+    'from'          => (float)$sliderData['from'],
+    'to'            => (float)$sliderData['to'],
+    'valueTemplate' => $block->getValueTemplate(),
+    'separator'     => $block->getSeparator(),
+    'rate'          => $block->getRate(),
+    'step'          => $sliderData['step'] ?? 1,
+];
+?>
+
+<div class="mst-nav__slider"
+     data-mst-nav-filter="<?= $attributeCode ?>"
+     x-data='renderRangeSlider(<?= \Mirasvit\Core\Service\SerializeService::encode($initParams) ?>)'
+     x-init="initSlider"
+>
+    <?php if (!$block->isFromTo()): ?>
+        <div class="mst-nav__slider-text text-center pt-4 font-semibold text-lg leading-7" data-element="text"></div>
+    <?php endif ?>
+
+    <?php if ($block->isSlider()): ?>
+        <div class="ps-[5px] pe-[20px]">
+            <div class="mst-nav__slider-slider my-4" data-element="slider"></div>
+        </div>
+    <?php endif ?>
+
+    <?php if ($block->isFromTo()): ?>
+        <div class="mst-nav__slider-from-to flex items-center justify-between mb-2 mt-6">
+            <input type="number"
+                   class="mst-nav__slider-from form-input w-[45%] py-[10px] px-[14px]"
+                   data-element="from"
+                   placeholder="<?= __('from') ?>"
+                   x-on:blur.change="applyFilter"
+            >
+            <span class="mst-nav__slider-del">-</span>
+            <input type="number"
+                   class="mst-nav__slider-to form-input w-[45%] py-[10px] px-[14px]"
+                   data-element="to"
+                   placeholder="<?= __('to') ?>"
+                   x-on:blur.change="applyFilter"
+            >
+        </div>
+    <?php endif ?>
+</div>
+
+<style>
+    .mst-nav__slider-slider {
+        height: 6px;
+        border: 0;
+    }
+    .mst-nav__slider-slider .noUi-handle {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #E51F26;
+        left: 0;
+        top: -6px;
+        border: 0;
+        box-shadow: unset;
+    }
+    .mst-nav__slider-slider .noUi-handle:before {
+        display: none;
+    }
+    .mst-nav__slider-slider .noUi-handle:after {
+        display: none;
+    }
+</style>

@@ -1,0 +1,38 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+?>
+<section id="messages"
+         x-data="initMessages()"
+         x-bind="eventListeners"
+>
+    <ul x-data="initToasts()"
+        x-bind="eventListeners"
+        x-show="toasts.length > 0"
+        class="messages-wrapper fixed block w-[320px] max-w-[calc(100%-40px)] md:w-[400px] md:max-w-[400px] group z-[99]"
+        role="alert"
+        :class="{
+            'top-0 mt-6': position.includes('top-'),
+            '': position.includes('center-'),
+            'bottom-0 sm:mb-6': position.includes('bottom-'),
+            'start-3': position.includes('-left'),
+            'ltr:right-1/2 ltr:translate-x-1/2 rtl:left-1/2 rtl:-translate-x-1/2': position.includes('-center'),
+            'end-3': position.includes('-right'),
+       }"
+        x-cloak
+    >
+        <template x-for="(toast, index) in toasts" :key="toast.id">
+            <?= $block->getChildHtml('item_markup') ?>
+        </template>
+    </ul>
+</section>

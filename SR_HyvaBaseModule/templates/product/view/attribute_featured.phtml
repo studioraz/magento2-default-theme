@@ -1,0 +1,36 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magento\Catalog\Model\Product;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ * @var Product $product
+ */
+$product = $block->getProduct();
+$viewModel = $block->getData('productAttributes');
+$featuredAttributes = $viewModel->getFeaturedAttributes($product);
+?>
+
+<?php if (!empty($featuredAttributes)): ?>
+    <dl id="product-featured-attributes" class="product-attribute-list">
+        <?php foreach ($featuredAttributes as $attribute): ?>
+            <?php if ($value = $attribute['value'] ?? null): ?>
+                <div class="flex attribute-<?=/* @noEscape */ $attribute['code'] ?: "" ?> text-sm font-normal leading-5">
+                    <dt class="product-detail-label w-1/4 text-start text-slate-500">
+                        <?= $escaper->escapeHtml($attribute['label']) ?>
+                    </dt>
+                    <dd class="product-detail-value w-3/4 ms-2 text-start text-slate-700">
+                        <?= $escaper->escapeHtml($value) ?>
+                    </dd>
+                </div>
+            <?php endif ?>
+        <?php endforeach; ?>
+    </dl>
+<?php endif; ?>

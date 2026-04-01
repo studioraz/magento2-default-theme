@@ -1,0 +1,105 @@
+<?php
+/**
+ * Copyright © 2023 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Hyva\Theme\Model\ViewModelRegistry;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ * @var ViewModelRegistry $viewModels
+ */
+
+$swiperUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
+?>
+<script>
+    function promoSliderInit() {
+        return {
+            dir: document.querySelector('html').getAttribute('dir'),
+            isHidden: false,
+            swiperInstance: null,
+
+            eventListeners: {
+                ['@scroll.window'](event) {
+                    let blockHeight = '0';
+                    this.isHidden = window.scrollY > 1;
+
+                    if (this.isHidden && this.$refs.slider) {
+                        blockHeight = this.$refs.slider.getBoundingClientRect().height + 'px';
+                    }
+
+                    document.querySelector('body').classList.toggle('promo-banner-hidden', this.isHidden);
+                    document.querySelector('body').classList.toggle('promo-banner-visible', !this.isHidden);
+
+                    document.documentElement.style.setProperty('--promo-banner-position-compensator', blockHeight);
+                },
+
+                ['@private-content-loaded.window'](event) {
+                    if (this.isHidden === false) {
+                        document.querySelector('body').classList.add('promo-banner-visible');
+                    }
+                }
+            },
+
+            init() {
+                this.$nextTick(() => {
+                    this.initSwiper();
+                    setTimeout(() => {
+                        this.closeSearchButtonPosition();
+                    }, 10);
+                });
+            },
+
+            closeSearchButtonPosition() {
+                this.isHidden = window.scrollY > 1;
+            },
+
+            initSwiper() {
+                if (typeof Swiper !== 'undefined') {
+                    this.runSwiperConfig();
+                    return;
+                }
+
+                const swiperSrc = '<?= $escaper->escapeUrl($swiperUrl) ?>';
+                const existingScript = document.querySelector(`script[src="${swiperSrc}"]`);
+
+                if (!existingScript) {
+                    const script = document.createElement('script');
+                    script.src = swiperSrc;
+                    script.async = true;
+                    script.onload = () => this.runSwiperConfig();
+                    document.head.appendChild(script);
+                } else {
+                    const checkInterval = setInterval(() => {
+                        if (typeof Swiper !== 'undefined') {
+                            clearInterval(checkInterval);
+                            this.runSwiperConfig();
+                        }
+                    }, 50);
+                }
+            },
+
+            runSwiperConfig() {
+                if (this.swiperInstance || !this.$refs.slider) return;
+
+                this.swiperInstance = new Swiper(this.$refs.slider, {
+                    spaceBetween: 0,
+                    loop: true,
+                    slidesPerView: 1,
+                    autoplay: {
+                        delay: 5000,
+                    },
+                    navigation: {
+                        nextEl: '.swiper-button-next-promo',
+                        prevEl: '.swiper-button-prev-promo',
+                    },
+                });
+            }
+        }
+    }
+</script>

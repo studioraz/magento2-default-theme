@@ -1,0 +1,61 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\Modal;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use SR\Base\Helper\Css;
+use SR\HyvaBaseModule\Controller\Cart\Truncate;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ * @var ViewModelRegistry $viewModels
+ * @var Modal $modalViewModel
+ */
+
+// Prepare block template data
+$actionUrl = $block->getUrl(Truncate::ACTION_PATH);
+$actionLabel = $block->getData('label') ?: __('Clear the Cart');
+$context = $block->getData('context') ?: 'default';
+
+// Set CSS block for styling
+Css::setBlock($block, 'cart-clear');
+
+// Define base CSS classes
+$css = [
+    'form' => Css::css('form', 'flex items-center ' . $context),
+    'separator' => Css::css('separator', 'w-px h-4 bg-slate-300 mx-3.5'),
+    'action' => Css::css('action', 'underline hover:no-underline hover:text-primary'),
+];
+
+if ($context === 'cart') {
+    $css['separator'] = 'hidden';
+    $css['action'] .= ' text-lg font-normal';
+}
+if ($context === 'default') {
+    $css['form'] .= ' hidden';
+}
+?>
+
+<form action="<?= $escaper->escapeUrl($actionUrl) ?>"
+      method="POST"
+      class="<?= $css['form'] ?>"
+      x-data="initSrTruncateClearCart('<?= $context ?>')"
+      x-bind="formBinds"
+      x-ref="form"
+>
+    <div class="<?= $css['separator'] ?>"></div>
+
+    <button x-bind="actionBinds"
+            type="button"
+            class="<?= $css['action'] ?>"
+            aria-haspopup="dialog"
+    ><?= $escaper->escapeHtml($actionLabel) ?></button>
+</form>

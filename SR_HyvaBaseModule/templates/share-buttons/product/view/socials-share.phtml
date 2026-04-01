@@ -1,0 +1,89 @@
+<?php
+/**
+ * Copyright © 2023 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use SR\HyvaBaseModule\ViewModel\ShareButtons\Product\View\SocialsShareViewModel;
+use SR\HyvaBaseModule\ViewModel\ShareButtons\SvgIcons;
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\HeroiconsSolid;
+
+/** @var ViewModelRegistry $viewModels */
+/** @var HeroiconsOutline $heroicons */
+
+/**
+ * @var Template     $block
+ * @var Escaper      $escaper
+ * @var SocialsShareViewModel $viewModel
+ * @var SvgIcons $viewModels
+ */
+
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+$storeName = $storeManager->getStore()->getName();
+
+$heroiconShare = $viewModels->require(HeroiconsSolid::class);
+$heroicons = $viewModels->require(SvgIcons::class);
+$viewModel = $block->getData('social_sharing_view_model');
+
+$cssClass = 'items-center justify-center w-10 h-10 rounded-full text-slate-500 bg-slate-200 hover:text-primary hover:bg-slate-100';
+?>
+
+<div x-data="showSocials()"
+     @mouseenter="isShowSocials = true"
+     @mouseleave="isShowSocials = false"
+     class="relative">
+    <div class="group">
+        <button @mouseover="isShowSocials = true" class="hidden md:flex <?= $cssClass ?>">
+            <?= $heroiconShare->renderHtml('share', '', 18, 18) ?>
+        </button>
+        <button @click="shareSocialsMobile()"
+                class="share-icon flex md:hidden <?= $cssClass ?>">
+            <?= $heroiconShare->renderHtml('share', '', 18, 18) ?>
+        </button>
+        <div x-cloak
+             x-show="isShowSocials"
+             class="absolute start-full top-1/2 z-10 -translate-y-1/2 ms-2 transform flex flex-row md:items-center gap-2 p-3 bg-slate-100 rounded-3xl shadow-[0_1px_3px_0_rgba(0,0,0,0.10),0_1px_2px_0_rgba(0,0,0,0.06)]"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-300"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0">
+            <?php foreach ($viewModel->getItems() as $item): ?>
+                <?php if ($item['url']): ?>
+                    <a target="_blank" href="<?= $escaper->escapeUrl($item['url']) ?>"
+                       class="product-socials-share-link bg-primary hover:bg-primary border-0 h-6 <?= $item['type'] ?> inline-flex items-center justify-center p-0 rounded-full text-gray-500 w-6"
+                       title="<?= $escaper->escapeHtmlAttr(__($item['label']))  ?>">
+                        <?= $heroicons->renderHtml($item['type'], "text-white", 12, 12); ?>
+                    </a>
+                <?php endif ?>
+            <?php endforeach ?>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showSocials () {
+        return {
+            isShowSocials: false,
+            shareSocialsMobile () {
+                const shareButton = document.querySelector(".share-icon");
+                const url = window.document.location.href;
+                const text = '<?php echo __('Hi, I found something on %1 that might interest you', $storeName); ?>';
+
+                shareButton.addEventListener('click', () => {
+                    navigator.share({
+                        text: `${text}`,
+                        url: `${url}`
+                    });
+                });
+            }
+        }
+    }
+</script>

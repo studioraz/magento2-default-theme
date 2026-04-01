@@ -1,0 +1,43 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/**
+ * @var Escaper $escaper
+ * @var Template $block
+ */
+
+$tooltipJsUrl = $escaper->escapeJs($escaper->escapeUrl($block->getViewFileUrl('tooltip/studioraz-tooltip.min.js')));
+?>
+
+<script>
+    window.addEventListener('alpine:initializing', () => {
+        const tooltipElements = document.querySelectorAll('.studioraz-tooltip');
+
+        if (tooltipElements.length === 0) return;
+
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.defer = true;
+        script.src = '<?= $tooltipJsUrl ?>';
+
+        script.onload = () => {
+            if (window.Alpine && typeof window.Alpine.initTree === 'function') {
+                document.querySelectorAll('.studioraz-tooltip').forEach(el => {
+                    const root = el.closest('[x-data]') || el;
+                    document.dispatchEvent(new CustomEvent('alpine:initializing'));
+                    window.Alpine.initTree(root);
+                });
+            }
+        };
+
+        document.head.appendChild(script);
+    });
+</script>

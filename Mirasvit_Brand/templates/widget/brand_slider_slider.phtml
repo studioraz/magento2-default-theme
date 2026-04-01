@@ -1,0 +1,187 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\LucideIcons;
+use Hyva\Theme\ViewModel\Store;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Hyva\Theme\ViewModel\StoreConfig;
+
+// phpcs:disable Generic.Files.LineLength.TooLong
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+/** @var StoreConfig $storeConfig */
+
+/** @var Store $viewModelStore */
+$viewModelStore = $viewModels->require(Store::class);
+
+/** @var LucideIcons $lucideIcons */
+$lucideIcons = $viewModels->require(LucideIcons::class);
+
+$title = (string)$block->getTitle();
+$items = $block->getItems() ?? [];
+if (is_object($items) && $items instanceof Iterator) {
+    $items = iterator_to_array($items);
+}
+if (!$itemCount = count($items)) {
+    return '';
+}
+$sliderItemRenderer = $block->getChildBlock('slider.item.template');
+$isShowButton = (int)$block->getData('is_show_button');
+$isShowPagination = (int)$block->getData('is_show_pagination');
+$storeConfig = $viewModels->require(StoreConfig::class);
+$storeBrandSliderConfig = $storeConfig->getStoreConfig('brand/brand_slider/slider_config');
+$configJson = is_string($storeBrandSliderConfig) ? $storeBrandSliderConfig : '{}';
+$parsedJson = json_encode(json_decode($configJson ?? '{}', true));
+$isConfigNotEmpty = !empty($configArray = json_decode($configJson ?? '{}', true)) && is_array($configArray);
+
+$swiperUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
+?>
+<script>
+    'use strict';
+
+    function initBrandSliderComponent() {
+        const parsedConfig = <?= $parsedJson ?>;
+
+        return {
+            config: parsedConfig,
+            autoplayInterval: <?= (int)$block->getData('autoplay_interval') ?>,
+            isAutoplay: <?= (int)$block->getData('is_autoplay') ?>,
+            isAutoplayLoop: <?= (int)$block->getData('is_autoplay_loop') ?>,
+            pauseOnHover: <?= (int)$block->getData('pause_on_hover') ?>,
+            isShowPagination: <?= $isShowPagination ?>,
+            swiperInstance: null,
+
+            initSwiper() {
+                if (typeof Swiper === 'undefined') {
+                    const swiperSrc = '<?= $escaper->escapeUrl($swiperUrl) ?>';
+                    const existingScript = document.querySelector(`script[src="${swiperSrc}"]`);
+
+                    if (!existingScript) {
+                        const script = document.createElement('script');
+                        script.src = swiperSrc;
+                        script.async = true;
+                        script.onload = () => this.runSwiperConfig();
+                        document.head.appendChild(script);
+                    } else {
+                        const checkInterval = setInterval(() => {
+                            if (typeof Swiper !== 'undefined') {
+                                clearInterval(checkInterval);
+                                this.runSwiperConfig();
+                            }
+                        }, 50);
+                    }
+                } else {
+                    this.runSwiperConfig();
+                }
+            },
+
+            runSwiperConfig() {
+                if (this.swiperInstance) return;
+
+                this.swiperInstance = new Swiper('.brand-swiper-container', {
+                    autoplay: this.isAutoplay ? {
+                        delay: this.autoplayInterval,
+                        pauseOnMouseEnter: this.pauseOnHover
+                    } : false,
+                    loop: this.isAutoplayLoop,
+                    swiper: null,
+                    freeMode: true,
+                    watchSlidesProgress: true,
+                    pagination: this.isShowPagination ? {
+                        el: '.swiper-pagination.brand',
+                        clickable: true,
+                    } : false,
+                    navigation: {
+                        nextEl: '.swiper-button-next.brand',
+                        prevEl: '.swiper-button-prev.brand',
+                    },
+                    breakpoints: {
+                        0: {
+                            slidesPerView: 2.5,
+                            spaceBetween: 5,
+                        },
+                        425: {
+                            slidesPerView: 3.5,
+                            spaceBetween: 5
+                        },
+                        768: {
+                            slidesPerView: 6,
+                            slidesPerGroup: 6,
+                            spaceBetween: 10
+                        },
+                        1024: {
+                            slidesPerView: 6,
+                            slidesPerGroup: 1,
+                            spaceBetween: 10
+                        },
+                        1440: {
+                            slidesPerView: 7,
+                            slidesPerGroup: 1,
+                            spaceBetween: 10
+                        }
+                    },
+                    ...this.config,
+                    on: {
+                        progress: (swiper, progress) => {
+                            swiper.visibleSlides.forEach((slide) => {
+                                const img = slide.querySelector('img[loading="lazy"]');
+
+                                if (img) {
+                                    img.setAttribute('loading', 'eager');
+                                }
+                            });
+                        }
+                    }
+                });
+            },
+        }
+    }
+</script>
+<section class="mt-0 mb-8 text-gray-700 body-font <?= $isConfigNotEmpty ? 'has-slider-config' : ''; ?>"
+         x-data="initBrandSliderComponent()"
+         x-init="initSwiper()"
+>
+    <?php if ($items): ?>
+        <div class="relative">
+            <?php if ($title): ?>
+                <div class="container flex flex-col items-center pt-4 pb-4 mx-auto mb-6 border-b-2
+                    border-gray-300 md:flex-row">
+                    <h3 class="text-2xl font-medium text-gray-900 title-font">
+                        <?= $escaper->escapeHtml($title); ?>
+                    </h3>
+                </div>
+            <?php endif; ?>
+            <div class="swiper swiper-container brand-swiper-container">
+                <div class="swiper-wrapper items-center">
+                    <?php foreach ($items as $item): ?>
+                        <div class="swiper-slide">
+                            <div class="m-auto shadow-none bg-none">
+                                <?= $sliderItemRenderer->setItem($item)->toHtml() ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php if ($isShowPagination): ?>
+                <div class="swiper-pagination brand"></div>
+            <?php endif; ?>
+            <?php if ($isShowButton): ?>
+                <div class="swiper-button-prev brand">
+                    <?= $lucideIcons->renderHtml('chevron-left', '', 24, 24, ['aria-hidden' => 'true']); ?>
+                </div>
+                <div class="swiper-button-next brand">
+                    <?= $lucideIcons->renderHtml('chevron-right', '', 24, 24, ['aria-hidden' => 'true']); ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+</section>

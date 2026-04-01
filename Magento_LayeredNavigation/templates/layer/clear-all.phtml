@@ -1,0 +1,14 @@
+<?php
+/**
+ * @var $block \Mirasvit\LayeredNavigation\Block\Navigation\State
+ */
+
+?>
+
+<div x-data="initLabelRenderer()">
+    <div data-element="filter" @click="handleClick">
+        <a href="<?= $block->getClearUrl() ?>" class="btn btn-secondary action clear filter-clear w-full">
+            <span><?= __('Clear All') ?></span>
+        </a>
+    </div>
+</div>

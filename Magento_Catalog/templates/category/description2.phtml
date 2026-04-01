@@ -1,0 +1,23 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php
+/**
+ * Category view template
+ *
+ * @var $block \Magento\Catalog\Block\Category\View
+ */
+?>
+<?php if ($description = $block->getCurrentCategory()->getData('description_secondary')): ?>
+    <div class="category-description2 text-sm text-[rgb(29,32,36)] font-normal text-center lg:text-start max-md:px-[13px] max-md:pt-5">
+        <?= /* @escapeNotVerified */ $this->helper('Magento\Catalog\Helper\Output')->categoryAttribute($block->getCurrentCategory(), $description, 'description_secondary') ?>
+    </div>
+<?php endif; ?>

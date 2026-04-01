@@ -1,0 +1,108 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ */
+?>
+
+<script>
+    window.srTruncateClearCartController = new AbortController();
+
+    function initSrTruncateClearCart(context) {
+        return {
+            canShow: false,
+
+            formBinds() {
+                return {
+                    ['@private-content-loaded.window'](event) {
+                        this.onPrivateContentLoaded(event.detail.data);
+                    },
+                    [':class']() {
+                        return {
+                            'hidden': !this.canShow
+                        };
+                    }
+                }
+            },
+
+            actionBinds() {
+                return {
+                    ['@click.prevent']() {
+                        this.sendRequest(this.$refs.form);
+                    },
+                }
+            },
+
+            onPrivateContentLoaded(data) {
+                this.canShow = data && data.cart && data.cart.summary_count > 0;
+            },
+
+            sendRequest(form) {
+                window.srTruncateClearCartController.abort();
+                window.srTruncateClearCartController = new AbortController();
+
+                return fetch(form.action, this.getRequestInit(form))
+                    .then(res => res.json())
+                    .then(data => this.afterRequest(data))
+                    .catch(error => {
+                        if (error && error.name === 'AbortError') {
+                            console.log('Fetch aborted intentionally.');
+
+                            return;
+                        }
+
+                        console.error('Error clearing cart', error);
+                        this.displayMessage('warning', 'Unable to process the request.');
+                    });
+            },
+
+            getRequestInit(form) {
+                return {
+                    signal: window.srTruncateClearCartController.signal,
+                    method: form.method,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        form_key: hyva.getFormKey()
+                    }),
+                };
+            },
+
+            afterRequest(data) {
+                if (data.success) {
+                    this.displayMessage('success', data.message);
+                    this.reloadCartSection();
+                } else {
+                    this.displayMessage('warning', data.message);
+                    console.error('Error clearing cart', data.message);
+                }
+            },
+
+            displayMessage(type, text) {
+                if (window.dispatchMessages) {
+                    window.dispatchMessages([{
+                        type: type,
+                        text: text
+                    }], 5000);
+                }
+            },
+
+            reloadCartSection() {
+                window.dispatchEvent(new CustomEvent('reload-customer-section-data', {
+                    detail: {sections: ['cart']}
+                }));
+            }
+        }
+    }
+</script>

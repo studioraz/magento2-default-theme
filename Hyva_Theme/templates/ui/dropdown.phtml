@@ -1,0 +1,69 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\Escaper;
+use Hyva\Theme\ViewModel\LucideIcons;
+
+/** @var ViewModelRegistry $viewModels */
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var LucideIcons $lucideIcons */
+
+$lucideIcons = $viewModels->require(LucideIcons::class);
+
+$title = $block->getData('title') ?: 'Dropdown Title';
+$content = $block->getData('content') ?: 'Dropdown Content';
+$dropdownId = $block->getData('dropdown_id') ?: 'dropdown-id';
+$cssClasses = $block->getData('css_classes') ?: ['dropdown' => '', 'title' => '', 'content' => ''];
+?>
+
+<div
+    x-data="{
+        open: false,
+        id: $id('<?= $dropdownId ?>')
+    }"
+    x-defer="intersect"
+    @click.outside="open = false"
+    @keydown.escape.window="open = false"
+    class="<?= $cssClasses['dropdown'] ?>"
+>
+    <h3 :id="`${id}-title`">
+        <button
+            type="button"
+            @click="open = !open"
+            class="<?= $cssClasses['title'] ?> flex justify-between items-center cursor-pointer text-start w-full filter-dropdown-button"
+            :aria-controls="`${id}-content`"
+            :aria-expanded="open"
+        >
+            <span class="title text-sm font-semibold leading-5"><?= $escaper->escapeHtml(__($title)) ?></span>
+            <span class="py-1 px-1">
+                <?= $lucideIcons->renderHtml(
+                    'chevron-down',
+                    'transition-transform transform duration-300 ease-in-out',
+                    12,
+                    12,
+                    [
+                        ":class" => "{ 'rotate-180': open }",
+                        "aria-hidden" => "true",
+                        "focusable" => "false"
+                    ]
+                ) ?>
+            </span>
+        </button>
+    </h3>
+    <template x-if="open">
+        <div
+            :id="`${id}-content`"
+            class="<?= $cssClasses['content'] ?> min-w-48 max-w-[300px] rounded-lg mt-1 z-10 origin-top-left bg-white outline-none border border-slate-300 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.10),0_4px_6px_-2px_rgba(0,0,0,0.05)]"
+        >
+            <?= /* @noEscape */ $content ?>
+        </div>
+    </template>
+</div>

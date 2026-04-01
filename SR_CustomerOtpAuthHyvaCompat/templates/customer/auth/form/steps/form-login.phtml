@@ -1,0 +1,93 @@
+<?php
+/**
+ * Copyright © 2023 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use SR\CustomerOtpAuth\ViewModel\OtpAuthForm;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ * @var ViewModelRegistry $viewModels
+ * @var OtpAuthForm $otpViewModel
+ */
+
+$otpViewModel = $viewModels->require(OtpAuthForm::class);
+$description = $otpViewModel->getOtpDescription();
+$extraDescription = $otpViewModel->getOtpExtraDescription();
+$checkoutUrl = $block->getUrl('checkout');
+?>
+
+<fieldset class="fieldset mt-0 flex-grow otp-login"
+          x-show="isStep('phone_number')"
+>
+    <legend class="sr-only">
+        <?= $escaper->escapeHtml(__('OTP Login')) ?>
+    </legend>
+    <div class="flex flex-col h-full">
+        <div class="pt-10 mx-auto max-w-[295px] text-[15px] text-gray-600 text-center"
+             x-html="loginDescription">
+            <?= html_entity_decode($description) ?>
+        </div>
+
+        <div class="mt-7 mx-auto px-3 text-center w-[304px] max-w-full">
+            <div class="field field-reserved required floating-labels phone-number">
+                <div class="control">
+                    <input name="otp[phone_number]"
+                           class="form-input peer w-full"
+                           @keydown.enter.prevent="submitForm($el.form);"
+                           :required="isStep('phone_number')"
+                           autocomplete="off"
+                           id="otp_phone_number"
+                           type="tel"
+                           pattern="^05([0-9]\d)\d{6}$"
+                           data-msg-pattern="<?= $escaper->escapeHtmlAttr(
+                               __('Please enter 10-digit phone number')
+                           ) ?>"
+                           title="<?= $escaper->escapeHtmlAttr(__('Phone Number')) ?>"
+                           placeholder=" "
+                           x-model.fill="phoneNumber"
+                           x-ref="phoneNumber"
+                           x-focus-first
+                           data-1p-ignore
+                    />
+                    <label class="label floating-labels-label" for="otp_phone_number">
+                        <span><?= $escaper->escapeHtml(__('Phone Number')) ?></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mt-7 flex grow flex-col">
+                <button type="submit" class="btn btn-primary">
+                    <?= $escaper->escapeHtml(__('Send Code')) ?>
+                </button>
+
+                <hr class="otp-form-actions-separator-choice"
+                    data-label="<?= $escaper->escapeHtml(__('Or')) ?>"
+                    x-cloak
+                    x-show="isProceedToCheckoutVisible()"
+                >
+
+                <a type="button"
+                   class="text-[15px] text-primary font-medium hover:underline"
+                   href="<?= $escaper->escapeHtmlAttr($checkoutUrl) ?>"
+                   x-cloak
+                   x-show="isProceedToCheckoutVisible()"
+                ><?= $escaper->escapeHtml(__('Checkout as Guest')) ?></a>
+            </div>
+
+            <?php if ($extraDescription): ?>
+                <div class="pt-16 mx-auto max-w-[295px] text-[15px] text-gray-600 text-center"
+                    x-html="loginExtraDescription">
+                    <?= html_entity_decode($extraDescription) ?>
+                </div>
+            <?php endif ?>
+        </div>
+    </div>
+</fieldset>
+

@@ -1,0 +1,114 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\LucideIcons;
+use Hyva\Theme\ViewModel\StoreConfig;
+use Magento\Checkout\Block\Cart\Sidebar as SidebarCart;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var ViewModelRegistry $viewModels */
+
+/** @var StoreConfig $storeConfig */
+$storeConfig = $viewModels->require(StoreConfig::class);
+$showMiniCart = $block->getDisplayOnSuccess() === 'minicart' && $storeConfig->getStoreConfig(SidebarCart::XML_PATH_CHECKOUT_SIDEBAR_DISPLAY);
+$showAjaxCartModal = $block->getDisplayOnSuccess() === 'modal' || $block->getDisplayOnSuccess() === null;
+
+/** @var LucideIcons $lucideIcons */
+$lucideIcons = $viewModels->require(LucideIcons::class);
+?>
+
+<?php if ($showMiniCart): ?>
+    <div
+        x-data="initAjaxCartModal()"
+        @open-ajax-cart.window="setNewCartData(event)"
+    ></div>
+<?php endif ?>
+
+<?php if ($showAjaxCartModal): ?>
+    <dialog
+        class="w-[640px] rounded-xl bg-white text-slate-800 p-0 shadow-xl backdrop:bg-black/75 backdrop:backdrop-blur-sm"
+        x-data="initAjaxCartModal"
+        x-show="open"
+        x-transition.duration.500ms
+        @keydown.window.escape="closeDialog()"
+        @click="!onDialogBackdropClickHelper(event) && closeDialog()"
+        @open-ajax-cart.window="setNewCartData(event)"
+    >
+        <template x-if="open && cartItem">
+            <div>
+                <div class="flex gap-6 justify-between items-center p-6">
+                    <span class="text-xl font-bold">
+                        <?= $escaper->escapeHtml(__('The product was added to your cart.')) ?>
+                    </span>
+                    <button
+                        title="<?= $escaper->escapeHtml(__('Close fullscreen')) ?>"
+                        aria-label="<?= $escaper->escapeHtml(__('Close fullscreen')) ?>"
+                        @click="closeDialog()"
+                        class="text-slate-300 hover:text-slate-500 focus:text-slate-500"
+                    >
+                        <?= $lucideIcons->xHtml( '', 32, 32, ['aria-hidden' => 'true']); ?>
+                    </button>
+                </div>
+                <div class="flex gap-3 sm:gap-x-6 items-start p-6">
+                    <div class="shrink-0 max-w-[theme(spacing.20)] sm:max-w-[theme(spacing.32)]">
+                        <img
+                            loading="lazy"
+                            :src="cartItem.product_image.src"
+                            :width="cartItem.product_image.width"
+                            :height="cartItem.product_image.height"
+                            :alt="hyva.str('<?= $escaper->escapeJs(__('Product "%1"')) ?>', cartItem.product_name)"
+                        >
+                    </div>
+                    <div class="grow flex gap-2 flex-col sm:flex-row">
+                        <div class="grow">
+                            <p class="text-lg">
+                                <strong class="font-bold" x-html="cartItem.product_name"></strong>
+                            </p>
+                            <template x-if="(cartItem.options && cartItem.options.length > 0) || showSku">
+                                <dl class="table mt-2 text-sm">
+                                    <template x-if="cartItem.product_sku && showSku">
+                                        <div class="table-row">
+                                            <dt class="table-cell pb-1.5 pe-2 min-w-[theme(spacing.12)] sm:min-w-[theme(spacing.24)] font-normal text-slate-500 uppercase">
+                                                <?= $escaper->escapeHtml(__('Sku')) ?>
+                                            </dt>
+                                            <dd class="table-cell pb-1.5 font-bold" x-html="cartItem.product_sku"></dd>
+                                        </div>
+                                    </template>
+                                    <template x-for="option in cartItem.options">
+                                        <div class="table-row">
+                                            <dt class="table-cell pb-1.5 pe-2 min-w-[theme(spacing.12)] sm:min-w-[theme(spacing.24)] font-normal text-slate-500" x-text="option.label"></dt>
+                                            <dd class="table-cell pb-1.5 font-bold" x-html="option.value"></dd>
+                                        </div>
+                                    </template>
+                                </dl>
+                            </template>
+                        </div>
+                        <div class="leading-7 shrink-0 [&_.price]:font-normal" x-html="cartItem.product_price"></div>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row lg:justify-end gap-4 p-6 bg-slate-100">
+                    <button
+                        @click="closeDialog()"
+                        class="sm:w-1/2 lg:w-auto btn btn-secondary"
+                    ><?= $escaper->escapeHtml(__('Continue Shopping')) ?></button>
+                    <a
+                        href="<?= $escaper->escapeUrl($block->getUrl('checkout')) ?>"
+                        @click.prevent.stop="closeDialog(); $dispatch('toggle-authentication', {
+                            url: '<?= $escaper->escapeUrl($block->getUrl('checkout')) ?>'
+                        });"
+                        class="sm:w-1/2 lg:w-auto btn btn-primary"
+                    ><?= $escaper->escapeHtml(__('Checkout')) ?></a>
+                </div>
+            </div>
+        </template>
+    </dialog>
+<?php endif; ?>

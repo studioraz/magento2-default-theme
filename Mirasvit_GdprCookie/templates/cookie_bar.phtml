@@ -1,0 +1,369 @@
+<?php
+/** @var ViewModelRegistry $viewModels */
+/** @var \Mirasvit\GdprCookie\Block\CookieBar $block */
+/** @var \Magento\Framework\Escaper $escaper */
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\MirasvitGdprCookie\ViewModel\Checkout\Csp;
+
+$isHyvaCsp = $viewModels->require(Csp::class)->isHyvaCsp();
+$isShowDeclineButton = $block->isShowDeclineButton();
+?>
+<div class="mst-gdpr__cookie-bar-wrapper block relative z-50" id="gdprCookieBar" x-data="initMstGdprCookieBar" x-init="initDisplay"
+     role="dialog" aria-modal="true" aria-label="<?= $escaper->escapeHtmlAttr(__('Cookie Consent')) ?>">
+    <div class="mst-gdpr__cookie-bar bg-white border border-gray-200 bottom-4 fixed flex-col left-4 right-4 max-w-4xl rounded-lg px-8 pt-8 pb-4 shadow-md z-1000"
+         x-bind:class="loadingClass"
+         x-show="isBarVisible"
+         style="display: none">
+        <div class="flex flex-col w-full">
+        <div class="consent-text">
+            <?= /* @noEscape */ $block->getPolicyText() ?>
+        </div>
+            <div class="mst-gdpr__buttons flex justify-center items-center w-full gap-2 md:gap-4 mt-4">
+                <?php /* ?>
+            <button type="button"
+                        class="action btn justify-center  text-sm w-auto mx-2"
+                    x-bind:class="loadingClass"
+                    @click="openSettings"
+                    aria-label="<?= $escaper->escapeHtmlAttr(__('Open cookie settings')) ?>">
+                <span><?= $escaper->escapeHtml(__('Settings')) ?></span>
+            </button>
+                <?php */ ?>
+                <button class="action btn btn-primary justify-center md:mt-0 text-sm w-auto mx-2 whitespace-nowrap "
+                    x-bind:class="loadingClass"
+                    @click="handleAllow"
+                    aria-label="<?= $escaper->escapeHtmlAttr(__('Accept all cookies')) ?>">
+                    <span><?= $escaper->escapeHtml(__('Agree All')) ?></span>
+            </button>
+            <?php if ($isShowDeclineButton): ?>
+                <button
+                            class="action btn justify-center md:mt-0 text-sm w-auto mx-2"
+                        x-bind:class="loadingClass"
+                        @click="handleDecline"
+                        aria-label="<?= $escaper->escapeHtmlAttr(__('Decline all cookies')) ?>">
+                    <span><?= $escaper->escapeHtml(__('Decline')) ?></span>
+                </button>
+            <?php endif; ?>
+        </div>
+    </div>
+    </div>
+    <div class="mst-gdpr__cookie-bar-overlay bg-white fixed h-full left-0 opacity-60 top-0 w-full z-40"
+         style="display: none"
+         id="gdprCookieBarOverlay" x-show="isScreenLocked"></div>
+</div>
+<script>
+    function initMstGdprCookieBar() {
+        'use strict';
+
+        const barConfig = <?=\Mirasvit\Core\Service\SerializeService::encode($block->getConfig())?>;
+        return {
+            isLoading:      false,
+            isBarVisible:   false,
+            isScreenLocked: false,
+            get loadingClass() {
+                return this.isLoading ? 'opacity-70' : '';
+            },
+            initDisplay:    function () {
+                if (barConfig.googleConsentEnabled) {
+                    if (!barConfig.barEnabled) {
+                        this.sendConsentUpdate(barConfig.googleConsentDefault);
+                    }
+                }
+                if (this.isSaved()) {
+                    this.initSavedCookieConsent();
+                }
+                if (!barConfig.barEnabled && !this.isSaved()) {
+                    this.handleAllow(true);
+                }
+
+                if (barConfig.isAllCountries) {
+                    this.showIfNotSaved();
+                } else {
+                    let countryCode = localStorage.getItem('mst-gdpr-country-code');
+                    if (countryCode) {
+                        if (this.isAllowedCountry(countryCode)) {
+                            this.showIfNotSaved();
+                        } else {
+                            this.hide();
+                            this.handleAllow(true);
+                        }
+                    } else {
+                        this.hide();
+                        fetch(barConfig.countryConfigUrl + '?_=' + Date.now())
+                            .then(function (response) {
+                                return response.json();
+                            })
+                            .then(function (data) {
+                                if (data.CountryIsoCode) {
+                                    localStorage.setItem('mst-gdpr-country-code', data.CountryIsoCode);
+                                    if (data.isShowCookieBar) {
+                                        this.showIfNotSaved();
+                                    } else {
+                                        this.hide();
+                                        this.handleAllow(true);
+                                    }
+                                }
+                            }.bind(this));
+                    }
+                }
+
+                window.addEventListener('mst-gdpr-cookie-settings-save', () => {
+                    this.handleAllow();
+                })
+
+                window.addEventListener('mst-gdpr-cookie-open-bar-request', () => {
+                    this.show();
+                })
+            },
+
+            isAllowedCountry: function (countryCode) {
+                return barConfig.countries.indexOf(countryCode) !== -1;
+            },
+
+            initSavedCookieConsent: function () {
+                let allowedCookieGroups = unescape(hyva.getCookie(barConfig.groupCookieName)).split(',');
+                let checkboxList = document.querySelectorAll('.group-content .cookie-group-container .checkbox')
+
+                checkboxList.forEach(function (item) {
+                    let groupId = item.getAttribute('data-group-id');
+                    item.checked = allowedCookieGroups.indexOf(groupId.toString()) !== -1;
+                }.bind(this));
+            },
+
+            isSaved: function () {
+                if (hyva.getCookie(barConfig.consentCookieName) < barConfig.version) {
+                    this.deleteCookieGroupsCookie();
+                    return false;
+                }
+
+                return !!hyva.getCookie(barConfig.groupCookieName);
+            },
+
+            showIfNotSaved: function () {
+                if (this.isSaved() || !barConfig.barEnabled) {
+                    this.hide();
+                } else {
+                    this.show();
+                }
+            },
+
+            handleAllow: function (agreeAll) {
+                this.isLoading = true;
+
+                let allowedGroupIds = this.getUserAllowedGroupIds(agreeAll);
+                if (allowedGroupIds.length) {
+                    this.setCookie(allowedGroupIds);
+                }
+
+                if (barConfig.googleConsentEnabled) {
+                    let consent = barConfig.barEnabled ? this.getGoogleConsentByAllowedGroupIds(allowedGroupIds) : barConfig.googleConsentDefault;
+                    this.saveGoogleConsent(consent);
+                }
+
+                if (barConfig.uetConsentEnabled) {
+                    let consent = barConfig.barEnabled ? this.getUETConsentByAllowedGroupIds(allowedGroupIds) : barConfig.uetConsentDefault;
+                    this.saveUETConsent(consent);
+                }
+
+                const body = allowedGroupIds.reduce((body, groupId) => {
+                    body.append('group_ids[]', groupId);
+                    return body;
+                }, new URLSearchParams({form_key: hyva.getFormKey()}))
+
+                fetch('<?= $escaper->escapeUrl($block->getUrl('gdpr_cookie/cookie/allow')) ?>', {
+                    method:  'post',
+                    body:    body,
+                    headers: {contentType: 'application/x-www-form-urlencoded; charset=UTF-8'}
+                })
+                    .then(() => this.hide())
+                    .finally(() => this.isLoading = false)
+            },
+
+            handleDecline: function () {
+                this.isLoading = true;
+
+                let checkboxList = document.querySelectorAll('.cookie-group-container .checkbox[disabled]:checked');
+                const required = Array.from(checkboxList || []);
+                let requiredGroupIds = required.reduce((requiredGroupIds, item) => {
+                    requiredGroupIds.push(item.dataset.groupId);
+                    return requiredGroupIds;
+                }, []);
+                if (requiredGroupIds.length) {
+                    this.setCookie(requiredGroupIds);
+                }
+
+                if (barConfig.googleConsentEnabled) {
+                    let consent = barConfig.barEnabled ? this.getGoogleConsentByAllowedGroupIds(requiredGroupIds) : barConfig.googleConsentDefault;
+                    this.saveGoogleConsent(consent);
+                }
+
+                const body = new URLSearchParams({form_key: hyva.getFormKey()});
+                fetch('<?= $escaper->escapeUrl($block->getUrl('gdpr_cookie/cookie/decline')) ?>', {
+                    method:  'post',
+                    body:    body,
+                    headers: {contentType: 'application/x-www-form-urlencoded; charset=UTF-8'}
+                })
+                    .then(() => this.hide())
+                    .finally(() => this.isLoading = false)
+            },
+
+            setCookie: function (groupIds) {
+                let d = new Date();
+                d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
+                let expires = "expires=" + d.toUTCString();
+                let cookieDomain = '.' + (new URL(window.location.href)).hostname;
+                document.cookie = "gdpr_cookie_consent=" + barConfig.version + ";domain=" + cookieDomain + ";" + expires + ";path=/;SameSite=Lax";
+                let value = encodeURIComponent(groupIds.join(','));
+                document.cookie = "gdpr_cookie_groups=" + value + ";domain=" + cookieDomain + ";" + expires + ";path=/;SameSite=Lax";
+            },
+
+            deleteCookieGroupsCookie: function () {
+                let d = new Date();
+                d.setTime(0);
+                let expires = "expires=" + d.toUTCString();
+                let cookieDomain = '.' + (new URL(window.location.href)).hostname;
+                document.cookie = "gdpr_cookie_groups=;domain=" + cookieDomain + ";" + expires + ";path=/;SameSite=Lax";
+            },
+
+            show: function () {
+                this.isBarVisible = true;
+
+                this.isScreenLocked = window.location.href.indexOf('cookie') === -1 && barConfig.lockScreen;
+                if (this.isScreenLocked) {
+                    document.querySelector('body').style.overflow = 'hidden';
+                }
+            },
+
+            hide: function () {
+                this.isBarVisible = false;
+                this.isScreenLocked = false;
+                document.querySelector('body').style.overflow = 'auto';
+            },
+
+            getLocalStorageGoogleConsent: function () {
+                return localStorage.getItem('mst-gdpr-google-consent-mode');
+            },
+            getLocalStorageUETConsent: function () {
+                return localStorage.getItem('mst-gdpr-uet-consent-mode');
+            },
+
+            setLocalStorageGoogleConsent: function (consent) {
+                localStorage.setItem('mst-gdpr-google-consent-mode', JSON.stringify(consent));
+            },
+
+            setLocalStorageUETConsent: function (consent) {
+                localStorage.setItem('mst-gdpr-uet-consent-mode', JSON.stringify(consent));
+            },
+
+            getGoogleConsent: function () {
+                let consent = this.getLocalStorageGoogleConsent();
+                if (consent) {
+                    return JSON.parse(consent);
+                }
+
+                return barConfig.googleConsentDefault;
+            },
+
+            getUETConsent: function () {
+                let consent = this.getLocalStorageUETConsent();
+                if (consent) {
+                    return JSON.parse(consent);
+                }
+
+                return barConfig.uetConsentDefault;
+            },
+
+            getUserAllowedGroupIds: function (agreeAll) {
+                let checkboxList = [];
+                if (agreeAll) {
+                    checkboxList = document.querySelectorAll('.cookie-group-container .checkbox');
+                } else {
+                    checkboxList = document.querySelectorAll('.cookie-group-container .checkbox:checked');
+                }
+
+                const checked = Array.from(checkboxList || []);
+                let groupIds = checked.reduce((groupIds, item) => {
+                    groupIds.push(item.dataset.groupId);
+                    return groupIds;
+                }, []);
+
+                return groupIds;
+            },
+
+            saveGoogleConsent: function (consent) {
+                this.sendConsentUpdate(consent);
+                this.setLocalStorageGoogleConsent(consent);
+            },
+
+            saveUETConsent: function (consent) {
+                this.sendUETConsentUpdate(consent);
+                this.setLocalStorageUETConsent(consent);
+            },
+
+            sendConsentUpdate: function (consent) {
+                if (typeof gtag === "function") {
+                    gtag('consent', 'update', consent);
+                }
+            },
+
+            sendUETConsentUpdate: function (consent) {
+                if (typeof window.uetq === "function") {
+                    window.uetq.push('consent', 'update', consent);
+                }
+            },
+
+            getGoogleConsentByAllowedGroupIds: function (allowedGroupIds) {
+                let consent = {};
+                barConfig.googleConsentTypes.forEach(function (consentType) {
+                    consent[consentType] = 'denied';
+                });
+
+                for (let i = 0; i < allowedGroupIds.length; i++) {
+                    let groupId = allowedGroupIds[i];
+                    let type = barConfig.cookieGroupTypes[groupId]
+                    if (!type) {
+                        type = 'other'
+                    }
+
+                    switch (type) {
+                        case 'essential':
+                            consent['security_storage'] = 'granted';
+                            break;
+                        case 'marketing':
+                            consent['ad_storage'] = 'granted';
+                            consent['ad_user_data'] = 'granted';
+                            consent['ad_personalization'] = 'granted';
+                            break;
+                        case 'functionality':
+                            consent['functionality_storage'] = 'granted';
+                            consent['personalization_storage'] = 'granted';
+                            break;
+                        case 'statistical':
+                            consent['analytics_storage'] = 'granted';
+                            break;
+                    }
+                }
+
+                return consent;
+            },
+
+            getUETConsentByAllowedGroupIds(allowedGroupIds) {
+                const consent = Object.fromEntries(
+                    barConfig.uetConsentTypes.map(type => [type, 'denied'])
+                );
+
+                if (allowedGroupIds.some(id => (barConfig.cookieGroupTypes[id] || 'other') === 'marketing')) {
+                    consent['ad_storage'] = 'granted';
+                }
+
+                return consent;
+            },
+
+            openSettings: function () {
+                window.dispatchEvent(new CustomEvent('mst-gdpr-cookie-settings-open'));
+            },
+        };
+    }
+    window.addEventListener('alpine:init', () => Alpine.data('initMstGdprCookieBar', initMstGdprCookieBar), {once: true});
+</script>
+<?php if ($isHyvaCsp): $hyvaCsp->registerInlineScript() ?> <?php endif; ?>

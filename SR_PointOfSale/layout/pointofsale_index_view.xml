@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!--
+  ~ Copyright © 2023 Studio Raz. All rights reserved.
+  ~ See LICENSE.txt for license details.
+  -->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="page.main.title">
+            <arguments>
+                <argument name="wrapper_container_css" xsi:type="string">page-title-container </argument>
+                <argument name="wrapper_block_css_default" xsi:type="string">flex justify-start items-center</argument>
+                <argument name="wrapper_spacing_css" xsi:type="string">mb-[18px] md:mb-[32px]</argument>
+                <argument name="text_css" xsi:type="string">page-title text-xl md:text-3xl font-medium leading-9</argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>

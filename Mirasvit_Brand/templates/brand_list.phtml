@@ -1,0 +1,77 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * @var $block \Mirasvit\Brand\Block\BrandList
+ */
+?>
+<?php
+$collection = $block->getBrandsByLetters();
+?>
+<h1 class="text-slate-900 text-2xl lg:text-3xl font-bold" <?= $block->showPageTitle() ? '' : ' class="visually-hidden"' ?>>
+    <?= $block->escapeHtml(__($block->getPageTitle())) ?>
+</h1>
+<div class="mst-brand__brand-list container px-0 mt-8 lg:mt-[60px]" x-data="{active: ''}">
+    <div class="toolbar flex text-center mb-8">
+        <div class="letters flex flex-wrap -m-px">
+            <a
+                    href="#"
+                    class="block py-[9px] lg:py-1 px-4 text-center text-sm lg:text-base font-medium no-underline cursor-pointer w-[130px] lg:w-[109px] -ms-px -mt-px"
+                    :class="{
+            '_active cursor-default bg-primary text-white hover:z-20 border border-primary z-30': (active == ''),
+            'cursor-pointer text-slate-900 border border-slate-200': (active != '')
+             }"
+                    data-letter=""
+                    @click.prevent="active = ''"
+            ><?= __('All brands') ?></a>
+            <?php foreach ($collection as $letter => $brands): ?>
+                <a
+                    href="#"
+                    class="block py-[9px] lg:py-[3px] px-4 w-11 lg:w-[55px] -ms-px -mt-px text-center text-sm lg:text-base font-medium no-underline border border-slate-200 uppercase"
+                    :class="{
+                    '_active cursor-default bg-primary border-primary text-white z-30': (active == '<?= $letter ?>'),
+                    'cursor-pointer z-10 text-slate-900 hover:z-20 hover:border hover:border-primary': (active != '<?= $letter ?>')
+                    }"
+                    data-letter="<?= $letter ?>"
+                    @click.prevent="active = '<?= $letter ?>'"
+                >
+                    <?= $letter ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+    <?php foreach ($collection as $letter => $brands): ?>
+        <div class="letter-row border-b border-gray-300 last:border-b-0 pt-3 lg:pt-4 js-brand-row"
+             :class="{'hidden': (active != '' && active != '<?= $letter ?>'),
+             'border-b-0': (active == '<?= $letter ?>')}"
+             data-letter="<?= $letter ?>">
+            <div class="letter top-0 start-0 text-lg lg:text-3xl font-bold leading-9 text-slate-900 clear-left "><?= $letter ?></div>
+            <ul class="flex flex-wrap m-0 list-none" aria-label="<?= $block->escapeHtmlAttr(__('Brands starting with %1', $letter)) ?>">
+                <?php /** @var \Mirasvit\Brand\Api\Data\BrandInterface $brand */ ?>
+                <?php foreach ($brands as $brand): ?>
+                    <li class="text-center">
+                        <a href="<?= $brand->getUrl() ?>" class="no-underline block p-4 pb-3 lg:pb-2 text-black text-sm lg:text-base leading-6">
+                            <?php if ($block->canShowImage($brand)): ?>
+                                <div class="logo-wrapper h-40 align-middle table-cell opacity-80">
+                                    <img
+                                        class="max-h-[70px] max-w-[86px] lg:max-h-40 lg:max-w-60"
+                                        alt="<?= $block->escapeHtmlAttr(__('Logo of %1', $brand->getLabel())) ?>"
+                                        <?php if ($block->getBrandLogoImageWidth()): ?>
+                                            width="<?= $block->escapeHtmlAttr($block->getBrandLogoImageWidth()) ?>"
+                                        <?php endif; ?>
+                                        <?php if ($block->getBrandLogoImageHeight()): ?>
+                                            height="<?= $block->escapeHtmlAttr($block->getBrandLogoImageHeight()) ?>"
+                                        <?php endif; ?>
+                                        src="<?= $brand->getImage() ?>">
+                                </div>
+                            <?php endif; ?>
+
+                            <div class="m__all_brand_label"><?= $brand->getLabel() ?></div>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endforeach; ?>
+</div>

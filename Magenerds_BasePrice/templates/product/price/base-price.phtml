@@ -1,0 +1,26 @@
+<?php
+/**
+ * Copyright © 2025 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magenerds\BasePrice\ViewModel\BasePrice;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/**
+ * @var Template $block
+ * @var Escaper $escaper
+ * @var ViewModelRegistry $viewModels
+ */
+
+$basePriceHtml = $viewModels->require(BasePrice::class);
+$product = $block->getProduct();
+?>
+
+<?php if ($basePriceHtml = $basePriceHtml->getBasePriceBlock($product)->toHtml()): ?>
+    <?= $basePriceHtml ?>
+<?php endif ?>
