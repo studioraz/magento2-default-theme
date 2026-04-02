@@ -149,7 +149,6 @@
                     name="footer-copyright"
                     template="Magento_Theme::html/footer/copyright.phtml"
                     as="copyright"
-                    display="true"
                 />
             </block>
         </referenceContainer>
