@@ -1,5 +1,5 @@
 {
-    "name": "hyva-themes/magento2-default-theme",
+    "name": "studioraz/magento2-default-theme",
     "description": "Default Hyvä Theme",
     "config": {
         "sort-packages": true
@@ -25,6 +25,9 @@
         "studioraz/magento2-hyva-checkout-fallback-theme": "^2.1.1|dev-master",
         "studioraz/magento2-hyva-snowdog-menu": "^1.1.1|dev-master",
         "studioraz/magento2-hyva-product-qty-spinner" : "^2.0|dev-master"
+    },
+    "replace": {
+        "hyva-themes/magento2-default-theme": "*"
     },
     "type": "magento2-theme",
     "authors": [
