@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="topmenu-mobile">
+            <arguments>
+                <argument name="menu" xsi:type="string">hyva-topmenu</argument>
+                <argument name="template_folder" xsi:type="string">hyva-topmenu-mobile</argument>
+            </arguments>
+        </referenceBlock>
+
+        <referenceBlock name="topmenu-desktop">
+            <arguments>
+                <argument name="menu" xsi:type="string">hyva-topmenu</argument>
+                <argument name="template_folder" xsi:type="string">hyva-topmenu-desktop</argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>
