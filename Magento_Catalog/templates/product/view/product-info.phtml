@@ -59,7 +59,7 @@ $reviewHtml = trim($block->getChildHtml('product.info.review'));
         </div>
     <?php } ?>
 
-    <div class="static-add-to-cart flex">
+    <div class="static-add-to-cart flex gap-2">
         <?php if ($productType === 'bundle'): ?>
             <span class="sr-only">
                 <?= $escaper->escapeHtml(__('The price depends on the chosen options')) ?>
