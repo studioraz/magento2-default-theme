@@ -1,30 +1,9 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Copyright © 2025 Studio Raz. All rights reserved.
+ * Copyright © 2026 Studio Raz. All rights reserved.
  * See LICENSE for license details.
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <body>
-        <move element="product.info.form" destination="product.view.add.to.cart.qty.spinner" as="add_to_cart"/>
-        <referenceBlock name="product.view.add.to.cart.qty.spinner">
-            <arguments>
-                <argument name="container_css_base" xsi:type="string">qty-spinner-container relative w-full</argument>
-                <argument name="placeholder_css_base" xsi:type="string">qty-spinner-placeholder h-10 bg-gray-50 cursor-wait animate-pulse rounded-md</argument>
-                <argument name="block_css_base" xsi:type="string">mx-auto w-full h-full</argument>
-            </arguments>
-        </referenceBlock>
-        <referenceBlock name="product.view.qty.spinner">
-            <arguments>
-                <argument name="block_css_base" xsi:type="string">qty-spinner-block relative flex flex-row items-center overflow-hidden</argument>
-                <argument name="block_css_additional" xsi:type="string">rounded-md</argument>
-                <argument name="buttons_css_base" xsi:type="string">qty-spinner-button w-10 h-10 flex justify-center shrink-0 items-center enabled:cursor-pointer outline-none rounded-lg text-slate-500 bg-slate-200 enabled:hover:text-primary hover:bg-slate-100</argument>
-                <argument name="buttons_symbol_css_base" xsi:type="string">w-[17px] h-[17px]</argument>
-                <argument name="input_css_base" xsi:type="string">no-spinner w-[124px] lg:w-full h-10 mx-[8.5px] lg:mx-2 p-0 rounded-lg border border-form text-base text-center text-dark-500 bg-white shadow-none grow hover:border-form-hover focus:border-form-focus focus:outline-none focus:ring-0</argument>
-                <argument name="loader_css_base" xsi:type="string">h-full w-auto</argument>
-            </arguments>
-        </referenceBlock>
-    </body>
-</page>
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"/>

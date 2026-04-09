@@ -1,13 +1,9 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Copyright © 2025 Studio Raz. All rights reserved.
+ * Copyright © 2026 Studio Raz. All rights reserved.
  * See LICENSE for license details.
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <body>
-        <move element="product.info.form" destination="product.info" after="product.info.quantity"/>
-    </body>
-</page>
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"/>
