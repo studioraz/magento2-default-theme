@@ -21,7 +21,7 @@
         "magento/module-quote-graph-ql": "*",
         "hyva-themes/magento2-payment-icons": "^1.0",
         "hyva-themes/magento2-cms-tailwind-jit" : "^1.0",
-        "studioraz/magento2-hyva-base-module": "^2.2",
+        "studioraz/magento2-hyva-base-module": "^2.6.0",
         "studioraz/magento2-hyva-checkout-fallback-theme": "^2.1.1|dev-master",
         "studioraz/magento2-hyva-snowdog-menu": "^1.1.1|dev-master",
         "studioraz/magento2-hyva-product-qty-spinner" : "^2.0|dev-master"

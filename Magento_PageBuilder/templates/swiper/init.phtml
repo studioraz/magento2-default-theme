@@ -47,14 +47,6 @@ $globalConfig = [
             return merged;
         };
 
-        const changeTagName = (element, newTagName) => {
-            const newElement = document.createElement(newTagName);
-            for (const attr of element.attributes) newElement.setAttribute(attr.name, attr.value);
-            while (element.firstChild) newElement.appendChild(element.firstChild);
-            element.replaceWith(newElement);
-            return newElement;
-        };
-
         const getGalleryData = () => {
             try {
                 return JSON.parse(localStorage.getItem('image-gallery-data')) || [];
@@ -327,18 +319,15 @@ $globalConfig = [
 
         const prepareTabsStructure = (slider) => {
             const container = document.createElement('div');
-            container.className = 'swiper glider-contain';
+            container.className = 'swiper glider-contain w-full';
             container.setAttribute('dir', TEXT_DIRECTION);
 
             const wrapper = document.createElement('div');
             wrapper.className = 'swiper-wrapper';
 
             slider.querySelectorAll('.tab-header').forEach(header => {
-                const slideWrapper = document.createElement('div');
-                slideWrapper.className = 'swiper-slide';
-                header.parentNode.insertBefore(slideWrapper, header);
-                header = changeTagName(header, 'div');
-                slideWrapper.appendChild(header);
+                header.classList.add('swiper-slide');
+                header.style.width = 'auto'; // Force auto width so tabs are packed left-to-right
             });
 
             wrapper.append(...slider.childNodes);
@@ -426,9 +415,8 @@ $globalConfig = [
 
             // 5. Tabs
             else if (element.classList.contains('tabs-navigation')) {
-                const newEl = changeTagName(element, 'div');
-                prepareTabsStructure(newEl);
-                initializeSwiper(newEl.querySelector('.swiper'), {
+                prepareTabsStructure(element);
+                initializeSwiper(element.querySelector('.swiper'), {
                     slidesPerView: 'auto', spaceBetween: 8, freeMode: true, grabCursor: true
                 });
             }
@@ -506,6 +494,10 @@ $globalConfig = [
         };
 
         window.hyvaSwiperScan = detectPageSliders;
+        window.hyvaSwiperInitElement = (el) => {
+            initQueue.add(el);
+            scriptLoaded ? runQueue() : loadLibrary();
+        };
 
         if (window.hyvaSwiperManager) {
             detectPageSliders();
