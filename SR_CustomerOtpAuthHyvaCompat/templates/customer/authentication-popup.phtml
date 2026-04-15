@@ -54,6 +54,13 @@ $title = $otpViewModel->getOtpTitle();
             dashboardUrl: '<?= $escaper->escapeJs($dashboardUrl) ?>',
             isCustomerLoggedIn: <?= $otpAuthPopup->isCustomerLoggedIn() ? 'true' : 'false' ?>,
             eventListeners: {
+                ['@pageshow.window'](event) {
+                    if (event.persisted) {
+                        this.open = false;
+
+                        window.dispatchEvent(new CustomEvent('reload-customer-section-data'));
+                    }
+                },
                 ['@toggle-authentication.window'](event) {
                     const url = event.detail && event.detail.url,
                         isCheckoutContext = url && url.includes('/checkout');

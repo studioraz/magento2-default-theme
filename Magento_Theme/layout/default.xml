@@ -168,6 +168,7 @@
             <block class="Magento\Framework\View\Element\Template"
                    name="swiper.manager.js"
                    template="Magento_PageBuilder::swiper/init.phtml"/>
+            <block name="bf.cache.reload" template="Magento_Theme::js/bf-cache.phtml"/>
         </referenceContainer>
 
         <block name="head.additional" as="head.additional" template="Magento_Theme::html/container.phtml"/>

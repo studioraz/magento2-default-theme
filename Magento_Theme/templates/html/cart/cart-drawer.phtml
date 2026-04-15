@@ -163,10 +163,13 @@ $clearCartBlock = $block->getChildBlock('clear_cart');
                     const { itemId, message } = event.detail;
                     this.setItemMessage(itemId, message);
                 },
-                ["@pageshow.window"](event) {
+                ['@pageshow.window'](event) {
                     if (event.persisted) {
-                        this.open = false;
-                        window.dispatchEvent(new CustomEvent("reload-customer-section-data"));
+                        this.closeCartDrawer();
+
+                        this.isLoading = false;
+
+                        window.dispatchEvent(new CustomEvent('reload-customer-section-data'));
                     }
                 }
             }
@@ -240,6 +243,12 @@ $clearCartBlock = $block->getChildBlock('clear_cart');
             isLoading: false,
             isAfterLoading: false,
             eventListeners: {
+                ['@pageshow.window'](event) {
+                    if (event.persisted) {
+                        this.isLoading = false;
+                        this.isAfterLoading = false;
+                    }
+                },
                 ['@update-qty-' + itemId + '-before.window'](event) {
                     this.isLoading = true;
                 },
