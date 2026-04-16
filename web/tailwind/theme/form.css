@@ -1,7 +1,7 @@
 @layer base {
     :where(form label) {
         @apply mb-2 block;
-        color: var(--color-fg-secondary);
+        color: var(--color-label-primary);
     }
 
     :where(form legend) {
@@ -25,7 +25,7 @@
 
     :is([type="checkbox"], [type="radio"], .form-checkbox, .form-radio) {
         &:hover:not(:checked) {
-            border-color: var(--color-form-hover);
+            border-color: var(--color-input-border-hover);
         }
     }
 
@@ -34,7 +34,7 @@
     [type="month"], [type="search"], [type="tel"], [type="time"], [type="week"],
     textarea, select, .form-input, .form-textarea, .form-select, .form-multiselect ) {
         &:hover {
-            border-color: var(--color-form-hover);
+            border-color: var(--color-input-border-hover);
         }
     }
 }

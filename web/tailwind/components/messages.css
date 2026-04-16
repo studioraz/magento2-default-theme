@@ -1,22 +1,23 @@
 @layer components {
     .message {
-        @apply flex items-center justify-between w-full p-2 ps-5 bg-gray-100 shadow rounded text-black font-semibold mb-2;
+        @apply flex items-center justify-between w-full p-2 ps-5 shadow rounded font-semibold mb-2;
+        @apply bg-background-muted text-text-primary;
 
         &.error {
-            @apply border-2 border-red-500 bg-red-50;
+            @apply border-2 border-system-error bg-system-error-bg text-system-error-text;
         }
 
         &.success {
-            @apply border-2 border-green-500 bg-green-50;
+            @apply border-2 border-system-success bg-system-success-bg text-system-success-text;
         }
 
         &.info,
         &.notice {
-            @apply border-2 border-blue-500 bg-blue-50;
+            @apply border-2 border-system-info bg-system-info-bg text-system-info-text;
         }
 
         &.warning {
-            @apply border-2 border-yellow-500 bg-yellow-50;
+            @apply border-2 border-system-warning bg-system-warning-bg text-system-warning-text;
         }
 
         a {

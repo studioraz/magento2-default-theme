@@ -12,6 +12,11 @@
         accent-color: var(--color-primary);
         caret-color: var(--color-primary);
         interpolate-size: allow-keywords;
+        --color-gray-950: #030712;
+        --color-red-950: #450a0a;
+        --color-green-950: #052e16;
+        --color-orange-950: #431407;
+        --color-blue-950: #172554;
     }
 
     body {
