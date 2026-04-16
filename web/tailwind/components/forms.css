@@ -13,7 +13,7 @@
         --switch-width: --spacing(9);
         --switch-height: --spacing(5);
         --switch-thumb-offset: calc(var(--switch-width) - var(--switch-height));
-        border-color: var(--color-form);
+        border-color: var(--color-input-border);
         border-radius: calc(infinity * 1px);
         border-width: 2px;
         block-size: var(--switch-height);
@@ -31,15 +31,15 @@
             border-radius: calc(infinity * 1px);
             border-width: 1px;
             border-color: var(--form-bg);
-            background-color: var(--form-stroke);
+            background-color: var(--color-input-border);
             transition: translate 150ms;
         }
 
         &:hover:not(:checked) {
-            border-color: var(--color-form-hover);
+            border-color: var(--color-input-border-hover);
 
             &::after {
-                background-color: var(--color-form-hover);
+                background-color: var(--color-input-border-hover);
             }
         }
 
@@ -54,6 +54,69 @@
 
         &:dir(rtl):checked::after {
             translate: calc(var(--switch-thumb-offset) / -1) 0%;
+        }
+    }
+}
+
+@layer components {
+
+    :is(
+        input:where(:not(
+            [type="checkbox"], [type="radio"], [type="hidden"],
+            [type="button"], [type="submit"], [type="reset"],
+            [type="range"], [type="file"], [type="image"], [type="color"]
+        )),
+        textarea,
+        select,
+        .form-input,
+        .form-textarea,
+        .form-select,
+        .form-multiselect
+    ) {
+        @apply border-input-border bg-input-background-bg text-input-text-text;
+
+        &::placeholder {
+            @apply text-input-text-placeholder;
+        }
+
+        &:hover:not(:focus, :disabled, [readonly]) {
+            @apply border-input-border-hover bg-input-background-bg-hover;
+        }
+
+        &:focus {
+            @apply border-input-border-focus bg-input-background-bg-active;
+        }
+
+        &:disabled {
+            @apply border-input-border-disabled bg-input-background-bg-disabled text-input-text-text-disabled cursor-not-allowed;
+        }
+
+        &[readonly] {
+            @apply bg-input-background-bg-readonly;
+        }
+    }
+
+    .field-error :is(input, textarea, select, .form-input, .form-textarea, .form-select) {
+        @apply border-input-border-error;
+
+        &:focus {
+            @apply border-input-border-error;
+        }
+    }
+
+    .field-success :is(input, textarea, select, .form-input, .form-textarea, .form-select) {
+        @apply border-input-border-success;
+
+        &:focus {
+            @apply border-input-border-success;
+        }
+    }
+
+    .field-warning :is(input, textarea, select, .form-input, .form-textarea, .form-select) {
+        @apply border-input-border-warning;
+
+        &:focus {
+            @apply border-input-border-warning;
         }
     }
 }
@@ -93,12 +156,12 @@
         }
 
         &.field-error .messages {
-            @apply text-red-600;
+            @apply text-system-error;
             max-width: fit-content;
         }
 
         &.required > label {
-            @apply after:relative after:-top-1 after:text-red-600 after:icon-asterisk after:text-xs;
+            @apply after:relative after:-top-1 after:text-system-error after:icon-asterisk after:text-xs;
         }
     }
 }

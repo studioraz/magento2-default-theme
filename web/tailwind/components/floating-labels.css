@@ -11,7 +11,7 @@
     }
 
     .floating-labels-label {
-        @apply absolute text-sm  duration-300 top-2 px-2 start-1 rounded-sm cursor-text;
+        @apply absolute text-sm duration-300 top-2 px-2 start-1 rounded-sm cursor-text;
 
         transform: translateY(-1rem) scale(.75);
     }
@@ -22,7 +22,7 @@
     }
 
     .peer:focus ~ .floating-labels-label {
-        @apply top-2 ;
+        @apply top-2;
         transform: translateY(-1rem) scale(.75);
     }
 }
@@ -32,25 +32,33 @@
     .floating-labels > .control > input,
     .floating-labels > .control > select,
     .floating-labels > .control textarea {
-        @apply text-gray-900 border-form hover:border-form-hover focus:border-form-focus;
+        @apply text-input-text-text border-input-border;
+
+        &:hover:not(:focus, :disabled, [readonly]) {
+            @apply border-input-border-hover;
+        }
+
+        &:focus {
+            @apply border-input-border-focus;
+        }
     }
 
     .floating-labels.field-error > .control > input,
     .floating-labels.field-error > .control > select,
     .floating-labels.field-error > .control textarea {
-        @apply border-form-error;
+        @apply border-input-border-error;
     }
 
     .floating-labels-label {
-        @apply text-gray-900 bg-white;
+        @apply text-label-primary bg-input-background-bg;
     }
 
     .peer:focus ~ .floating-labels-label {
-        @apply text-form-focus;
+        @apply text-input-border-focus;
     }
 
     .field-error .peer ~ .floating-labels-label {
-        @apply text-form-error;
+        @apply text-system-error;
     }
 }
 
