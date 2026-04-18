@@ -145,7 +145,10 @@ $icons = $viewModels->require(SvgIcons::class);
 </div>
 
 <?php if (!$block->getIsBottom()): ?>
-    <div>
-        <?= $block->getLayout()->getBlock('m.catalog.navigation.horizontal.state')->toHtml(); ?>
-    </div>
+    <?php $mirasvitToolbar = $block->getLayout()->getBlock('m.catalog.navigation.horizontal.state'); ?>
+    <?php if ($mirasvitToolbar): ?>
+        <div>
+            <?= $mirasvitToolbar->toHtml(); ?>
+        </div>
+    <?php endif; ?>
 <?php endif ?>
