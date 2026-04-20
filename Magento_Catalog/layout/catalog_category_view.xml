@@ -14,7 +14,7 @@
         </referenceContainer>
 
         <referenceContainer name="category.view.container" htmlId="category-view-container" htmlClass="category-view container">
-            <block class="Magento\Catalog\Block\Category\View" name="category.image" template="Magento_Catalog::category/image.phtml" remove="true">
+            <block class="Magento\Catalog\Block\Category\View" name="category.image" template="Magento_Catalog::category/image.phtml">
                 <arguments>
                     <argument name="image" xsi:type="object">Magento\Catalog\ViewModel\Category\Image</argument>
                     <argument name="output" xsi:type="object">Magento\Catalog\ViewModel\Category\Output</argument>
@@ -26,6 +26,8 @@
 
             <block class="Magento\Catalog\Block\Category\View" name="category.description2" template="Magento_Catalog::category/description2.phtml"/>
         </referenceContainer>
+
+        <referenceBlock name="category.image" remove="true"/>
 
         <referenceContainer name="content">
             <block class="Magento\Catalog\Block\Category\View" name="category.products" template="Magento_Catalog::category/products.phtml">
