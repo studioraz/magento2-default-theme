@@ -69,7 +69,6 @@
                                             class="Magento\Checkout\Block\Cart\Shipping"
                                             as="shipping"
                                             template="Magento_Checkout::php-cart/shipping.phtml"
-                                            remove="true"
                                     >
                                         <!--
                                         <arguments>
@@ -142,5 +141,7 @@
                 </arguments>
             </block>
         </referenceContainer>
+
+        <referenceBlock name="checkout.cart.shipping" remove="true"/>
     </body>
 </page>
