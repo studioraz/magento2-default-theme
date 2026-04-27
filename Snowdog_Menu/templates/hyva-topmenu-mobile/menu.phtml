@@ -41,7 +41,8 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
 
             async openMenu() {
                 this.open = true;
-                this.$nextTick(() => hyva.trapFocus(this.$refs['menu-dialog']));
+                this.expandedNodes = {};
+                this.$nextTick(() => hyva.trapFocus(this.$refs['mobile-menu-dialog']));
                 document.body.classList.add('fixed', 'w-full');
 
                 if (!this.loaded && !this.loading) {
@@ -172,12 +173,13 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
             },
 
 
-            close(event) {
-                event && event.stopPropagation();
+            close() {
                 document.body.classList.remove('fixed', 'w-full');
                 this.open = false;
-                this.expandedNodes = {};
-                this.$nextTick(() => this.$refs['open-menu-button'].focus() || hyva.releaseFocus());
+                this.$nextTick(() => {
+                    this.$refs['open-menu-button']?.focus();
+                    hyva.releaseFocus();
+                });
             },
 
             toggleSubmenu(nodeId) {
@@ -218,8 +220,7 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
     <nav
             class="<?= $escaper->escapeHtmlAttr($menu->getCssClass()) ?> snowdog-topmenu-mobile z-20 order-2 text-slate-950 sm:order-1 navigation lg:hidden w-10 text-center"
             x-data="initMobileMenuGraphql<?= $escaper->escapeJs($uniqueId) ?>()"
-            @keydown.escape="open && close"
-            @click.outside="open && close"
+            @keydown.escape="open && close()"
             aria-label="<?= $escaper->escapeHtmlAttr(__('Main menu')) ?>"
             role="navigation"
     >
@@ -234,6 +235,7 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
         </button>
 
         <dialog
+                x-ref="mobile-menu-dialog"
                 id="mobile-menu-popup"
                 aria-labelledby="mobile-menu-popup-title"
                 class="w-[505px] h-full max-h-full me-0 open:flex flex-col transition ease-out duration-300 motion-reduce:duration-0 rounded-e-none"
@@ -254,7 +256,7 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
                 <button
                         type="button"
                         class="btn bg-transparent border-transparent p-2"
-                        @click="close"
+                        @click.stop.prevent="close()"
                         aria-label="<?= $escaper->escapeHtmlAttr(__('Close panel')) ?>"
                 >
                     <?= $lucideIcons->xHtml('', 24, 24, ['aria-hidden' => 'true']); ?>
