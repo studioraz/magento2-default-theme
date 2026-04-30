@@ -51,6 +51,18 @@
         }
     }
 
+    .product-info-addtocart-container {
+        > .field {
+            &.field-reserved {
+                margin: 0;
+
+                .form-input {
+                    border-color: var(--color-input-border) !important;
+                }
+            }
+        }
+    }
+
     @media (max-width: 768px) {
         .swatch-attribute {
             .product-option-values {
