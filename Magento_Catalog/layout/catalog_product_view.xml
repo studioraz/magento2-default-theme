@@ -246,7 +246,7 @@
         </referenceContainer>
 
         <referenceBlock name="product.info.form">
-            <container name="product.info.addtocart.container" htmlTag="div" htmlClass="product-info-addtocart-container flex flex-nowrap items-baseline gap-2" after="-"/>
+            <container name="product.info.addtocart.container" htmlTag="div" htmlClass="product-info-addtocart-container flex flex-nowrap items-center gap-2" after="-"/>
         </referenceBlock>
 
         <move element="product.info.quantity" destination="product.info.addtocart.container"/>
