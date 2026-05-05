@@ -66,7 +66,7 @@ $tooltipBlockHtml = $block->getBlockHtml('product.swatch.tooltip');
                             <?= $escaper->escapeHtmlAttr($productAttribute->getAttributeCode()) ?>">
                         <div class="flex flex-col items-center sm:items-start py-4 sm:py-1 w-full border-gray-300">
                             <label
-                                class="w-full text-left text-gray-700 label product-option-label"
+                                class="w-full text-start text-gray-700 label product-option-label"
                                 id="attribute-label-<?= $escaper->escapeHtmlAttr($productId . '-' . $attributeId) ?>"
                                 aria-hidden="true"
                             >
@@ -93,15 +93,15 @@ $tooltipBlockHtml = $block->getBlockHtml('product.swatch.tooltip');
                         </div>
                     </div>
                 <?php else: ?>
-                    <div class="flex flex-col sm:flex-row items-center py-2 w-full border-t border-gray-300 last:border-b">
-                        <label class="w-full sm:w-1/2 text-left text-gray-700 label"
+                    <div class="flex flex-col items-center sm:items-start py-2 w-full border-t border-gray-300 last:border-b">
+                        <label class="w-full sm:w-1/2 text-start text-gray-700 label"
                                for="attribute<?= $escaper->escapeHtmlAttr($attributeId) ?>"
                         >
                             <span>
                                 <?= $escaper->escapeHtml($attribute->getProductAttribute()->getStoreLabel()) ?>
                             </span>
                         </label>
-                        <div class="w-full sm:ml-2 sm:w-1/2 text-left text-gray-900">
+                        <div class="w-full sm:ml-2 sm:w-1/2 text-start text-gray-900">
                             <select name="super_attribute[<?= $escaper->escapeHtmlAttr($attribute->getAttributeId()) ?>]"
                                     id="attribute<?= $escaper->escapeHtmlAttr($attributeId) ?>"
                                     class="form-select super-attribute-select max-w-full"
