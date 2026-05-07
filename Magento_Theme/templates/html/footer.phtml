@@ -32,20 +32,15 @@ $icons = $viewModels->require(SvgIcons::class);
         </div>
     </div>
 
-    <div class="py-3 mx-auto bg-[#070914] border-b border-t border-[#1F2937]">
+    <div class="flex items-center justify-center lg:justify-between p-6 mx-auto bg-[#070914] border-b border-t border-[#1F2937]">
+        <div class="hidden lg:block">
+            <?= $block->getChildHtml('copyright') ?>
+        </div>
         <?= $block->getChildHtml('payment_icons') ?>
         <div class="block lg:hidden">
             <?= $block->getChildHtml('copyright') ?>
         </div>
-    </div>
-
-    <div class="bg-[#070914] flex p-6">
-        <div class="w-full mx-auto flex items-center justify-center lg:justify-between">
-            <div class="hidden lg:block">
-                <?= $block->getChildHtml('copyright') ?>
-            </div>
-            <a href="https://studioraz.co.il/"
-               target="_blank"><?= $icons->renderHtml('studioraz-logo', 'text-white w-[113px] h-[31px]', 96, 50) ?></a>
-        </div>
+        <a href="https://studioraz.co.il/"
+           target="_blank"><?= $icons->renderHtml('studioraz-logo', 'text-white w-[113px] h-[31px]', 96, 50) ?></a>
     </div>
 </div>

@@ -23,7 +23,7 @@ $newsletterBlock = $block->getLayout()->createBlock(Subscribe::class);
 $recaptcha = $block->getData('viewModelRecaptcha');
 ?>
 
-<div class="container mx-auto px-7 lg:mt-8">
+<div class="container mx-auto px-7 lg:mt-8 border-b border-gray-300">
     <div class="text-center mb-[18px] lg:mb-[21px]">
         <div class="uppercase font-bold mb-[10px] lg:mb-2 text-gray-700 pt-[38px] lg:pt-14 text-[22px] lg:text-[32px]">
             <?= $escaper->escapeHtml(__('Be the first to know')) ?>
