@@ -22,9 +22,10 @@
         "hyva-themes/magento2-payment-icons": "^1.0",
         "hyva-themes/magento2-cms-tailwind-jit" : "^1.0",
         "studioraz/magento2-hyva-base-module": "^2.7",
-        "studioraz/magento2-hyva-checkout-fallback-theme": "^2.1.1|dev-master",
+        "studioraz/magento2-hyva-checkout-fallback-theme": "^2.1.1|dev-master",        
+        "studioraz/magento2-hyva-product-qty-spinner" : "^2.0|dev-master",
+        "snowdog/module-menu": "^2.29",
         "studioraz/magento2-hyva-snowdog-menu": "^1.1.1|dev-master",
-        "studioraz/magento2-hyva-product-qty-spinner" : "^2.0|dev-master"
     },
     "replace": {
         "hyva-themes/magento2-default-theme": "*"
