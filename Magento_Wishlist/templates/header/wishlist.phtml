@@ -38,7 +38,7 @@ $customer = $viewModels->require(Customer::class);
     aria-label="<?= $escaper->escapeHtmlAttr(__('My Wish List')); ?>"
     :aria-label="linkAriaLabel"
 >
-    <?= $lucideIcons->heartHtml('', 24, 24, ["aria-hidden" => "true"]) ?>
+    <?= $lucideIcons->heartHtml('', 26, 26, ["aria-hidden" => "true"]) ?>
     <template x-if="itemCount">
         <span
             x-text="itemCount"

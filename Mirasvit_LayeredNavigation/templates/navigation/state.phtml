@@ -8,7 +8,7 @@ $filters = $block->getActiveFilters();
 <?php if (!empty($filters)): ?>
     <div class="filter-current mb-5 lg:mb-6 <?= $block->isHorizontalFilter() ? 'w-full' : '' ?>" data-mst-nav-part="state" x-data="initLabelRenderer()">
 
-        <ol class="items <?= $block->isHorizontalFilter() ? 'flex flex-wrap items-center gap-4' : '' ?>">
+        <ol class="items <?= $block->isHorizontalFilter() ? 'flex flex-wrap items-center gap-4' : 'flex flex-wrap gap-[6px]' ?>">
 
             <?php foreach ($filters as $filter): ?>
                 <?php
@@ -48,7 +48,7 @@ $filters = $block->getActiveFilters();
             <?php endif ?>
 
             <?php if (!$block->isHorizontalFilter()): ?>
-                <li class="item block-actions filter-actions font-semibold" data-element="filter" @click="handleClick">
+                <li class="item block-actions filter-actions font-semibold w-full cursor-pointer" data-element="filter" @click="handleClick">
                     <a href="<?= $block->getClearUrl() ?>" class="action clear filter-clear"><span><?= __('Clear All') ?></span></a>
                 </li>
             <?php endif ?>

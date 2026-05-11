@@ -150,7 +150,7 @@ $showWishlist = $block->getShowWishlist() !== null ? (bool)$block->getShowWishli
                     <?php endif ?>
                     id="menu-cart-icon"
                     type="button"
-                    class="relative btn bg-transparent border-transparent p-1"
+                    class="relative btn bg-transparent border-transparent p-1 mt-[1px] lg:mt-0"
                     x-ref="cartButton"
                     :aria-label="cartAriaLabel"
                     <?php if ($showMiniCart): ?>
@@ -162,7 +162,7 @@ $showWishlist = $block->getShowWishlist() !== null ? (bool)$block->getShowWishli
                         aria-label="<?= $escaper->escapeHtmlAttr(__('View cart')) ?>"
                     <?php endif ?>
             >
-                <?= $lucideIcons->shoppingCartHtml("md:h-6 md:w-6", 28, 28, ["aria-hidden" => "true"]) ?>
+                <?= $lucideIcons->shoppingCartHtml("md:h-6 md:w-6", 26, 26, ["aria-hidden" => "true"]) ?>
                 <span
                         x-text="summaryCount"
                         x-show="summaryCount"

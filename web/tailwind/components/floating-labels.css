@@ -11,7 +11,7 @@
     }
 
     .floating-labels-label {
-        @apply absolute text-sm duration-300 top-2 px-2 start-1 rounded-sm cursor-text;
+        @apply absolute text-xs duration-300 top-4.5 px-2 start-1 rounded-sm cursor-text;
 
         transform: translateY(-1rem) scale(.75);
     }
@@ -22,7 +22,7 @@
     }
 
     .peer:focus ~ .floating-labels-label {
-        @apply top-2;
+        @apply top-4.5;
         transform: translateY(-1rem) scale(.75);
     }
 }
