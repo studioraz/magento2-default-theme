@@ -29,7 +29,7 @@
     }
 }
 
-@media (min-width: 1280px) {
+@media (max-width: 1280px) {
     #html-body [data-content-type=column-group] [data-content-type=column-line] {
         @apply grid;
         grid-template-columns: repeat(var(--grid-template-columns, 1), minmax(0, 1fr));
