@@ -12,6 +12,7 @@
 @import "./slider.css";
 @import "./swatches.css";
 @import "./wrapper.css";
+@import "./page-builder-grid.css";
 
 /* ----- Custom styles ----- */
 @import "./floating-labels.css";
