@@ -116,7 +116,7 @@ $icons = $viewModels->require(SvgIcons::class);
     <?php if ($block->getCollection()->getSize()): ?>
         <div x-data="initToolbar<?= /** @noEscape */ $uniqueId ?>()" class="toolbar toolbar-products <?= !$block->getIsBottom() ? 'toolbar-top' : '' ?> mb-2 lg:mb-4 flex flex-wrap max-lg:gap-y-2">
             <div class="w-full flex flex-row">
-                <div class="w-full">
+                <div class="w-full flex flex-row">
                     <?php if ($block->getIsBottom()): ?>
                         <?= /** @noEscape */  $block->fetchView($block->getTemplateFile('Magento_Catalog::product/list/toolbar/amount.phtml')) ?>
                         <?= $block->getPagerHtml() ?>

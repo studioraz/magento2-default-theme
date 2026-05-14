@@ -30,6 +30,50 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
     <script>
         'use strict';
 
+        (function() {
+            const cacheKey = 'sr_menu_graphql_<?= $escaper->escapeJs($menuIdentifier) ?>';
+            const cached = sessionStorage.getItem(cacheKey);
+            if (cached) {
+                try {
+                    const parsed = JSON.parse(cached);
+                    if (parsed.expiry > Date.now()) return; // already cached
+                } catch(e) {}
+            }
+            const prefetch = () => {
+                const query = `{
+                    snowdogMenus(identifiers: ["<?= $escaper->escapeJs($menuIdentifier) ?>"]) {
+                        items {
+                            menu_id identifier title css_class
+                            nodes { items {
+                                ... on SnowdogMenuNodeInterface { node_id menu_id type classes parent_id position level title node_template submenu_template url_key additional_data }
+                                ... on SnowdogMenuNodeContentFieldInterface { content }
+                                ... on SnowdogMenuNodeImageFieldInterface { image image_alt_text }
+                                ... on SnowdogMenuCustomUrlNodeInterface { target }
+                            }}
+                        }
+                    }
+                }`;
+                fetch('<?= $escaper->escapeJs($graphqlEndpoint) ?>', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({query})
+                }).then(r => r.json()).then(result => {
+                    const items = result.data?.snowdogMenus?.items?.[0]?.nodes?.items;
+                    if (items) {
+                        sessionStorage.setItem(cacheKey, JSON.stringify({
+                            data: items,
+                            expiry: Date.now() + 300000
+                        }));
+                    }
+                }).catch(() => {});
+            };
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(prefetch);
+            } else {
+                setTimeout(prefetch, 200);
+            }
+        })();
+
         const initMobileMenuGraphql<?= $escaper->escapeJs($uniqueId) ?> = () => ({
             open: false,
             loading: false,
@@ -46,7 +90,6 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
                 document.body.classList.add('fixed', 'w-full');
 
                 if (!this.loaded && !this.loading) {
-                    this.loading = true;
                     await this.fetchMenu();
                 }
             },
@@ -59,13 +102,26 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
                     try {
                         const parsed = JSON.parse(cached);
                         if (parsed.expiry > Date.now()) {
-                            this.menuTree = parsed.data;
+                            const data = parsed.data;
+                            if (Array.isArray(data) && data.length > 0 && data[0].node_id !== undefined) {
+                                this.menuTree = this.buildTree(data);
+                                // Re-save as built tree for next time
+                                sessionStorage.setItem(cacheKey, JSON.stringify({
+                                    data: this.menuTree,
+                                    expiry: parsed.expiry
+                                }));
+                            } else {
+                                this.menuTree = data;
+                            }
                             this.loaded = true;
                             this.loading = false;
                             return;
                         }
                     } catch (e) { /* ignore bad cache */ }
                 }
+
+                // No cache available - show loading state
+                this.loading = true;
 
                 const query = `{
                 snowdogMenus(identifiers: ["<?= $escaper->escapeJs($menuIdentifier) ?>"]) {
@@ -227,11 +283,12 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
         <button x-ref="open-menu-button"
                 @click="openMenu"
                 type="button"
+                class="mt-[2px] lg:mt-0"
                 aria-label="<?= $escaper->escapeHtmlAttr(__('Open menu')) ?>"
                 :aria-expanded="open"
                 aria-haspopup="menu"
         >
-            <?= $lucideIcons->renderHtml('menu', '', 24, 24, ['aria-hidden' => 'true']) ?>
+            <?= $lucideIcons->renderHtml('menu', '', 26, 26, ['aria-hidden' => 'true']) ?>
         </button>
 
         <dialog
