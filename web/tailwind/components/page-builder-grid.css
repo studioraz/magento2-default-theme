@@ -1,0 +1,41 @@
+/**
+ * Hyvä Themes - https://hyva.io
+ * Copyright © Hyvä Themes 2020-present. All rights reserved.
+ * This product is licensed per Magento install
+ * See https://hyva.io/license
+ */
+
+@media (max-width: 639px) {
+    .pagebuilder-column-group {
+        --grid-template-columns: var(--column-layout-sm);
+    }
+}
+
+@media (min-width: 640px) and (max-width: 767px) {
+    .pagebuilder-column-group {
+        --grid-template-columns: var(--column-layout-md);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .pagebuilder-column-group {
+        --grid-template-columns: var(--column-layout-lg);
+    }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+    .pagebuilder-column-group {
+        --grid-template-columns: var(--column-layout-xl);
+    }
+}
+
+@media (max-width: 1280px) {
+    #html-body [data-content-type=column-group] [data-content-type=column-line] {
+        @apply grid;
+        grid-template-columns: repeat(var(--grid-template-columns, 1), minmax(0, 1fr));
+    }
+
+    #html-body [data-content-type=column-group] [data-content-type=column] {
+        @apply w-auto;
+    }
+}

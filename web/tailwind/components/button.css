@@ -59,11 +59,11 @@
 }
 
 @utility btn-primary {
-    --btn-stroke: var(--color-button-primary-border);
+    --btn-stroke: var(--color-button-primary-background);
     --btn-bg: var(--color-button-primary-background);
     --btn-color: var(--color-button-primary-text-primary);
 
-    --btn-hover-stroke: var(--color-button-primary-border-hover);
+    --btn-hover-stroke: var(--color-button-primary-background-hover);
     --btn-hover-bg: var(--color-button-primary-background-hover);
     --btn-hover-color: var(--color-button-primary-text-primary-hover);
 

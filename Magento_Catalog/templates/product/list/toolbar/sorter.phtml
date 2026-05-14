@@ -71,7 +71,7 @@ foreach ($availableOrders as $orderCode => $orderLabel) {
          @keydown.enter="selectedItem=selectableItemActive; selectOpen=false;"
          @keydown="selectKeydown($event);"
          x-cloak
-         class="relative z-20">
+         class="relative z-1">
         <button x-ref="selectButton" @click="selectOpen=!selectOpen"
                 id="select-button"
                 class="relative flex items-center justify-between py-2 pe-10 text-start cursor-default bg-slate-100 focus:outline-none filter-dropdown-button">

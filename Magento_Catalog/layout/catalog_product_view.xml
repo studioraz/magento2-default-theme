@@ -245,9 +245,15 @@
 
         </referenceContainer>
 
+        <referenceBlock name="product.info.form">
+            <container name="product.info.addtocart.container" htmlTag="div" htmlClass="product-info-addtocart-container flex flex-nowrap items-center gap-2" after="-"/>
+        </referenceBlock>
+
+        <move element="product.info.quantity" destination="product.info.addtocart.container"/>
+        <move element="product.info.addtocart" destination="product.info.addtocart.container"/>
+
         <move element="alert.urls" destination="product.info" as="alert.urls"/>
         <move element="page.main.title" destination="product.detail.page" as="product.title" />
-        <move element="product.info.addtocart" destination="product.info.form"/>
         <move element="mst_brand_product_page_logo" destination="product.info"/>
 
         <referenceContainer name="before.body.end">
