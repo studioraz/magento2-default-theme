@@ -30,7 +30,7 @@ $heroIcons = $viewModels->require(HeroiconsOutline::class);
     <label for="custom-input-number" class="sr-only"><?= $escaper->escapeHtml(__('Counter Input')) ?></label>
     <div class="max-w-[152px] flex flex-row items-center justify-between overflow-hidden bg-white">
         <button data-action="decrement"
-                class="flex justify-center items-center text-black hover:enabled:bg-gray-200 outline-none w-10 h-10 px-2 grow shrink-0 bg-[#F8FAFC] rounded-lg"
+                class="flex justify-center items-center text-black hover:enabled:bg-gray-200 outline-none w-10 h-10 px-2 grow shrink-0 bg-background-muted rounded-lg"
                 :class="{
                         'disabled:cursor-not-allowed': isDecrementDisabled && !isRequestInProgress,
                         'disabled:cursor-wait': isRequestInProgress,
@@ -60,7 +60,7 @@ $heroIcons = $viewModels->require(HeroiconsOutline::class);
                readonly
         />
         <button data-action="increment"
-                class="flex justify-center items-center text-black hover:enabled:bg-gray-200 outline-none w-10 h-10 px-2 grow shrink-0 bg-[#F8FAFC] rounded-lg"
+                class="flex justify-center items-center text-black hover:enabled:bg-gray-200 outline-none w-10 h-10 px-2 grow shrink-0 bg-background-muted rounded-lg"
                 :class="{
                         'disabled:cursor-not-allowed': isIncrementDisabled && !isRequestInProgress,
                         'disabled:cursor-wait': isRequestInProgress,

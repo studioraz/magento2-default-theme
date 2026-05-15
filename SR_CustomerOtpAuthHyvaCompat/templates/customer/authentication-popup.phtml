@@ -43,7 +43,10 @@ $dashboardUrl = $block->getUrl('customer/account');
 /** @var OtpAuthPopup $otpAuthPopup */
 $otpAuthPopup = $viewModels->require(OtpAuthPopup::class);
 
-/** @var OtpAuthForm $otpAuthPopup */
+/** @var bool $isOpenOtpOnContinueToCheckout */
+$isOpenOtpOnContinueToCheckout = (bool)$block->getData('isOpenOtpOnContinueToCheckout');
+
+/** @var OtpAuthForm $otpViewModel */
 $otpViewModel = $viewModels->require(OtpAuthForm::class);
 $title = $otpViewModel->getOtpTitle();
 ?>
@@ -53,7 +56,7 @@ $title = $otpViewModel->getOtpTitle();
             open: false,
             dashboardUrl: '<?= $escaper->escapeJs($dashboardUrl) ?>',
             isCustomerLoggedIn: <?= $otpAuthPopup->isCustomerLoggedIn() ? 'true' : 'false' ?>,
-            isOpenOtpOnCheckout: <?= $otpAuthPopup->isOpenOtpOnCheckout() ? 'true' : 'false' ?>,
+            isOpenOtpOnCheckout: <?= $isOpenOtpOnContinueToCheckout ? 'true' : 'false' ?>,
             eventListeners: {
                 ['@pageshow.window'](event) {
                     if (event.persisted) {
