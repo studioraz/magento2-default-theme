@@ -26,6 +26,7 @@ $maxItemsToDisplay = $storeConfig->getStoreConfig('checkout/sidebar/max_items_di
 $lucideIcons = $viewModels->require(LucideIcons::class);
 
 $miniCartOptionShowSku = $block->getShowSku() !== null ? (bool) $block->getShowSku() : false;
+$isOpenOtpOnCheckout = (bool) $storeConfig->getStoreConfig('srcustomerauth/user_interface/open_otp_on_checkout');
 
 $qtySpinnerBlock = $block->getChildBlock('qty_spinner');
 $clearCartBlock = $block->getChildBlock('clear_cart');
@@ -40,6 +41,7 @@ $clearCartBlock = $block->getChildBlock('clear_cart');
             maxItemsToDisplay: <?= (int) $maxItemsToDisplay ?>,
             itemsCount: 0,
             showSku: <?= $miniCartOptionShowSku ? 'true' : 'false' ?>,
+            isOpenOtpOnCheckout: <?= $isOpenOtpOnCheckout ? 'true' : 'false' ?>,
             autocompleteNumber: 100,
             init() {
                 if (document.prerendering) {
@@ -134,12 +136,18 @@ $clearCartBlock = $block->getChildBlock('clear_cart');
                 return hyva.strf(this.$el.dataset.ariaLabel, this.item.product_name)
             },
             proceedToCheckout() {
+                const checkoutUrl = '<?= $escaper->escapeUrl($block->getUrl('checkout')) ?>';
                 this.closeCartDrawer()
+
+                if (!this.isOpenOtpOnCheckout) {
+                    window.location.href = checkoutUrl;
+                    return;
+                }
 
                 this.$dispatch(
                     'toggle-authentication',
                     {
-                        url: '<?= $escaper->escapeUrl($block->getUrl('checkout')) ?>'
+                        url: checkoutUrl
                     }
                 )
             },

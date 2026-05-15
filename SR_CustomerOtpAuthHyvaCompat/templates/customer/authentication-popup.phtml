@@ -53,6 +53,7 @@ $title = $otpViewModel->getOtpTitle();
             open: false,
             dashboardUrl: '<?= $escaper->escapeJs($dashboardUrl) ?>',
             isCustomerLoggedIn: <?= $otpAuthPopup->isCustomerLoggedIn() ? 'true' : 'false' ?>,
+            isOpenOtpOnCheckout: <?= $otpAuthPopup->isOpenOtpOnCheckout() ? 'true' : 'false' ?>,
             eventListeners: {
                 ['@pageshow.window'](event) {
                     if (event.persisted) {
@@ -66,6 +67,11 @@ $title = $otpViewModel->getOtpTitle();
                         isCheckoutContext = url && url.includes('/checkout');
 
                     if (this.redirectIfAuthenticated(url)) {
+                        return;
+                    }
+
+                    if (isCheckoutContext && !this.isOpenOtpOnCheckout) {
+                        window.location.href = url;
                         return;
                     }
 
