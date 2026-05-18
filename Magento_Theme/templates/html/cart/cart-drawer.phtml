@@ -26,7 +26,7 @@ $maxItemsToDisplay = $storeConfig->getStoreConfig('checkout/sidebar/max_items_di
 $lucideIcons = $viewModels->require(LucideIcons::class);
 
 $miniCartOptionShowSku = $block->getShowSku() !== null ? (bool) $block->getShowSku() : false;
-$isOpenOtpOnCheckout = (bool) $storeConfig->getStoreConfig('srcustomerauth/user_interface/open_otp_on_checkout');
+$isOpenOtpOnCheckout = (bool) $storeConfig->getStoreConfig('srcustomerauth/user_interface/is_open_otp_on_continue_to_checkout');
 
 $qtySpinnerBlock = $block->getChildBlock('qty_spinner');
 $clearCartBlock = $block->getChildBlock('clear_cart');
