@@ -250,7 +250,7 @@ if ($msrpPrice = iterator_to_array($product->getPriceInfo()->getPrices())[MsrpPr
      class="price-box price-final_price"
 >
     <div x-show="!activeProductsPriceData && !isPriceHidden()"
-         class="price-container text-start flex items-center flex-wrap">
+         class="price-container text-start flex items-baseline flex-wrap">
         <?php if ($finalPrice < $regularPrice): ?>
             <div class="old-price flex order-2">
                 <span id="product-price-<?= (int)$product->getId() ?>"
@@ -273,11 +273,6 @@ if ($msrpPrice = iterator_to_array($product->getPriceInfo()->getPrices())[MsrpPr
         <?php endif; ?>
 
         <div class="final-price <?= $finalPrice < $regularPrice ? 'text-special-price' : 'text-price' ?> flex justify-center order-1 me-2" itemprop="offers" itemscope="" itemtype="http://schema.org/Offer">
-                <span class="price-label block">
-                    <?= ($product->canConfigure() && is_int($product->getPrice())) ?
-                            $escaper->escapeHtml(__('As low as')) . ':' :
-                            '&nbsp;' ?>
-                </span>
             <span id="product-price-<?= (int)$product->getId() ?>" class="price-wrapper">
                 <span class="price" x-html="getFormattedFinalPrice()">
                     <?= /** @noEscape */ $productViewModel->format($finalPrice, false) ?>
@@ -324,11 +319,6 @@ if ($msrpPrice = iterator_to_array($product->getPriceInfo()->getPrices())[MsrpPr
     </template>
     <template x-if="activeProductsPriceData">
         <div class="final-price inline-block">
-            <?php if ($product->canConfigure() && is_int($product->getPrice())): ?>
-                <span class="price-label block" :class="{ 'invisible' : !showRegularPriceLabel }">
-                    <?= $escaper->escapeHtml(__('As low as')) ?>:
-                </span>
-            <?php endif; ?>
             <span id="product-price-<?= (int)$product->getId() ?>"
                   class="price-wrapper title-font font-medium text-2xl text-dark-red">
                 <span class="price" x-html="getFormattedFinalPrice()"></span>

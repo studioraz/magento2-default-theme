@@ -45,10 +45,8 @@ $reviewHtml = trim($block->getChildHtml('product.info.review'));
 
     <div class="flex mb-3 md:mb-5">
         <span class="flex text-sm font-normal leading-5 text-slate-700">
-            <?= $block->getChildHtml("product.info.stockstatus") ?>
         </span>
         <?php if ($reviewHtml): ?>
-            <span class="mx-1 text-sm text-slate-700">|</span>
             <?= $reviewHtml ?>
         <?php endif; ?>
     </div>
@@ -58,6 +56,11 @@ $reviewHtml = trim($block->getChildHtml('product.info.review'));
             <?= /* @noEscape */ $shortDescription ?>
         </div>
     <?php } ?>
+
+    <div class="flex flex-col sm:flex-row justify-between my-4">
+        <?= $block->getChildHtml("product.info.stockstatus") ?>
+        <?= $block->getChildHtml("alert.urls") ?>
+    </div>
 
     <div class="static-add-to-cart flex gap-2">
         <?php if ($productType === 'bundle'): ?>
