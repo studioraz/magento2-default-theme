@@ -1,3 +1,25 @@
 #header, .navigation {
     background-color: #FFF8F6;
 }
+
+@layer utilities {
+    #search_mini_form {
+        @apply max-w-120 mx-auto;
+
+        #search {
+            @apply rounded-md px-3.5 py-2.5 leading-6 text-base;
+        }
+    }
+
+    .header-logo {
+        img {
+            @apply max-w-30 sm:max-w-36 lg:max-w-37;
+        }
+    }
+
+    .page-header {
+        > .navigation {
+            @apply lg:bg-white;
+        }
+    }
+}

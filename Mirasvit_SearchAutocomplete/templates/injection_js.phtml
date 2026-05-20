@@ -26,11 +26,11 @@ $config = $block->getJsConfig();
 
 $helper         = $this->helper(SearchHelper::class);
 $col2           = $config['layout'] == "2columns";
-$titleCSS       = 'text-base font-bold leading-6';
+$titleCSS       = 'text-sm lg:text-base font-semibold leading-6';
 $titleNumberCSS = 'text-gray-500 ms-1';
 
 $itemCSS     = 'flex';
-$itemNameCSS = 'text-sm font-normal leading-5 cursor-pointer';
+$itemNameCSS = 'text-sm text-secondary font-normal leading-5 cursor-pointer';
 
 $lucideIcons = $viewModels->require(LucideIcons::class);
 $icons = $viewModels->require(SvgIcons::class);
@@ -45,7 +45,7 @@ $icons = $viewModels->require(SvgIcons::class);
     x-init="calculatePositions()"
     @resize.window.debounce="calculatePositions()"
 >
-    <form class="relative w-full"
+    <form class="relative w-full max-lg:!mx-0"
           id="search_mini_form"
           x-ref="searchForm"
           action="<?= $escaper->escapeUrl($helper->getResultUrl()) ?>"
@@ -63,7 +63,7 @@ $icons = $viewModels->require(SvgIcons::class);
                    value="<?= $escaper->escapeHtmlAttr($helper->getEscapedQueryText()) ?>"
                    placeholder="<?= $escaper->escapeHtmlAttr(__('Search entire store here...')) ?>"
                    maxlength="<?= $escaper->escapeHtmlAttr($helper->getMaxQueryLength()) ?>"
-                   class="w-full border-slate-300 rounded-l-md !rounded-e-none focus:border-primary focus:outline-none focus:ring-0"
+                   class="w-full border-slate-300 rounded-l-md max-lg:!rounded-e-md !rounded-e-none focus:border-primary focus:outline-none focus:ring-0"
                    x-on:keyup.debounce.300="doSearch(searchInput)"
                    x-on:focus.debounce.150="openSearch"
                    x-on:click.debounce.150="openSearch"
@@ -73,13 +73,13 @@ $icons = $viewModels->require(SvgIcons::class);
             />
             <button
                     type="submit"
-                    class="action search btn btn-primary rounded-s-none rounded-e-md px-2"
+                    class="action search btn btn-primary rounded-s-none rounded-e-md px-2 max-lg:hidden"
                     title="<?= $escaper->escapeHtmlAttr(__('Search')) ?>"
                     aria-label="<?= $escaper->escapeHtmlAttr(__('Search')) ?>"
             >
                 <?= $lucideIcons->searchHtml('', 24, 24, ['aria-hidden' => 'true']); ?>
             </button>
-            <button class="absolute end-[55px] top-0 h-full p-2"
+            <button class="absolute end-0 top-0 h-full p-2"
                     x-show="canShowClearSearch()"
                     @click="clearSearch();"
                     title="<?= __('Clear search') ?>"
@@ -96,7 +96,7 @@ $icons = $viewModels->require(SvgIcons::class);
         :style="backdropStyles()"
         x-cloak></div>
 
-    <div x-cloak x-show="isOpen" id="mirasvitSearchResults" :style="panelStyles()" class="mirasvit-search-results absolute top-full start-0 end-0 mt-5 bg-white z-[60] rounded-xl shadow-[-4px_4px_4px_0px_rgba(10,26,79,0.04)]">
+    <div x-cloak x-show="isOpen" id="mirasvitSearchResults" :style="panelStyles()" class="mirasvit-search-results max-lg:fixed max-lg:inset-0 absolute top-full start-0 end-0 mt-5 bg-white z-[60] rounded-xl shadow-[-4px_4px_4px_0px_rgba(10,26,79,0.04)] lg:mx-auto lg:max-w-[720px]">
 
         <div x-show="isLoading" class="min-h-[70px] md:min-h-[100px]">
             <?= $block->getChildHtml('loading.search.autocomplete') ?>
@@ -111,7 +111,7 @@ $icons = $viewModels->require(SvgIcons::class);
                     <div class="mt-3 flex flex-wrap gap-[8px]">
                         <?php foreach ($config['popularSearches'] as $search) : ?>
                             <span x-on:click="hotSearchClickEvent"
-                                  class="text-center text-sm font-medium leading-5 py-[6px] px-[10px] border border-slate-400 rounded-[26px] cursor-pointer hover:text-primary hover:border-primary active:text-primary active:border-primary">
+                                  class="text-center text-sm font-medium leading-5 py-[6px] px-[10px] border border-input-border-disabled rounded-[26px] cursor-pointer hover:text-primary hover:border-primary active:text-primary active:border-primary">
                                     <?= $escaper->escapeHtml(__($search)) ?>
                                 </span>
                         <?php endforeach; ?>
@@ -129,7 +129,7 @@ $icons = $viewModels->require(SvgIcons::class);
                     <?php if ($col2) : ?>
                     <div class="col-span-12 lg:col-span-7 lg:order-first max-w-full">
                         <?php endif; ?>
-                        <p class="order-1 text-base md:text-lg text-slate-900 font-bold leading-6 mb-3">
+                        <p class="order-1 text-sm lg:text-base text-slate-900 font-semibold leading-6 mb-3">
                             <?= __('Products') ?>
                         </p>
                         <div
@@ -141,11 +141,11 @@ $icons = $viewModels->require(SvgIcons::class);
                                     <a x-bind:href="`${item.url}`" class="flex items-center justify-between gap-[8px] py-[6px] px-[8px] w-full rounded-lg hover:bg-gray-50 no-underline">
                                         <?php if ($config['isShowImage']): ?>
                                             <div class="flex items-center w-[80px]">
-                                                <img x-bind:src="`${item.imageUrl}`" class="mx-auto w-[64px] h-auto"/>
+                                                <img x-bind:src="`${item.imageUrl}`" class="mx-auto w-[54px] lg:w-[58px] h-auto"/>
                                             </div>
                                         <?php endif ?>
-                                        <div class="w-full text-sm md:text-base">
-                                            <h4 class="font-bold leading-6 text-black text-wrap" x-html="item.name"></h4>
+                                        <div class="w-full text-sm">
+                                            <h4 class="font-semibold leading-6 text-black text-wrap" x-html="item.name"></h4>
                                             <?php if ($config['isShowDescription']): ?>
                                                 <p class="truncate w-[135px]" x-html="item.description"></p>
                                             <?php endif ?>
@@ -165,9 +165,8 @@ $icons = $viewModels->require(SvgIcons::class);
                         <?php if ($col2) : ?>
                         <div class="w-full order-2 col-span-12 hidden lg:pe-[32px] lg:block">
                             <div class="flex items-center justify-end">
-                                <a x-bind:href="numberResultsUrl" class="inline-flex items-center justify-between gap-[6px] no-underline text-primary hover:underline">
-                                    <span class="text-sm leading-6 font-medium transition appearance-none" x-html="getNumberResults(numberResults)"></span>
-                                    <?= $lucideIcons->renderHtml('arrow-right', '', 18, 18, []) ?>
+                                <a x-bind:href="numberResultsUrl" class="w-full inline-flex items-center justify-between gap-[6px] no-underline text-primary hover:underline">
+                                    <span class="w-full btn btn-primary text-sm leading-6 font-semibold appearance-none" x-html="getNumberResults(numberResults)"></span>
                                 </a>
                             </div>
                         </div>
@@ -180,7 +179,7 @@ $icons = $viewModels->require(SvgIcons::class);
 
                         <template x-if="searchCategories != ''">
                             <div class="mb-2 lg:mb-[21px] pt-[18px] lg:pt-0 lg:pb-0 border-t border-t-slate-300 lg:border-none">
-                                <p class="order-1 text-base md:text-lg text-slate-900 font-bold leading-6 mb-3"">
+                                <p class="order-1 text-base text-slate-900 font-semibold leading-6 mb-3">
                                     <?= __('Categories') ?>
                                 </p>
                                 <div class="text-sm">
@@ -235,9 +234,8 @@ $icons = $viewModels->require(SvgIcons::class);
 
                     <div class="order-3 pe-[18px] lg:mt-0 w-full col-span-12 lg:hidden">
                         <div class="flex items-center justify-end mb-[16px]">
-                            <a x-bind:href="numberResultsUrl" class="inline-flex items-center justify-between gap-[6px] no-underline text-primary">
-                                <span class="text-base leading-6 font-medium appearance-none" x-html="getNumberResults(numberResults)"></span>
-                                <?= $lucideIcons->renderHtml('arrow-right', '', 18, 18) ?>
+                            <a x-bind:href="numberResultsUrl" class="w-full inline-flex items-center justify-between gap-[6px] no-underline text-primary">
+                                <span class="w-full btn btn-primary text-sm leading-6 font-semibold appearance-none" x-html="getNumberResults(numberResults)"></span>
                             </a>
                         </div>
                     </div>
@@ -257,7 +255,7 @@ $icons = $viewModels->require(SvgIcons::class);
                         <?php if ($config['popularSearches']) : ?>
                             <?php foreach ($config['popularSearches'] as $search) : ?>
                                 <span x-on:click="hotSearchClickEvent"
-                                      class="text-center text-sm font-medium leading-5 py-[6px] px-[10px] border border-slate-400 rounded-[26px] cursor-pointer hover:text-primary hover:border-primary active:text-primary active:border-primary">
+                                      class="text-center text-sm font-medium leading-5 py-[6px] px-[10px] border border-border-input-border-disabled rounded-[26px] cursor-pointer hover:text-primary hover:border-primary active:text-primary active:border-primary">
                                     <?= $escaper->escapeHtml(__($search)) ?>
                                 </span>
                             <?php endforeach; ?>
@@ -501,7 +499,7 @@ $icons = $viewModels->require(SvgIcons::class);
                 this.backdropTop = rectHeader.bottom;
                 const searchInputEl = this.$refs.searchInput;
                 const rectSearchInput = searchInputEl.getBoundingClientRect();
-                this.panelMarginTop = rectHeader.bottom - rectSearchInput.bottom + 4;
+                this.panelMarginTop = rectHeader.bottom - rectSearchInput.bottom - 10;
             },
 
             backdropStyles() {
