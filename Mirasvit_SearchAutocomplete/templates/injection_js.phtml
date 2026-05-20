@@ -79,7 +79,7 @@ $icons = $viewModels->require(SvgIcons::class);
             >
                 <?= $lucideIcons->searchHtml('', 24, 24, ['aria-hidden' => 'true']); ?>
             </button>
-            <button class="absolute end-0 top-0 h-full p-2"
+            <button class="absolute end-0 lg:end-[55px] top-0 h-full p-2"
                     x-show="canShowClearSearch()"
                     @click="clearSearch();"
                     title="<?= __('Clear search') ?>"
