@@ -1,5 +1,4 @@
 .price-box {
-    --price-font-weight: 400;
     color: var(--color-price, var(--color-blue-800));
 
     & .price {
