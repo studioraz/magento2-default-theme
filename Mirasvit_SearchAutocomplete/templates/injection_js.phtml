@@ -96,7 +96,7 @@ $icons = $viewModels->require(SvgIcons::class);
         :style="backdropStyles()"
         x-cloak></div>
 
-    <div x-cloak x-show="isOpen" id="mirasvitSearchResults" :style="panelStyles()" class="mirasvit-search-results max-lg:fixed max-lg:inset-0 absolute top-full start-0 end-0 mt-5 bg-white z-[60] rounded-xl shadow-[-4px_4px_4px_0px_rgba(10,26,79,0.04)] lg:mx-auto lg:max-w-[720px]">
+    <div x-cloak x-show="isOpen" id="mirasvitSearchResults" :style="panelStyles()" class="mirasvit-search-results max-lg:fixed max-lg:inset-0 absolute top-full start-0 end-0 mt-5 bg-white z-[60] rounded-xl shadow-[-4px_4px_4px_0px_rgba(10,26,79,0.04)] lg:mx-auto lg:max-w-[720px] !mt-[75px] lg:!mt-1">
 
         <div x-show="isLoading" class="min-h-[70px] md:min-h-[100px]">
             <?= $block->getChildHtml('loading.search.autocomplete') ?>
