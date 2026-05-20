@@ -71,7 +71,7 @@
             "bg-hover": "var(--color-white)",
             "bg-disabled": "var(--color-slate-50)",
             "bg-readonly": "var(--color-zinc-50)",
-            "bg-active": "var(--color-blue-50)"
+            "bg-active": "var(--color-white)"
           },
           "text": {
             "text": "var(--color-slate-800)",
