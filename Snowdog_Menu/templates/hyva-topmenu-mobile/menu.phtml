@@ -27,11 +27,33 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
 ?>
 
 <?php if ($menu): ?>
+    <style>
+        @keyframes slideOutLeft {
+            from { transform: translateX(0); opacity: 1; }
+            to   { transform: translateX(-30%); opacity: 0; }
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(30%); opacity: 0; }
+            to   { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to   { transform: translateX(30%); opacity: 0; }
+        }
+        @keyframes slideInLeft {
+            from { transform: translateX(-30%); opacity: 0; }
+            to   { transform: translateX(0); opacity: 1; }
+        }
+        .animate-slide-out-left  { animation: slideOutLeft 200ms ease-in forwards; }
+        .animate-slide-in-right  { animation: slideInRight 250ms ease-out forwards; }
+        .animate-slide-out-right { animation: slideOutRight 200ms ease-in forwards; }
+        .animate-slide-in-left   { animation: slideInLeft 250ms ease-out forwards; }
+    </style>
     <script>
         'use strict';
 
         (function() {
-            const cacheKey = 'sr_menu_graphql_<?= $escaper->escapeJs($menuIdentifier) ?>';
+            const cacheKey = 'sr_menu_graphql_v2_<?= $escaper->escapeJs($menuIdentifier) ?>';
             const cached = sessionStorage.getItem(cacheKey);
             if (cached) {
                 try {
@@ -80,12 +102,12 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
             loaded: false,
             error: null,
             menuTree: [],
-            expandedNodes: {},
+            navigationStack: [],
             mediaBaseUrl: '<?= $escaper->escapeJs($mediaBaseUrl) ?>',
 
             async openMenu() {
                 this.open = true;
-                this.expandedNodes = {};
+                this.navigationStack = [];
                 this.$nextTick(() => hyva.trapFocus(this.$refs['mobile-menu-dialog']));
                 document.body.classList.add('fixed', 'w-full');
 
@@ -95,24 +117,14 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
             },
 
             async fetchMenu() {
-                const cacheKey = 'sr_menu_graphql_<?= $escaper->escapeJs($menuIdentifier) ?>';
+                const cacheKey = 'sr_menu_graphql_v2_<?= $escaper->escapeJs($menuIdentifier) ?>';
                 const cached = sessionStorage.getItem(cacheKey);
 
                 if (cached) {
                     try {
                         const parsed = JSON.parse(cached);
-                        if (parsed.expiry > Date.now()) {
-                            const data = parsed.data;
-                            if (Array.isArray(data) && data.length > 0 && data[0].node_id !== undefined) {
-                                this.menuTree = this.buildTree(data);
-                                // Re-save as built tree for next time
-                                sessionStorage.setItem(cacheKey, JSON.stringify({
-                                    data: this.menuTree,
-                                    expiry: parsed.expiry
-                                }));
-                            } else {
-                                this.menuTree = data;
-                            }
+                        if (parsed.expiry > Date.now() && Array.isArray(parsed.data) && parsed.data.length > 0) {
+                            this.menuTree = this.buildTree(parsed.data);
                             this.loaded = true;
                             this.loading = false;
                             return;
@@ -191,7 +203,7 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
                     this.loaded = true;
 
                     sessionStorage.setItem(cacheKey, JSON.stringify({
-                        data: this.menuTree,
+                        data: menuData.nodes.items,
                         expiry: Date.now() + 300000 // 5 min TTL
                     }));
                 } catch (e) {
@@ -238,12 +250,63 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
                 });
             },
 
-            toggleSubmenu(nodeId) {
-                this.expandedNodes[nodeId] = !this.expandedNodes[nodeId];
+            // Drill-down navigation
+            animationTimer: null,
+
+            get currentNodes() {
+                if (this.navigationStack.length === 0) return this.menuTree;
+                return this.navigationStack[this.navigationStack.length - 1].children;
             },
 
-            isExpanded(nodeId) {
-                return !!this.expandedNodes[nodeId];
+            get currentParent() {
+                if (this.navigationStack.length === 0) return null;
+                return this.navigationStack[this.navigationStack.length - 1];
+            },
+
+            cancelAnimation() {
+                if (this.animationTimer) {
+                    clearTimeout(this.animationTimer);
+                    this.animationTimer = null;
+                }
+                const container = this.$refs.menuContent;
+                if (container) container.style.animation = '';
+            },
+
+            drillDown(node) {
+                if (!node.children || node.children.length === 0) return;
+                this.cancelAnimation();
+                const container = this.$refs.menuContent;
+                if (container) {
+                    container.style.animation = 'slideOutLeft 150ms ease-in forwards';
+                    this.animationTimer = setTimeout(() => {
+                        this.navigationStack.push(node);
+                        container.style.animation = 'slideInRight 200ms ease-out forwards';
+                        this.animationTimer = setTimeout(() => {
+                            container.style.animation = '';
+                            this.animationTimer = null;
+                        }, 210);
+                    }, 160);
+                } else {
+                    this.navigationStack.push(node);
+                }
+            },
+
+            goBack() {
+                this.cancelAnimation();
+                const container = this.$refs.menuContent;
+                if (container) {
+                    container.style.animation = 'slideOutRight 150ms ease-in forwards';
+                    this.animationTimer = setTimeout(() => {
+                        this.navigationStack.pop();
+                        container.style.animation = 'slideInLeft 200ms ease-out forwards';
+                        this.animationTimer = setTimeout(() => {
+                            container.style.animation = '';
+                            this.animationTimer = null;
+                        }, 210);
+                    }, 160);
+                } else {
+                    this.navigationStack.pop();
+                }
             },
 
             getNodeUrl(node) {
@@ -322,157 +385,80 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
 
             <div class="flex flex-col h-full overflow-y-auto bg-white text-start">
                 <!-- Loading state -->
-                <template x-if="loading">
-                    <div class="px-8 py-6 space-y-4" role="status" aria-label="<?= $escaper->escapeHtmlAttr(__('Loading menu...')) ?>">
-                        <template x-for="i in 5" :key="i">
-                            <div class="animate-pulse flex items-center space-x-3">
-                                <div class="h-4 bg-gray-200 rounded w-3/4"></div>
-                            </div>
-                        </template>
-                        <span class="sr-only"><?= $escaper->escapeHtml(__('Loading menu...')) ?></span>
-                    </div>
-                </template>
+                <div x-show="loading" class="px-8 py-6 space-y-4" role="status" aria-label="<?= $escaper->escapeHtmlAttr(__('Loading menu...')) ?>">
+                    <template x-for="i in 5" :key="i">
+                        <div class="animate-pulse flex items-center space-x-3">
+                            <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                        </div>
+                    </template>
+                    <span class="sr-only"><?= $escaper->escapeHtml(__('Loading menu...')) ?></span>
+                </div>
 
                 <!-- Error state -->
-                <template x-if="!loading && error">
-                    <div class="px-8 py-4 text-red-600" role="alert">
-                        <p><?= $escaper->escapeHtml(__('Unable to load menu.')) ?></p>
-                        <button
-                                type="button"
-                                class="underline mt-2 text-sm"
-                                @click="loading = true; error = null; fetchMenu()"
-                        ><?= $escaper->escapeHtml(__('Try again')) ?></button>
-                    </div>
-                </template>
+                <div x-show="!loading && error" x-cloak class="px-8 py-4 text-red-600" role="alert">
+                    <p><?= $escaper->escapeHtml(__('Unable to load menu.')) ?></p>
+                    <button
+                            type="button"
+                            class="underline mt-2 text-sm"
+                            @click="loading = true; error = null; fetchMenu()"
+                    ><?= $escaper->escapeHtml(__('Try again')) ?></button>
+                </div>
 
-                <!-- Menu tree -->
-                <template x-if="loaded && !error">
-                    <ul class="mb-1 divide-y divide-container">
-                        <template x-for="node in menuTree" :key="node.node_id">
-                            <li>
-                                <!-- Node with children -->
-                                <template x-if="node.children.length > 0">
-                                    <div>
+                <!-- Menu tree - Drill Down -->
+                <div x-show="loaded && !error" class="relative overflow-hidden h-full">
+                    <div x-ref="menuContent" class="h-full">
+                        <!-- Back button -->
+                        <div x-show="currentParent" x-cloak>
+                            <button
+                                    type="button"
+                                    class="flex items-center w-full px-8 py-4 font-medium text-left"
+                                    @click="goBack()"
+                            >
+                                <?= $lucideIcons->renderHtml('chevron-left', 'text-gray-500 me-2', 20, 20, ['aria-hidden' => 'true']); ?>
+                                <span x-text="currentParent ? currentParent.title : ''"></span>
+                            </button>
+                            <!-- View All link for current parent -->
+                            <template x-if="currentParent && showViewAll(currentParent)">
+                                <a :href="getNodeUrl(currentParent)"
+                                   class="flex items-center px-8 py-3 text-base"
+                                   x-text="viewAllLabel + ' ' + currentParent.title"
+                                ></a>
+                            </template>
+                        </div>
+
+                        <!-- Current level nodes -->
+                        <ul class="divide-y divide-container overflow-y-auto" :class="currentParent ? 'h-[calc(100%-80px)] pb-4' : 'h-full'">
+                            <template x-for="node in currentNodes" :key="node.node_id">
+                                <li>
+                                    <!-- Node with children - drill down button -->
+                                    <template x-if="node.children && node.children.length > 0">
                                         <button
-                                                class="flex items-center w-full px-8 py-4"
-                                                @click="toggleSubmenu(node.node_id)"
-                                                :aria-expanded="isExpanded(node.node_id)"
-                                                :aria-label="'<?= $escaper->escapeJs(__('Toggle submenu for')) ?> ' + node.title"
                                                 type="button"
+                                                class="flex items-center w-full px-8 py-4 text-left"
+                                                @click="drillDown(node)"
                                         >
                                             <template x-if="getImageUrl(node)">
                                                 <img class="me-2" :src="getImageUrl(node)" :alt="node.image_alt_text || ''" loading="lazy" width="24" height="24" />
                                             </template>
                                             <span x-text="node.title"></span>
-                                            <div class="ms-auto transition-transform" :class="{'rotate-180': isExpanded(node.node_id)}">
-                                                <?= $lucideIcons->renderHtml('chevron-down', 'text-gray-500', 20, 20, ['aria-hidden' => 'true']); ?>
+                                            <div class="ms-auto">
+                                                <?= $lucideIcons->renderHtml('chevron-right', 'text-gray-500', 20, 20, ['aria-hidden' => 'true']); ?>
                                             </div>
                                         </button>
-                                        <!-- Submenu level 1 -->
-                                        <ul class="pb-2 ps-4" x-show="isExpanded(node.node_id)" x-collapse :aria-hidden="!isExpanded(node.node_id) ? 'true' : 'false'">
-                                            <template x-if="showViewAll(node)">
-                                                <li>
-                                                    <a :href="getNodeUrl(node)" class="__inner-link px-8 py-4 block" x-text="viewAllLabel"></a>
-                                                </li>
-                                            </template>
-                                            <template x-for="child in node.children" :key="child.node_id">
-                                                <li>
-                                                    <template x-if="child.children.length > 0">
-                                                        <div>
-                                                            <button
-                                                                    class="flex items-center justify-between w-full px-8 py-4"
-                                                                    @click="toggleSubmenu(child.node_id)"
-                                                                    :aria-expanded="isExpanded(child.node_id)"
-                                                                    :aria-label="'<?= $escaper->escapeJs(__('Toggle submenu for')) ?> ' + child.title"
-                                                                    type="button"
-                                                            >
-                                                                <template x-if="getImageUrl(child)">
-                                                                    <img class="me-2" :src="getImageUrl(child)" :alt="child.image_alt_text || ''" loading="lazy" width="24" height="24" />
-                                                                </template>
-                                                                <span x-text="child.title"></span>
-                                                                <div class="ms-auto transition-transform" :class="{'rotate-180': isExpanded(child.node_id)}">
-                                                                    <?= $lucideIcons->renderHtml('chevron-down', 'text-gray-500', 20, 20, ['aria-hidden' => 'true']); ?>
-                                                                </div>
-                                                            </button>
-                                                            <!-- Submenu level 2 -->
-                                                            <ul class="pb-2 ps-4" x-show="isExpanded(child.node_id)" x-collapse :aria-hidden="!isExpanded(child.node_id) ? 'true' : 'false'">
-                                                                <template x-if="showViewAll(child)">
-                                                                    <li>
-                                                                        <a :href="getNodeUrl(child)" class="__inner-link" x-text="viewAllLabel"></a>
-                                                                    </li>
-                                                                </template>
-                                                                <template x-for="grandchild in child.children" :key="grandchild.node_id">
-                                                                    <li>
-                                                                        <template x-if="grandchild.children.length > 0">
-                                                                            <div>
-                                                                                <button
-                                                                                        class="flex items-center justify-between w-full px-8 py-4"
-                                                                                        @click="toggleSubmenu(grandchild.node_id)"
-                                                                                        :aria-expanded="isExpanded(grandchild.node_id)"
-                                                                                        :aria-label="'<?= $escaper->escapeJs(__('Toggle submenu for')) ?> ' + grandchild.title"
-                                                                                        type="button"
-                                                                                >
-                                                                                    <span x-text="grandchild.title"></span>
-                                                                                    <div class="ms-auto transition-transform" :class="{'rotate-180': isExpanded(grandchild.node_id)}">
-                                                                                        <?= $lucideIcons->renderHtml('chevron-down', 'text-gray-500', 20, 20, ['aria-hidden' => 'true']); ?>
-                                                                                    </div>
-                                                                                </button>
-                                                                                <ul class="pb-2 ps-4" x-show="isExpanded(grandchild.node_id)" x-collapse>
-                                                                                    <template x-if="showViewAll(grandchild)">
-                                                                                        <li>
-                                                                                            <a :href="getNodeUrl(grandchild)" class="__inner-link" x-text="viewAllLabel"></a>
-                                                                                        </li>
-                                                                                    </template>
-                                                                                    <template x-for="leaf in grandchild.children" :key="leaf.node_id">
-                                                                                        <li>
-                                                                                            <a class="flex items-center px-8 py-4 group"
-                                                                                               :href="getNodeUrl(leaf)"
-                                                                                               :target="getNodeTarget(leaf)"
-                                                                                               x-text="leaf.title"
-                                                                                            ></a>
-                                                                                        </li>
-                                                                                    </template>
-                                                                                </ul>
-                                                                            </div>
-                                                                        </template>
-                                                                        <template x-if="grandchild.children.length === 0">
-                                                                            <a class="flex items-center px-8 py-4 group"
-                                                                               :href="getNodeUrl(grandchild)"
-                                                                               :target="getNodeTarget(grandchild)"
-                                                                               x-text="grandchild.title"
-                                                                            ></a>
-                                                                        </template>
-                                                                    </li>
-                                                                </template>
-                                                            </ul>
-                                                        </div>
-                                                    </template>
-                                                    <template x-if="child.children.length === 0">
-                                                        <a class="flex items-center px-8 py-4 group"
-                                                           :href="getNodeUrl(child)"
-                                                           :target="getNodeTarget(child)"
-                                                           x-text="child.title"
-                                                        ></a>
-                                                    </template>
-                                                </li>
-                                            </template>
-                                        </ul>
-                                    </div>
-                                </template>
-                                <!-- Leaf node (no children) -->
-                                <template x-if="node.children.length === 0">
-                                    <div class="group">
+                                    </template>
+                                    <!-- Leaf node -->
+                                    <template x-if="!node.children || node.children.length === 0">
                                         <a class="flex items-center px-8 py-4"
                                            :href="getNodeUrl(node)"
                                            :target="getNodeTarget(node)"
                                            x-text="node.title"
                                         ></a>
-                                    </div>
-                                </template>
-                            </li>
-                        </template>
-                    </ul>
-                </template>
+                                    </template>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </dialog>
     </nav>
