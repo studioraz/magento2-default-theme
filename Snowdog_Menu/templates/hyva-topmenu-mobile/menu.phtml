@@ -24,6 +24,56 @@ $menuIdentifier = $menu ? $menu->getIdentifier() : 'hyva-topmenu';
 $graphqlEndpoint = rtrim($block->getBaseUrl(), '/') . '/graphql';
 $uniqueId = '_' . uniqid();
 $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
+$storeCode = $block->getStoreCode() ?: 'default';
+$baseUrl = rtrim($block->getBaseUrl(), '/') . '/';
+
+// Build server-side URL map for all menu nodes — same approach as desktop category.phtml:
+// $categoryUrl = $block->getCategoryUrl($nodeId) — but for ALL nodes at once
+$nodeUrlMap = [];
+if ($menu) {
+    /** @var \Snowdog\Menu\Api\NodeRepositoryInterface $nodeRepository */
+    $nodeRepository = \Magento\Framework\App\ObjectManager::getInstance()
+        ->get(\Snowdog\Menu\Api\NodeRepositoryInterface::class);
+    /** @var \Magento\Catalog\Api\CategoryRepositoryInterface $categoryRepository */
+    $categoryRepository = \Magento\Framework\App\ObjectManager::getInstance()
+        ->get(\Magento\Catalog\Api\CategoryRepositoryInterface::class);
+
+    $allNodes = $nodeRepository->getByMenu($menu->getId());
+    foreach ($allNodes as $node) {
+        if (!$node->getIsActive()) {
+            continue;
+        }
+        $nodeId = (string) $node->getNodeId();
+        $nodeType = $node->getType();
+        $url = null;
+
+        try {
+            switch ($nodeType) {
+                case 'category':
+                    $categoryId = (int) $node->getContent();
+                    if ($categoryId) {
+                        $url = $categoryRepository->get($categoryId)->getUrl();
+                    }
+                    break;
+                case 'custom_url':
+                    $url = $node->getContent() ?: null;
+                    break;
+                case 'product':
+                    // product nodes are rare in menus; url_key from GraphQL handles them
+                    break;
+                case 'cms_page':
+                    // cms_page nodes; url_key from GraphQL handles them
+                    break;
+            }
+        } catch (\Exception $e) {
+            // category/product not found or disabled
+        }
+
+        if ($url) {
+            $nodeUrlMap[$nodeId] = $url;
+        }
+    }
+}
 ?>
 
 <?php if ($menu): ?>
@@ -53,7 +103,7 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
         'use strict';
 
         (function() {
-            const cacheKey = 'sr_menu_graphql_v2_<?= $escaper->escapeJs($menuIdentifier) ?>';
+            const cacheKey = 'sr_menu_graphql_v5_<?= $escaper->escapeJs($menuIdentifier) ?>_<?= $escaper->escapeJs($storeCode) ?>';
             const cached = sessionStorage.getItem(cacheKey);
             if (cached) {
                 try {
@@ -77,7 +127,10 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
                 }`;
                 fetch('<?= $escaper->escapeJs($graphqlEndpoint) ?>', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Store': '<?= $escaper->escapeJs($storeCode) ?>'
+                    },
                     body: JSON.stringify({query})
                 }).then(r => r.json()).then(result => {
                     const items = result.data?.snowdogMenus?.items?.[0]?.nodes?.items;
@@ -104,11 +157,20 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
             menuTree: [],
             navigationStack: [],
             mediaBaseUrl: '<?= $escaper->escapeJs($mediaBaseUrl) ?>',
+            baseUrl: '<?= $escaper->escapeJs($baseUrl) ?>',
+            storeCode: '<?= $escaper->escapeJs($storeCode) ?>',
+            serverUrlMap: <?= json_encode((object) $nodeUrlMap, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES) ?>,
 
             async openMenu() {
                 this.open = true;
                 this.navigationStack = [];
-                this.$nextTick(() => hyva.trapFocus(this.$refs['mobile-menu-dialog']));
+                this.$nextTick(() => {
+                    hyva.trapFocus(this.$refs['mobile-menu-dialog']);
+                    // Remove focus from the close button so it doesn't show focus ring on touch devices
+                    if (document.activeElement) {
+                        document.activeElement.blur();
+                    }
+                });
                 document.body.classList.add('fixed', 'w-full');
 
                 if (!this.loaded && !this.loading) {
@@ -117,7 +179,7 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
             },
 
             async fetchMenu() {
-                const cacheKey = 'sr_menu_graphql_v2_<?= $escaper->escapeJs($menuIdentifier) ?>';
+                const cacheKey = 'sr_menu_graphql_v5_<?= $escaper->escapeJs($menuIdentifier) ?>_<?= $escaper->escapeJs($storeCode) ?>';
                 const cached = sessionStorage.getItem(cacheKey);
 
                 if (cached) {
@@ -179,7 +241,7 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Store': '<?= $escaper->escapeJs($block->getBaseUrl() ? '' : 'default') ?>'
+                            'Store': '<?= $escaper->escapeJs($storeCode) ?>'
                         },
                         body: JSON.stringify({ query })
                     });
@@ -310,12 +372,30 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
             },
 
             getNodeUrl(node) {
+                // 1. Server-side URL map (beautiful URLs resolved via PHP, same as desktop)
+                const serverUrl = this.serverUrlMap[String(node.node_id)];
+                if (serverUrl) {
+                    return serverUrl;
+                }
+
+
+                // 2. Custom URL nodes: content holds the actual URL
                 if (node.type === 'custom_url' && node.content) {
+                    if (node.content.startsWith('http') || node.content.startsWith('/') || node.content.startsWith('#')) {
                     return node.content;
                 }
-                if (node.url_key) {
-                    return node.url_key.startsWith('http') ? node.url_key : '/' + node.url_key;
+                    return this.baseUrl + node.content;
                 }
+
+                // 3. GraphQL url_key fallback (resolved from url_rewrite table)
+                if (node.url_key) {
+                    if (node.url_key.startsWith('http')) {
+                        return node.url_key;
+                }
+                    return this.baseUrl + node.url_key;
+                }
+
+                // 4. Wrapper and other structural nodes don't have URLs
                 return '#';
             },
 
@@ -329,7 +409,11 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
 
             showViewAll(node) {
                 const noViewAll = ['cms_block', 'wrapper'];
-                return node.children.length > 0 && !noViewAll.includes(node.type);
+                if (node.children.length === 0 || noViewAll.includes(node.type)) {
+                    return false;
+                }
+                // Only show "View All" if the node actually has a URL (e.g. linked to a real category)
+                return this.getNodeUrl(node) !== '#';
             },
 
             viewAllLabel: '<?= $escaper->escapeJs(__('View All')) ?>'
@@ -375,7 +459,7 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
                 </p>
                 <button
                         type="button"
-                        class="btn bg-transparent border-transparent p-2"
+                        class="btn bg-transparent border-transparent p-2 focus:outline-none focus-visible:outline"
                         @click.stop.prevent="close()"
                         aria-label="<?= $escaper->escapeHtmlAttr(__('Close panel')) ?>"
                 >
@@ -411,7 +495,7 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
                         <div x-show="currentParent" x-cloak>
                             <button
                                     type="button"
-                                    class="flex items-center w-full px-8 py-4 font-medium text-left"
+                                    class="flex items-center w-full ps-[25px] pe-8 py-4 font-medium text-left"
                                     @click="goBack()"
                             >
                                 <?= $lucideIcons->renderHtml('chevron-left', 'text-gray-500 me-2', 20, 20, ['aria-hidden' => 'true']); ?>
@@ -427,14 +511,14 @@ $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
                         </div>
 
                         <!-- Current level nodes -->
-                        <ul class="divide-y divide-container overflow-y-auto" :class="currentParent ? 'h-[calc(100%-80px)] pb-4' : 'h-full'">
+                        <ul class="current-level-nodes-container divide-y divide-container overflow-y-auto" :class="currentParent ? 'h-[calc(100%-80px)] pb-4' : 'h-full'">
                             <template x-for="node in currentNodes" :key="node.node_id">
                                 <li>
                                     <!-- Node with children - drill down button -->
                                     <template x-if="node.children && node.children.length > 0">
                                         <button
                                                 type="button"
-                                                class="flex items-center w-full px-8 py-4 text-left"
+                                                class="flex items-center w-full ps-8 pe-2.75 py-4 text-left"
                                                 @click="drillDown(node)"
                                         >
                                             <template x-if="getImageUrl(node)">

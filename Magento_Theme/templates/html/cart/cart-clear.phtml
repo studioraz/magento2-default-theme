@@ -32,7 +32,7 @@ Css::setBlock($block, 'cart-clear');
 $css = [
     'form' => Css::css('form', 'flex items-center ' . $context),
     'separator' => Css::css('separator', 'w-px h-4 bg-slate-300 mx-3.5'),
-    'action' => Css::css('action', 'underline hover:no-underline hover:text-primary'),
+    'action' => Css::css('action', 'underline hover:no-underline hover:text-primary focus:outline-none focus-visible:outline'),
 ];
 
 if ($context === 'cart') {

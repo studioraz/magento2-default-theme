@@ -7,3 +7,12 @@
         @apply me-0;
     }
 }
+
+.scrollable-list,
+.current-level-nodes-container {
+    direction: ltr;
+
+    * {
+        direction: rtl;
+    }
+}
