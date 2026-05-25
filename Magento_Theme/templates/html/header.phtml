@@ -125,7 +125,7 @@ $showWishlist = $block->getShowWishlist() !== null ? (bool)$block->getShowWishli
 
             <button
                     id="menu-search-icon"
-                    class="btn bg-transparent border-transparent p-1"
+                    class="btn bg-transparent border-transparent p-1 focus:outline-none focus-visible:outline"
                     @click.prevent="toggleSearch"
                     @keydown.window="searchShortcut"
                     aria-label="<?= $escaper->escapeHtmlAttr(__('Toggle search form')) ?>"

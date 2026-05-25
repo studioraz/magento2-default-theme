@@ -25,3 +25,9 @@
         }
     }
 }
+
+@media (max-width: 389px) {
+    .cart-actions-container {
+        @apply flex-col items-start;
+    }
+}

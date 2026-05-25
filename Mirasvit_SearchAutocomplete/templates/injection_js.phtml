@@ -122,12 +122,12 @@ $icons = $viewModels->require(SvgIcons::class);
 
         <template x-if="searchResults">
             <div x-show="!isLoading"
-                class="overflow-y-hidden w-full rounded-xl p-[16px] pe-0 lg:p-[32px]"
+                class="overflow-y-hidden w-full rounded-xl p-[16px] pe-0 lg:p-[32px] max-lg:h-full"
                 :class="{'search-scroll-panel': (searchProducts.length || searchCategories.length)}"
             >
-                <div class="search-panel-content mx-auto justify-items-stretch lg:px-2 <?= $col2 ? 'flex flex-col lg:grid lg:gap-x-0 lg:grid-cols-12' : '' ?> rounded-xl">
+                <div class="search-panel-content mx-auto justify-items-stretch lg:px-2 max-lg:h-full <?= $col2 ? 'flex flex-col lg:grid lg:gap-x-0 lg:grid-cols-12' : '' ?> rounded-xl">
                     <?php if ($col2) : ?>
-                    <div class="col-span-12 lg:col-span-7 lg:order-first max-w-full">
+                    <div class="col-span-12 lg:col-span-7 lg:order-first max-w-full max-lg:flex-1">
                         <?php endif; ?>
                         <p class="order-1 text-sm lg:text-base text-slate-900 font-semibold leading-6 mb-3">
                             <?= __('Products') ?>
@@ -172,7 +172,7 @@ $icons = $viewModels->require(SvgIcons::class);
                         </div>
                     </div>
                     <div
-                        class="order-4 pe-[18px] col-span-12 lg:col-span-5 lg:order-1 lg:border-s lg:border-s-slate-300 lg:ps-[32px]"
+                        class="order-3 pe-[18px] col-span-12 lg:col-span-5 lg:order-1 lg:border-s lg:border-s-slate-300 lg:ps-[32px] max-lg:flex-1"
                         :class="{'lg:min-h-[476px] lg:h-[calc(100vh-600px)]': searchCategories.length}"
                     >
                         <?php endif; ?>
@@ -232,7 +232,7 @@ $icons = $viewModels->require(SvgIcons::class);
                     </div>
                 <?php endif; ?>
 
-                    <div class="order-3 pe-[18px] lg:mt-0 w-full col-span-12 lg:hidden">
+                    <div class="order-4 pe-[18px] lg:mt-0 w-full col-span-12 lg:hidden">
                         <div class="flex items-center justify-end mb-[16px]">
                             <a x-bind:href="numberResultsUrl" class="w-full inline-flex items-center justify-between gap-[6px] no-underline text-primary">
                                 <span class="w-full btn btn-primary text-sm leading-6 font-semibold appearance-none" x-html="getNumberResults(numberResults)"></span>
