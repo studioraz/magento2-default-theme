@@ -125,7 +125,7 @@ $icons = $viewModels->require(SvgIcons::class);
                 class="overflow-y-hidden w-full rounded-xl p-[16px] pe-0 lg:p-[32px] max-lg:h-full"
                 :class="{'search-scroll-panel': (searchProducts.length || searchCategories.length)}"
             >
-                <div class="search-panel-content mx-auto justify-items-stretch lg:px-2 max-lg:h-full <?= $col2 ? 'flex flex-col lg:grid lg:gap-x-0 lg:grid-cols-12' : '' ?> rounded-xl">
+                <div class="search-panel-content mx-auto justify-items-stretch max-lg:h-full <?= $col2 ? 'flex flex-col lg:grid lg:gap-x-0 lg:grid-cols-12' : '' ?> rounded-xl">
                     <?php if ($col2) : ?>
                     <div class="col-span-12 lg:col-span-7 lg:order-first max-w-full max-lg:flex-1">
                         <?php endif; ?>
@@ -133,15 +133,15 @@ $icons = $viewModels->require(SvgIcons::class);
                             <?= __('Products') ?>
                         </p>
                         <div
-                            class="scrollable-list order-2 mx-auto flex flex-col mb-[14px] pe-[18px] lg:pe-[32px] lg:mb-[20px] overflow-x-hidden overflow-y-auto"
+                            class="scrollable-list order-2 mx-auto flex flex-col mb-[14px] ps-[18px] lg:ps-[32px] lg:mb-[20px] overflow-x-hidden overflow-y-auto"
                             :class="{'h-[calc(100dvh-469px)] lg:min-h-[386px] lg:h-[calc(100vh-690px)]': searchProducts.length}"
                         >
                             <template x-for="item in searchProducts">
                                 <div class="flex bg-white flex-row w-full">
-                                    <a x-bind:href="`${item.url}`" class="flex items-center justify-between gap-[8px] py-[6px] px-[8px] w-full rounded-lg hover:bg-gray-50 no-underline">
+                                    <a x-bind:href="`${item.url}`" class="flex items-center justify-between gap-[8px] py-[6px] pe-8 w-full rounded-lg hover:bg-gray-50 no-underline">
                                         <?php if ($config['isShowImage']): ?>
                                             <div class="flex items-center w-[80px]">
-                                                <img x-bind:src="`${item.imageUrl}`" class="mx-auto w-[54px] lg:w-[58px] h-auto"/>
+                                                <img x-bind:src="`${item.imageUrl}`" class="me-auto w-[54px] lg:w-[58px] h-auto"/>
                                             </div>
                                         <?php endif ?>
                                         <div class="w-full text-sm">

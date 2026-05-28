@@ -85,7 +85,7 @@ if ($block->getChildBlock('add_to_cart') && $product->getTypeId() !== Configurab
     $addToCartBlock = $block->getChildBlock('add_to_cart');
 }
 
-$itemCss = 'item product product-item relative h-auto flex flex-col grow py-4 w-full bg-white';
+$itemCss = 'item product product-item relative h-full flex flex-col grow py-4 w-full bg-white';
 // NOTE: stub for future implementation of brand support
 $hasBrand = false;
 ?>
@@ -180,7 +180,7 @@ $hasBrand = false;
             <?php endif; ?>
         </div>
 
-        <div class="product-name mb-[2px] md:mb-0 text-sm md:text-base text-slate-800 hover:underline">
+        <div class="product-name mb-[2px] md:mb-0 text-sm md:text-base text-slate-800 hover:underline line-clamp-3">
             <a class="product-item-link"
                href="<?= $escaper->escapeUrl($product->getProductUrl()) ?>"><?= /* @noEscape */ $productName ?></a>
         </div>
