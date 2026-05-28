@@ -36,16 +36,16 @@ $attributes = $block->decorateArray($block->getAllowAttributes());
 
         <?php foreach ($attributes as $attribute): ?>
             <?php $attributeId = $attribute->getAttributeId(); ?>
-        <div class="flex flex-col sm:flex-row border-t last:border-b border-gray-300 py-2 w-full items-center">
+        <div class="flex flex-col items-center sm:items-start py-4 sm:py-2 border-t last:border-b border-gray-300 w-full items-center">
 
-            <label class="w-full sm:w-1/2 text-left text-gray-700 label"
+            <label class="w-full sm:w-1/2 text-start text-gray-700 label"
                    for="attribute<?= $escaper->escapeHtmlAttr($attributeId) ?>"
             >
                 <span>
                     <?= $escaper->escapeHtml($attribute->getProductAttribute()->getStoreLabel()) ?>
                 </span>
             </label>
-            <div class="w-full sm:ml-2 sm:w-1/2 text-left text-gray-900">
+            <div class="w-full sm:ml-2 sm:w-1/2 text-start text-gray-900">
                 <select name="super_attribute[<?= $escaper->escapeHtmlAttr($attributeId) ?>]"
                         id="attribute<?= $escaper->escapeHtmlAttr($attributeId) ?>"
                         class="form-select super-attribute-select max-w-full"

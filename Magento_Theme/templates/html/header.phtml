@@ -116,7 +116,7 @@ $showWishlist = $block->getShowWishlist() !== null ? (bool)$block->getShowWishli
     <div class="container px-4 max-lg:pt-[11.5px] pt-3.5 pb-2 lg:pb-3.5 grid grid-cols-[auto_minmax(0px,1fr)_auto]
         lg:grid-cols-[auto_minmax(0px,1fr)_auto] gap-y-0.75 lg:gap-y-0 gap-x-4 lg:gap-x-10 items-center">
 
-        <div class="header-icons-container ms-auto flex gap-0.5 items-center lg:hidden order-1 max-lg:-mb-3 max-lg:min-w-30.25">
+        <div class="header-icons-container ms-auto flex items-start lg:items-center lg:hidden order-1 max-lg:-mb-3 max-lg:min-w-30.25">
             <div class="pt-[5px]">
                 <?= $block->getChildHtml('topmenu') ?>
             </div>
@@ -142,7 +142,7 @@ $showWishlist = $block->getShowWishlist() !== null ? (bool)$block->getShowWishli
             <?= $block->getChildHtml('logo'); ?>
         </div>
 
-        <div class="header-icons-container ms-auto flex gap-0.5 lg:gap-3 items-center order-3 lg:order-2 max-lg:-mb-3 max-lg:justify-end max-lg:min-w-30.25">
+        <div class="header-icons-container ms-auto flex lg:gap-3 items-end lg:items-center order-3 lg:order-2 max-lg:-mb-3 max-lg:justify-end max-lg:min-w-30.25">
             <?php if ($showCompare): ?>
                 <?= $block->getChildHtml('compare'); ?>
             <?php endif; ?>

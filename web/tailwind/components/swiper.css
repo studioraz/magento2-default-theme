@@ -328,8 +328,10 @@
         }
     }
 
+    .swiper {
     .swiper-slide {
-        height: auto;
+            height: auto !important;
+        }
     }
 
     .pagebuilder-slider[data-breakpoints=""]:has(> [data-content-type="slide"]) {
