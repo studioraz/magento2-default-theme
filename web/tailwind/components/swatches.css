@@ -92,5 +92,15 @@
                 @apply min-w-auto text-sm px-1.5 py-0.75 leading-none;
             }
         }
+
+        .swatch-attribute {
+            .swatch-option {
+                @apply relative;
+
+                .field.field-reserved {
+                    @apply sr-only;
+                }
+            }
+        }
     }
 }
