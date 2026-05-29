@@ -127,34 +127,6 @@ $jsTemplate = 'Magento_Catalog::product/widget/viewed/js/recently-viewed-product
                             </a>
                         <?php endif; ?>
                         <div class="product-info flex flex-col grow">
-                            <div class="mb-2 flex flex-wrap gap-2">
-                                <div class="ms-auto flex gap-2">
-                                    <?php if ($wishlistViewModel->isEnabled() && in_array("add_to_wishlist", $widgetButtonsToShow)): ?>
-                                        <button
-                                            @click.prevent="addToWishlist"
-                                            aria-label="<?= $escaper->escapeHtmlAttr(__('Add to Wish List')) ?>"
-                                            type="button"
-                                            class="rounded-full w-8 h-8 inline-flex shrink-0 items-center justify-center text-slate-500 bg-slate-200 hover:text-primary hover:bg-slate-100"
-                                            data-addto="wishlist"
-                                        >
-                                            <?= $lucideIcons->heartHtml('', 16, 16, ['aria-hidden' => 'true']) ?>
-                                        </button>
-                                    <?php endif; ?>
-
-                                    <?php if ($compareViewModel->showInProductList() && in_array("add_to_compare", $widgetButtonsToShow)): ?>
-                                        <button
-                                            @click.prevent="addToCompare"
-                                            aria-label="<?= $escaper->escapeHtmlAttr(__('Add to Compare')) ?>"
-                                            type="button"
-                                            class="rounded-full w-8 h-8 inline-flex shrink-0 items-center justify-center text-slate-500 bg-slate-200 hover:text-primary hover:bg-slate-100"
-                                            data-addto="compare"
-                                        >
-                                            <?= $lucideIcons->scaleHtml('', 16, 16, ['aria-hidden' => 'true']) ?>
-                                        </button>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-
                             <div class="mb-[3px] flex flex-wrap items-center text-xs">
                                 <div class="product-info-sku me-auto flex text-slate-500">
                                     <div class="product-info-sku-label"><?= __('SKU') ?></div>

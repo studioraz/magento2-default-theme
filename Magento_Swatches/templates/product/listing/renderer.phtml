@@ -167,7 +167,7 @@ $swatchItemBlock->setData('product_id', $productId);
      x-init="findAllowedAttributeOptions()"
      @private-content-loaded.window="onGetCartData($event.detail.data)"
      @resize.window="resizeEvent()"
-     class="mb-2 relative"
+     class="mb-1 relative"
 >
     <div>
         <?php foreach ($attributes as $attribute): ?>
@@ -177,10 +177,9 @@ $swatchItemBlock->setData('product_id', $productId);
             <?php if (!$productAttribute->getUsedInProductListing() || !$swatchRendererViewModel->isSwatchAttribute($productAttribute)) {
                 continue;
             } ?>
-        <div class="swatch-attribute border-t last:border-b border-container
-            <?= $escaper->escapeHtmlAttr($productAttribute->getAttributeCode()) ?>"
+        <div class="swatch-attribute <?= $escaper->escapeHtmlAttr($productAttribute->getAttributeCode()) ?>"
         >
-            <div class="w-full swatch-attribute-options min-h-14">
+            <div class="w-full swatch-attribute-options">
                 <div class="flex flex-wrap w-full snap items-center py-1"
                     id="attribute-label-<?= $escaper->escapeHtmlAttr($productId . '-' . $attributeId) ?>"
                     role="radiogroup"
