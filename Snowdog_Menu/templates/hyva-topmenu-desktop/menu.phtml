@@ -52,7 +52,7 @@ $uniqueId = '_' . uniqid();
             <div class="fixed left-0 right-0 bottom-0 bg-[var(--backdrop,hsl(0_0%_0%_/_20%))] shadow-lg z-10 pointer-events-none"
                  :style="openSubmenuId !== null ? 'top: ' + $root.getBoundingClientRect().bottom + 'px' : 'top: -9999px'"
                  x-show="openSubmenuId !== null"
-                 x-transition:enter="transition ease-in duration-300 delay-300"
+                 x-transition:enter="transition ease-in duration-200 delay-100"
                  x-transition:enter-start="opacity-0"
                  x-transition:enter-end="opacity-100"
                  x-cloak

@@ -139,35 +139,6 @@ $hasBrand = false;
         </a>
     </div>
     <div class="product-info flex flex-col grow <?= $viewIsGrid ? '' : 'md:ps-5 md:w-4/6' ?>">
-        <?php if ($showAddToWishlist || $showAddToCompare || $hasBrand): ?>
-            <div class="mb-2 flex flex-wrap gap-2">
-                <div class="ms-auto flex gap-2">
-                    <?php if ($showAddToWishlist && $wishlistBlock): ?>
-                        <?= $wishlistBlock->setData('product', $product)->toHtml() ?>
-                    <?php endif; ?>
-                    <?php if ($showAddToCompare): ?>
-                        <button x-data="initCompareOnProductList()"
-                                x-defer="intersect"
-                                @click.prevent="addToCompare(<?= (int)$productId ?>)"
-                                aria-label="<?= $escaper->escapeHtmlAttr(__('Add to Compare') . ' ' . $productName) ?>"
-                                type="button"
-                                class="rounded-full w-8 h-8 inline-flex shrink-0 items-center justify-center text-slate-500 bg-slate-200 hover:text-primary hover:bg-slate-100"
-                                data-addto="compare"
-                        >
-                            <?= $lucideIcons->renderHtml('bar-chart-3', '', 16, 16, ['aria-hidden' => 'true']) ?>
-                        </button>
-                    <?php endif; ?>
-                    <?php if ($addToBlock = $block->getChildBlock('addto')): ?>
-                        <?= $addToBlock->setProduct($product)->getChildHtml() ?>
-                    <?php endif; ?>
-                </div>
-
-                <?php if ($hasBrand): ?>
-                    <div class="product-info-brand"></div>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
-
         <div class="mb-[3px] flex flex-wrap items-center text-xs min-h-5">
             <div class="product-info-sku me-auto flex text-slate-500">
                 <div class="product-info-sku-label"><?= __('SKU') ?></div>

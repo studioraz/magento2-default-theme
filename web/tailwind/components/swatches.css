@@ -79,4 +79,18 @@
             }
         }
     }
+
+    .product-item {
+        .color {
+            .swatch-option {
+                @apply rounded-full !w-5 !h-5 min-w-auto;
+            }
+        }
+
+        &:not(.color) {
+            .swatch-option {
+                @apply min-w-auto text-sm px-1.5 py-0.75 leading-none;
+            }
+        }
+    }
 }
