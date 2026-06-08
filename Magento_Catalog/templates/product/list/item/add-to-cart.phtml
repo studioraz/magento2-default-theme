@@ -29,7 +29,7 @@ $product = $block->getProduct();
 $productName = $catalogOutputHelper->productAttribute($product, $product->getName(), 'name');
 ?>
 <button
-    class="btn btn-primary text-xs lg:text-sm h-8 w-full relative"
+    class="btn btn-primary text-xs lg:text-sm h-8 lg:h-10 w-full relative"
     title="<?= $escaper->escapeHtmlAttr(__('Add to Cart') . ' ' . $productName) ?>"
     aria-label="<?= $escaper->escapeHtmlAttr(__('Add to Cart') . ' ' . $productName) ?>"
 >
