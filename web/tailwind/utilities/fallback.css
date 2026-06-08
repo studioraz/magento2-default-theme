@@ -4,8 +4,8 @@
 
 @theme {
     --color-container-lighter: var(--color-white);
-    --color-container: var(--color-gray-50);
-    --color-container-darker: var(--color-gray-100);
+    --color-container: var(--color-gray-200);
+    --color-container-darker: var(--color-gray-300);
 }
 
 /* Preserve the older opacity utility for bg-{primary,white,black} */
