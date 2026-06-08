@@ -18,6 +18,12 @@
     & .old-price {
         --price-font-size: 14px;
     }
+
+    .m-logo {
+        .m-brand-tooltip {
+            @apply float-none inline-block mr-0;
+        }
+    }
 }
 
 .wishlist-widget .price-box {

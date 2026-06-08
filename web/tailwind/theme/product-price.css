@@ -61,6 +61,6 @@
 
 .price-srmultipass_price {
     .price-label {
-        @apply inline;
+        @apply inline max-lg:text-xs;
     }
 }

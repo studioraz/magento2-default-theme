@@ -13,7 +13,7 @@
 
     .header-logo {
         img {
-            @apply max-w-30 sm:max-w-36 lg:max-w-37;
+            @apply max-w-[70px] sm:max-w-36 lg:max-w-37;
         }
     }
 

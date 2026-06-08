@@ -29,7 +29,7 @@ $product = $block->getProduct();
 $productName = $catalogOutputHelper->productAttribute($product, $product->getName(), 'name');
 ?>
 <button
-    class="btn btn-primary text-sm h-10 w-full relative"
+    class="btn btn-primary text-xs lg:text-sm h-8 w-full relative"
     title="<?= $escaper->escapeHtmlAttr(__('Add to Cart') . ' ' . $productName) ?>"
     aria-label="<?= $escaper->escapeHtmlAttr(__('Add to Cart') . ' ' . $productName) ?>"
 >
@@ -39,6 +39,6 @@ $productName = $catalogOutputHelper->productAttribute($product, $product->getNam
             <?= $icons->spinnerHtml('h-full w-auto'); ?>
         </span>
     </template>
-    <?= $lucideIcons->renderHtml('shopping-cart', 'me-[6px]', 19, 19); ?>
+    <?= $lucideIcons->renderHtml('shopping-cart', 'lg:me-[6px] max-lg:w-[15px]', 19, 19); ?>
     <?= $escaper->escapeHtml(__('Add to Cart')) ?>
 </button>
