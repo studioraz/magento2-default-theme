@@ -32,7 +32,7 @@ $customer = $viewModels->require(Customer::class);
     href="javascript:void(0);"
     @click="$dispatch('toggle-authentication');"
     <?php endif; ?>
-    class="relative inline-flex btn bg-transparent border-transparent p-1 max-lg:hidden"
+    class="relative inline-flex btn bg-transparent border-transparent p-1 max-lg:hidden top-0.25"
     x-data="initWishlistHeader"
     @private-content-loaded.window="receiveWishlistData"
     aria-label="<?= $escaper->escapeHtmlAttr(__('My Wish List')); ?>"

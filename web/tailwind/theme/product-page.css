@@ -3,6 +3,14 @@
         .qty-spinner-container-product-info-main {
             @apply me-auto max-md:max-w-full md:max-w-[344px] md:mt-2 lg:mt-0;
         }
+
+        .product-info-price {
+            .price-box {
+                &.price-final_price {
+                    @apply flex flex-row-reverse justify-end items-baseline gap-2 h-9;
+                }
+            }
+        }
     }
 }
 

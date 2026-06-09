@@ -121,3 +121,11 @@
         }
     }
 }
+
+.main {
+    .mst-scroll__button {
+        &.hidden {
+            @apply hidden;
+        }
+    }
+}

@@ -29,7 +29,7 @@ $lucideIcons = $viewModels->require(LucideIcons::class);
     <button
         type="button"
         id="customer-menu"
-        class="btn bg-transparent border-transparent p-1"
+        class="btn bg-transparent border-transparent p-1 -me-0.5"
         <?php if ($block->customerLoggedIn()): ?>
             @click="open = !open"
             @click.outside="open = false"

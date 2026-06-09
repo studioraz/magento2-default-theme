@@ -32,6 +32,18 @@ $layout = $block->getLayout();
 $swatchItemBlock = $layout->getBlock('product.swatch.item');
 $swatchItemBlock->setData('product_id', $productId);
 
+$swatchValidationMessages = [];
+foreach ($attributes as $attribute) {
+    $productAttribute = $attribute->getProductAttribute();
+    if ($swatchRendererViewModel->isSwatchAttribute($productAttribute)) {
+        $swatchValidationMessages[(int) $attribute->getAttributeId()] = (string) __(
+            'Please select %1.',
+            $productAttribute->getStoreLabel()
+        );
+    }
+}
+$swatchAttributeIds = array_keys($swatchValidationMessages);
+
 $tooltipBlockHtml = $block->getBlockHtml('product.swatch.tooltip');
 ?>
 <?php if ($product->isSaleable() && count($attributes)): ?>
@@ -47,12 +59,88 @@ $tooltipBlockHtml = $block->getBlockHtml('product.swatch.tooltip');
 
             return Object.assign(
                 configurableOptionsComponent,
-                swatchOptionsComponent
+                swatchOptionsComponent,
+                {
+                    swatchValidationErrors: {},
+                    swatchAttributeIds: <?= /* @noEscape */ json_encode($swatchAttributeIds) ?>,
+                    swatchValidationMessages: <?= /* @noEscape */ json_encode(
+                        $swatchValidationMessages,
+                        JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP
+                    ) ?>,
+                    initSwatchValidation() {
+                        const form = this.$root.closest('form') || document.getElementById('product_addtocart_form');
+
+                        if (!form) {
+                            return;
+                        }
+
+                        const showMissingSwatches = () => this.validateSwatchesForAddToCart(form);
+                        const submitButtons = new Set([
+                            ...form.querySelectorAll('button[type="submit"], input[type="submit"], button:not([type])'),
+                            ...document.querySelectorAll(`[form="${form.id}"][type="submit"], button[form="${form.id}"]:not([type])`),
+                            ...document.querySelectorAll('#product-addtocart-button')
+                        ]);
+
+                        submitButtons.forEach(button => {
+                            button.addEventListener('click', showMissingSwatches, true);
+                        });
+                        form.addEventListener('submit', showMissingSwatches, true);
+                    },
+                    validateSwatchesForAddToCart(form) {
+                        const validationErrors = {};
+
+                        this.swatchAttributeIds.forEach(attributeId => {
+                            const hasAvailableOptions = this.getAllowedAttributeOptions(attributeId).length > 0
+                                || (this.optionConfig.attributes[attributeId]?.options || []).length > 0;
+                            const hasSelection = !!this.selectedValues[attributeId];
+                            const hasError = hasAvailableOptions && !hasSelection;
+                            const radios = form.querySelectorAll(
+                                `input.product-option-value-input[name="super_attribute[${attributeId}]"]`
+                            );
+
+                            radios.forEach(radio => {
+                                radio.setCustomValidity(hasError ? this.swatchValidationMessages[attributeId] : '');
+                            });
+
+                            validationErrors[attributeId] = hasError;
+                        });
+
+                        this.swatchValidationErrors = Object.assign({}, this.swatchValidationErrors, validationErrors);
+                    },
+                    showSwatchValidation(attributeId, event) {
+                        const input = event && event.target;
+
+                        if (input && input.validity && input.validity.valueMissing) {
+                            input.setCustomValidity(this.swatchValidationMessages[attributeId] || input.validationMessage);
+                        }
+
+                        this.swatchValidationErrors = Object.assign({}, this.swatchValidationErrors, {
+                            [attributeId]: true
+                        });
+                    },
+                    clearSwatchValidation(attributeId, event) {
+                        const input = event && event.target;
+
+                        if (input) {
+                            const form = input.form || input.closest('form');
+                            const radios = form
+                                ? form.querySelectorAll(`[name="${input.name}"]`)
+                                : [input];
+
+                            radios.forEach(radio => radio.setCustomValidity(''));
+                        }
+
+                        this.swatchValidationErrors = Object.assign({}, this.swatchValidationErrors, {
+                            [attributeId]: false
+                        });
+                    }
+                }
             );
         }
     </script>
 
     <div x-data="initConfigurableSwatchOptions_<?= (int) $productId ?>()"
+         x-init="initSwatchValidation()"
          @private-content-loaded.window="onGetCartData($event.detail.data)"
          class="relative mb-6"
          x-defer="intersect"
@@ -76,11 +164,12 @@ $tooltipBlockHtml = $block->getBlockHtml('product.swatch.tooltip');
                                         x-text="getSwatchText(<?= (int) $attributeId ?>, selectedValues[<?= (int) $attributeId ?>])"
                                 ></span>
                             </label>
-                            <div class="w-full text-left text-gray-900 product-option-values">
+                            <div class="w-full text-left text-gray-900 product-option-values relative">
                                 <div
                                      class="flex items-center -mx-1 space-x-4 swatch-attribute-options"
                                      role="radiogroup"
                                      aria-label="<?= $escaper->escapeHtmlAttr($productAttribute->getStoreLabel()) ?>"
+                                     aria-describedby="attribute-validation-<?= $escaper->escapeHtmlAttr($productId . '-' . $attributeId) ?>"
                                 >
                                     <template
                                         x-for="(item, index) in optionConfig.attributes[<?= (int) $attributeId ?>].options"
@@ -89,6 +178,15 @@ $tooltipBlockHtml = $block->getBlockHtml('product.swatch.tooltip');
                                         <?= /* @noEscape */ $swatchItemBlock->setData('attribute_id', $attributeId)->toHtml(); ?>
                                     </template>
                                 </div>
+                                <p
+                                    id="attribute-validation-<?= $escaper->escapeHtmlAttr($productId . '-' . $attributeId) ?>"
+                                    class="swatch-validation-note"
+                                    role="alert"
+                                    x-cloak
+                                    x-show="swatchValidationErrors[<?= (int) $attributeId ?>]"
+                                >
+                                    <?= $escaper->escapeHtml($swatchValidationMessages[(int) $attributeId]) ?>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -104,7 +202,7 @@ $tooltipBlockHtml = $block->getBlockHtml('product.swatch.tooltip');
                         <div class="w-full sm:ml-2 sm:w-1/2 text-start text-gray-900">
                             <select name="super_attribute[<?= $escaper->escapeHtmlAttr($attribute->getAttributeId()) ?>]"
                                     id="attribute<?= $escaper->escapeHtmlAttr($attributeId) ?>"
-                                    class="form-select super-attribute-select max-w-full"
+                                    class="form-select super-attribute-select max-w-full w-full"
                                     x-on:change="changeOption(<?= (int) $attributeId ?>, event.target.value)"
                                     required>
                                 <option value="">

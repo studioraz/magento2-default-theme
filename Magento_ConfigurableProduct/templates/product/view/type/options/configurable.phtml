@@ -48,7 +48,7 @@ $attributes = $block->decorateArray($block->getAllowAttributes());
             <div class="w-full sm:ml-2 sm:w-1/2 text-start text-gray-900">
                 <select name="super_attribute[<?= $escaper->escapeHtmlAttr($attributeId) ?>]"
                         id="attribute<?= $escaper->escapeHtmlAttr($attributeId) ?>"
-                        class="form-select super-attribute-select max-w-full"
+                        class="form-select super-attribute-select max-w-full w-full"
                         x-on:change="changeOption(<?= (int) $attributeId ?>, event.target.value)"
                         required>
                     <option value="">
