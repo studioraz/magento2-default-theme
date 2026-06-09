@@ -92,7 +92,7 @@ $icons = $viewModels->require(SvgIcons::class);
     <div
         x-show="isOpen"
         @click="closeSearch; $nextTick(() => isSearchOpened())"
-        class="fixed z-40 inset-0 top-[172px] md:top-[106px] bg-[rgba(0,0,0,0.24)]"
+        class="fixed z-40 inset-0 !top-[172px] md:!top-[106px] bg-[rgba(0,0,0,0.24)]"
         :style="backdropStyles()"
         x-cloak></div>
 

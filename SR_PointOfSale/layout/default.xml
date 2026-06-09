@@ -12,7 +12,7 @@
 
         <referenceBlock name="header.link.point.of.sale">
             <arguments>
-                <argument name="class" xsi:type="string">point-of-sale-link inline-flex btn bg-transparent border-transparent p-1</argument>
+                <argument name="class" xsi:type="string">point-of-sale-link inline-flex btn bg-transparent border-transparent p-1 lg:mt-0.25</argument>
             </arguments>
         </referenceBlock>
     </body>

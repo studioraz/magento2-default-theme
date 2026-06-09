@@ -16,3 +16,9 @@
         direction: rtl;
     }
 }
+
+.mst-search-highlight {
+    &.bg-secondary {
+        @apply bg-brand-primary;
+    }
+}
