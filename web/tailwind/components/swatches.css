@@ -13,7 +13,7 @@
     }
 
     .swatch-validation-note {
-        @apply mt-2 rounded-md border border-system-error bg-system-error-bg px-3 py-2 text-sm text-system-error-text absolute w-fit inset-s-0;
+        @apply mt-2 rounded-md border border-system-error bg-system-error-bg px-3 py-2 text-sm text-system-error-text absolute w-fit inset-s-0 z-10;
 
         &::before {
             content: '';
