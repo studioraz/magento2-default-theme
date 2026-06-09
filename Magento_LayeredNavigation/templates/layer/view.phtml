@@ -98,7 +98,7 @@ $isSidebarNav = in_array($block->getNameInLayout(), ['catalog.leftnav', 'catalog
                                     :aria-controls="`${id}-content`"
                                     :aria-expanded="open"
                                 >
-                                    <span class="title text-sm font-normal leading-5">
+                                    <span class="title text-[15px] lg:text-sm font-normal leading-5">
                                         <?= $escaper->escapeHtml(__($filter->getName())) ?>
                                         <span class="sr-only"> <?= $escaper->escapeHtml(__('filter')) ?></span>
                                     </span>

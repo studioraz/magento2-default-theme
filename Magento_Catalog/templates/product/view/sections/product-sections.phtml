@@ -28,7 +28,8 @@ foreach ($block->getGroupSortedChildNames('detailed_info', '') as $sectionName) 
         continue;
     }
     ?>
-    <section id="<?= $escaper->escapeHtmlAttr($sectionBlock->getNameInLayout()) ?>">
+    <section id="<?= $escaper->escapeHtmlAttr($sectionBlock->getNameInLayout()) ?>"
+             class="<?= $sectionBlock->getNameInLayout() === 'description' ? 'hidden lg:block' : '' ?>">
         <?=
             $titleRenderer->setTemplate($titleTemplate)
                           ->assign('sectionBlock', $sectionBlock)

@@ -46,7 +46,7 @@
 {
     &.page-layout-2columns-left {
         .toolbar-wrapper {
-            @apply justify-between flex-row-reverse lg:justify-start lg:flex-row;
+            @apply justify-between md:flex-row-reverse lg:justify-start lg:flex-row;
             .horizontal-filters {
                 @apply hidden lg:block;
             }

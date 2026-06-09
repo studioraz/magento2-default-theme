@@ -101,6 +101,15 @@ $reviewHtml = trim($block->getChildHtml('product.info.review'));
         </div>
     <?php endif; ?>
 
+    <section id="description" class="lg:hidden mt-4">
+        <h2 class="mb-2 text-xl md:text-start font-semibold">
+            <?= $escaper->escapeHtml(__('About the product')) ?>
+        </h2>
+        <div class="card w-full">
+            <?= /** @noEscape */ $block->getLayout()->getBlock('description')->toHtml() ?>
+        </div>
+    </section>
+
     <?= $block->getChildHtml("mst_brand_product_page_logo") ?>
 
     <?= $block->getChildHtml("product.info.additional") ?>
