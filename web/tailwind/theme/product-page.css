@@ -27,7 +27,7 @@
         --price-font-size: 24px;
     }
 
-    @apply mb-5;
+    @apply mb-1 lg:mb-5;
 
     & .old-price {
         --price-font-size: 14px;

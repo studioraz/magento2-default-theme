@@ -154,9 +154,20 @@ $showWishlist = $block->getShowWishlist() !== null ? (bool)$block->getShowWishli
                 this.$dispatch('toggle-cart', {isOpen: this.isCartOpen})
             },
             focusMobileSearch() {
+                const tempInput = document.createElement('input');
+                tempInput.setAttribute('type', 'search');
+                tempInput.setAttribute('aria-hidden', 'true');
+                tempInput.setAttribute('tabindex', '-1');
+                tempInput.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;font-size:16px;border:0;padding:0;margin:0;pointer-events:none;';
+                document.body.appendChild(tempInput);
+                tempInput.focus();
+
                 this.$nextTick(() => {
                     const input = document.querySelector('#search-overlay-mobile #search');
-                    if (input) input.focus();
+                    if (input) {
+                        input.focus();
+                    }
+                    tempInput.remove();
                 });
             },
             toggleSearch() {

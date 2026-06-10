@@ -138,7 +138,7 @@ $isSideBar = $parentName === 'sidebar.main';
             </div>
 
             <div class="flex flex-col h-full md:h-full bg-white rounded-ss-2xl rounded-es-2xl">
-                <header class="bg-white mb-[3px] p-[12px] h-[64px] md:h-[88px] md:p-[24px] shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] flex items-center rounded-ss-2xl">
+                <header class="bg-white mb-[3px] p-[12px] h-[64px] md:h-[88px] md:p-[24px] shadow-[0_1px_2px_0_rgba(0,0,0,0.15)] flex items-center rounded-ss-2xl">
                     <div class="flex items-center w-full leading-[normal]">
                         <div id="layered-navigation-drawer-title">
                             <strong class="text-2xl"><?= $block->escapeHtml(__('Shop By')) ?></strong>
@@ -149,14 +149,13 @@ $isSideBar = $parentName === 'sidebar.main';
                     <?= $block->getChildHtml('catalog.leftnav') ?>
                     <?= $block->getChildHtml('catalogsearch.leftnav') ?>
                 </div>
-                <div class="absolute bottom-0 w-full pt-2 pb-3 px-4 md:py-6 bg-white grid grid-cols-1 md:grid-cols-2 md:gap-4 shadow-[0_-2px_4px_0_rgba(0,0,0,0.06)] rounded-es-2xl">
+                <div class="absolute bottom-0 w-full pt-2 pb-2 px-4 md:py-6 bg-white grid grid-cols-1 md:grid-cols-2 md:gap-4 shadow-[0_-2px_4px_0_rgba(0,0,0,0.15)] rounded-es-2xl">
                     <button
                         @click="closeDrawer"
-                        class="btn btn-primary w-full mb-2"
+                        class="btn btn-primary w-full"
                         aria-label="<?= $block->escapeHtmlAttr(__('Show results')) ?>">
                         <span><?= $block->escapeHtmlAttr(__('Show results')) ?></span>
                     </button>
-                    <?= $block->getChildHtml('clear.all.leftnav') ?>
                 </div>
             </div>
         </div>
