@@ -31,4 +31,8 @@
     .cataloglabel {
         @apply hidden;
     }
+
+    .page-footer {
+        @apply max-md:pb-[60px];
+    }
 }

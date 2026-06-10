@@ -87,6 +87,7 @@
                     &.field-reserved {
                         ul.messages {
                             transform: translateX(-20%);
+
                             &::before {
                                 left: 18.5%;
                             }
@@ -97,26 +98,24 @@
         }
     }
 
-    .product-item {
-        .color {
-            .swatch-option {
-                @apply rounded-full !w-5 !h-5 min-w-auto;
-            }
+    .color {
+        .swatch-option {
+            @apply rounded-full !w-5 !h-5 min-w-auto;
         }
+    }
 
-        &:not(.color) {
-            .swatch-option {
-                @apply min-w-auto text-sm px-1.5 py-0.75 leading-none;
-            }
+    &:not(.color) {
+        .swatch-option {
+            @apply min-w-auto text-sm px-1.5 py-0.75 leading-none;
         }
+    }
 
-        .swatch-attribute {
-            .swatch-option {
-                @apply relative;
+    .swatch-attribute {
+        .swatch-option {
+            @apply relative;
 
-                .field.field-reserved {
-                    @apply sr-only;
-                }
+            .field.field-reserved {
+                @apply sr-only;
             }
         }
     }

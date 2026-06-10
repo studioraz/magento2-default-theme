@@ -80,7 +80,7 @@ $imageCss = 'product-item-photo shrink-0 !absolute sm:!static start-3 top-6 sm:m
         <?php endif; ?>
     <?php endforeach; ?>
 >
-    <tr class="item-info flex flex-col gap-4 sm:table-row min-h-[96px] sm:min-h-0 ps-[120px] py-6 px-3 sm:p-0 <?= $hasError ? 'bg-gray-50': '' ?>">
+    <tr class="item-info flex flex-col gap-2.5 lg:gap-4 sm:table-row min-h-[96px] sm:min-h-0 ps-[120px] py-6 px-3 sm:p-0 <?= $hasError ? 'bg-gray-50': '' ?>">
         <td data-th="<?= $escaper->escapeHtml(__('Item')) ?>"
             class="col item <?= $rowCss ?> sm:ps-4 xl:ps-8">
             <div class="sm:flex sm:gap-2 xl:gap-4">
@@ -122,8 +122,8 @@ $imageCss = 'product-item-photo shrink-0 !absolute sm:!static start-3 top-6 sm:m
                         <dl class="item-options w-full break-all text-sm clearfix">
                             <?php foreach ($options as $option): ?>
                                 <?php $formatedOptionValue = $block->getFormatedOptionValue($option) ?>
-                                <dt class="font-normal float-left clear-left me-2 mb-2"><?= $escaper->escapeHtml($option['label']) ?>:</dt>
-                                <dd class="float-left">
+                                <dt class="font-normal float-start clear-start me-2 mb-2"><?= $escaper->escapeHtml($option['label']) ?>:</dt>
+                                <dd class="float-start">
                                     <?php if (isset($formatedOptionValue['full_view'])): ?>
                                         <?= $escaper->escapeHtml($formatedOptionValue['full_view']) ?>
                                     <?php else: ?>
@@ -152,11 +152,11 @@ $imageCss = 'product-item-photo shrink-0 !absolute sm:!static start-3 top-6 sm:m
             <label class="sr-only" for="cart-<?= $escaper->escapeHtmlAttr($item->getId()) ?>-qty">
                 <?= $escaper->escapeHtml(__('Qty')) ?>
             </label>
-            <div class="cart-qty-spinner max-w-[120px] me-auto relative flex flex-row sm:justify-end items-center justify-between overflow-hidden border border-gray-300 bg-white rounded-[14px] sm:rounded-[20px]"
+            <div class="cart-qty-spinner max-w-[100px] lg:max-w-[120px] me-auto relative flex flex-row sm:justify-end items-center justify-between overflow-hidden border border-gray-300 bg-white rounded-[14px] sm:rounded-[20px]"
                  x-data="initCartItemQtySpinner(<?= $escaper->escapeHtmlAttr($block->getQty()) ?>, <?= $escaper->escapeHtmlAttr($item->getId()) ?>, <?= htmlentities(json_encode($productQtyConfig)) ?>)">
                 <?php
-                $_buttonClass = 'h-[26px] px-2 flex shrink-0 grow justify-center items-center enabled:cursor-pointer outline-none hover:enabled:bg-gray-200 disabled:cursor-not-allowed';
-                $_inputClass = 'no-spinner w-10 h-5 mx-1 p-0 rounded-md text-[13px] text-center text-black bg-gray-200 border-none shadow-none leading-none';
+                $_buttonClass = 'h-[26px] px-1 lg:px-2 flex shrink-0 grow justify-center items-center enabled:cursor-pointer outline-none hover:enabled:bg-gray-200 disabled:cursor-not-allowed';
+                $_inputClass = 'no-spinner w-10 h-5 mx-0.5 lg:mx-1 p-0 rounded-md text-[13px] text-center text-black bg-gray-200 border-none shadow-none leading-none';
                 ?>
 
                 <button type="button"
@@ -230,7 +230,7 @@ $imageCss = 'product-item-photo shrink-0 !absolute sm:!static start-3 top-6 sm:m
             <?= $block->getRowTotalHtml($item) ?>
         </td>
 
-        <td class="col actions <?= $rowCss ?> absolute sm:static start-3 bottom-6 sm:w-[1%] p-2 sm:pr-4 xl:pe-8">
+        <td class="col actions <?= $rowCss ?> absolute sm:static start-3 bottom-6 sm:w-[1%] p-2 max-md:pb-0.5 sm:pr-4 xl:pe-8 [&>*]:mb-1 last:mb-0 max-md:flex max-md:flex-col max-md:start-auto max-md:end-0 max-md:bottom-6 max-md:[&>*]:w-8 max-md:[&>*]:h-8 max-md:[&>*]:p-1.5">
             <?= /* @noEscape */ $block->getActions($item) ?>
         </td>
     </tr>

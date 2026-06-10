@@ -277,7 +277,7 @@ $clearCartBlock = $block->getChildBlock('clear_cart');
 <dialog
         id="cart-drawer"
         aria-labelledby="cart-drawer-title"
-        class="w-[480px] md:w-[640px] h-full max-h-full me-0 open:flex flex-col transition ease-out duration-300 motion-reduce:duration-0 rounded-e-none"
+        class="w-[480px] md:w-[640px] h-full max-h-full me-0 open:flex flex-col justify-between transition ease-out duration-300 motion-reduce:duration-0 rounded-e-none max-lg:!pe-2"
         x-data="initCartDrawer"
         x-bind="cartListeners"
         x-show="open"
@@ -292,7 +292,7 @@ $clearCartBlock = $block->getChildBlock('clear_cart');
 >
     <?= $block->getChildHtml('cart-drawer.top'); ?>
 
-    <div class="flex gap-2 justify-between items-center">
+    <div class="flex gap-2 justify-between items-center shadow-[0_2px_4px_0_rgba(0,0,0,0.06)] pe-2 ps-4 lg:pe-6 lg:ps-6 -me-2 -ms-4 lg:-me-6 lg:-ms-6">
         <div class="flex">
             <p id="cart-drawer-title" class="flex items-center">
                 <strong class="text-base lg:text-lg text-salte-900"><?= $escaper->escapeHtml(__('My Cart')) ?></strong>
@@ -335,7 +335,7 @@ $clearCartBlock = $block->getChildBlock('clear_cart');
             <ul class="grow flex flex-col overflow-y-auto mask-overflow mask-dir-y">
                 <template x-for="item in cartItems" :key="item.item_id">
                     <li class="minicart-product-item box-border py-2 lg:py-3 [&:not(:last-child)]:border-b border-slate-200">
-                        <div class="relative flex items-start justify-start lg:justify-between gap-3 transition duration-150 ease-in-out">
+                        <div class="relative flex items-start justify-between gap-3 transition duration-150 ease-in-out max-lg:pe-0.5">
                             <div class="w-20 lg:w-24 flex flex-col items-center">
                                 <template x-if="productIsVisibleInSite">
                                     <a :href="item.product_url"
@@ -364,7 +364,7 @@ $clearCartBlock = $block->getChildBlock('clear_cart');
                                 </template>
                             </div>
                             <div class="w-[calc(100%_-_108px)]">
-                                <div class="flex items-start justify-between gap-[8px] mb-5">
+                                <div class="flex items-start justify-between gap-1 lg:gap-2 mb-2 lg:mb-5">
                                     <div class="">
                                         <template x-if="productIsVisibleInSite">
                                             <a :href="item.product_url" class="transition duration-150 ease-in-out no-underline">
@@ -404,7 +404,7 @@ $clearCartBlock = $block->getChildBlock('clear_cart');
                                     </div>
                                     <button
                                             type="button"
-                                            class="btn bg-transparent border-transparent p-2 focus:outline-none focus-visible:outline"
+                                            class="btn bg-transparent border-transparent p-2 pt-0 focus:outline-none focus-visible:outline"
                                             @click="deleteItemFromCart"
                                             data-aria-label="<?= $escaper->escapeHtmlAttr(__('Remove product "%0" from cart')) ?>"
                                             :aria-label="productAriaLabel"
@@ -481,7 +481,7 @@ $clearCartBlock = $block->getChildBlock('clear_cart');
     <?= $block->getChildHtml('cart-drawer.bottom'); ?>
 
     <template x-if="itemsCount">
-        <div class="-mx-4 lg:-mx-6 px-4 lg:px-6 pt-2 -mb-2 shadow-[0_-2px_4px_0_rgba(0,0,0,0.06)]">
+        <div class="-me-2 -ms-4 lg:-me-6 lg:-ms-6 px-4 lg:px-6 pt-2 shadow-[0_-2px_4px_0_rgba(0,0,0,0.06)]">
             <?= $block->getChildHtml('cart-drawer.totals.before'); ?>
 
             <dl class="flex gap-2 justify-between items-center text-sm font-bold">
@@ -505,7 +505,10 @@ $clearCartBlock = $block->getChildBlock('clear_cart');
                 <dd class="text-price" x-html="cart.grandTotal"></dd>
             </dl>
 
-            <div class="flex flex-col gap-y-4 mt-2">
+            <div class="flex flex-col justify-between mt-2">
+                <div class="text-center text-sm font-semibold text-[#334155] mt-1 mb-3">
+                    <?= $escaper->escapeHtml(__('Discounts and promotions will be calculated at checkout.')) ?>
+                </div>
                 <a
                         @click.prevent.stop="proceedToCheckout"
                         href="<?= $escaper->escapeUrl($block->getUrl('checkout')) ?>"
@@ -513,9 +516,6 @@ $clearCartBlock = $block->getChildBlock('clear_cart');
                 >
                     <?= $escaper->escapeHtml(__('Continue to Checkout')) ?>
                 </a>
-                <div class="text-center text-sm font-semibold text-[#334155]">
-                    <?= $escaper->escapeHtml(__('Discounts and promotions will be calculated at checkout.')) ?>
-                </div>
                 <div x-html="getSectionDataExtraActions"></div>
                 <?= $block->getChildHtml('extra_actions'); ?>
             </div>

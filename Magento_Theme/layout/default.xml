@@ -171,6 +171,15 @@
                    name="swiper.manager.js"
                    template="Magento_PageBuilder::swiper/init.phtml"/>
             <block name="bf.cache.reload" template="Magento_Theme::js/bf-cache.phtml"/>
+            <block name="scroll.to.top" template="Magento_Theme::scroll-to-top.phtml">
+                <arguments>
+                    <argument name="position" xsi:type="string">end</argument> <!-- Button position (start/center/end) -->
+                    <argument name="visible_offset" xsi:type="number">200</argument> <!-- Offset before showing the button -->
+                    <argument name="visible_only_to_top" xsi:type="boolean">true</argument> <!-- Only show when scrolling to top (true/false) -->
+                    <argument name="hide_on_inactivity" xsi:type="number">6000</argument> <!-- Hide after x ms -->
+                </arguments>
+            </block>
+
         </referenceContainer>
 
         <block name="head.additional" as="head.additional" template="Magento_Theme::html/container.phtml"/>
