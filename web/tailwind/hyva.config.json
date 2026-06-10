@@ -142,22 +142,22 @@
           },
           "secondary": {
             "background": {
-              "default": "var(--color-brand-secondary-lighter)",
-              "hover": "var(--color-brand-secondary-lighter)",
-              "focus": "var(--color-brand-secondary-lighter)",
-              "active": "var(--color-brand-secondary)",
+              "default": "var(--color-brand-primary-text)",
+              "hover": "var(--color-brand-primary)",
+              "focus": "var(--color-brand-primary)",
+              "active": "var(--color-brand-primary)",
               "disabled": "var(--color-slate-50)"
             },
             "text": {
               "primary": "var(--color-brand-primary)",
-              "primary-hover": "var(--color-brand-primary-darker)",
+              "primary-hover": "var(--color-brand-primary-text)",
               "primary-disabled": "var(--color-slate-400)"
             },
             "border": {
-              "default": "var(--color-blue-100)",
-              "hover": "var(--color-brand-secondary)",
-              "focus": "var(--color-brand-secondary-lighter)",
-              "active": "var(--color-brand-secondary)",
+              "default": "var(--color-brand-primary)",
+              "hover": "var(--color-brand-primary)",
+              "focus": "var(--color-brand-primary)",
+              "active": "var(--color-brand-primary)",
               "disabled": "var(--color-slate-50)"
             }
           },
