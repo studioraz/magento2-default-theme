@@ -35,12 +35,14 @@ $isSideBar = $parentName === 'sidebar.main';
             isMobile: false,
             desktopAllowed: Boolean(options.desktopAllowed || false),
             blockOpen: false,
+            bodyScrollLocked: false,
             checkIsMobileResolution() {
                 this.isMobile = window.matchMedia('(max-width: 1024px)').matches;
                 // Close if we move to desktop where drawer is not allowed
                 if (!this.isMobile && !this.desktopAllowed && this.blockOpen) {
                     this.closeDrawer();
                 }
+                this.updateBodyScrollLock();
             },
             toggleDrawer(event) {
                 const detail = event && event.detail ? event.detail : {};
@@ -55,6 +57,7 @@ $isSideBar = $parentName === 'sidebar.main';
             openDrawer() {
                 if (this.isMobile || this.desktopAllowed) {
                     this.blockOpen = true;
+                    this.updateBodyScrollLock();
                     this.$nextTick(() => {
                         this.$refs && this.$refs.layeredNavDialog && hyva.trapFocus(this.$refs.layeredNavDialog);
                     });
@@ -62,7 +65,31 @@ $isSideBar = $parentName === 'sidebar.main';
             },
             closeDrawer() {
                 this.blockOpen = false;
+                this.updateBodyScrollLock();
                 this.$refs && this.$refs.layeredNavDialog && hyva.releaseFocus(this.$refs.layeredNavDialog);
+            },
+            updateBodyScrollLock() {
+                if (this.blockOpen && this.isMobile) {
+                    this.lockBodyScroll();
+                } else {
+                    this.unlockBodyScroll();
+                }
+            },
+            lockBodyScroll() {
+                if (this.bodyScrollLocked) {
+                    return;
+                }
+
+                document.body.classList.add('overflow-hidden');
+                this.bodyScrollLocked = true;
+            },
+            unlockBodyScroll() {
+                if (!this.bodyScrollLocked) {
+                    return;
+                }
+
+                document.body.classList.remove('overflow-hidden');
+                this.bodyScrollLocked = false;
             },
             headerFixToggle() {
                 const header = document.querySelector('#header');
