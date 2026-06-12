@@ -41,6 +41,7 @@ $showWishlist = $block->getShowWishlist() !== null ? (bool)$block->getShowWishli
             scrollListener: null,
             mobileQuery: null,
             stickyHeader: null,
+            bodyScrollLockOverflow: null,
 
             init() {
                 this.stickyHeader = this.$el.closest('header') || this.$el;
@@ -60,6 +61,7 @@ $showWishlist = $block->getShowWishlist() !== null ? (bool)$block->getShowWishli
             },
 
             destroy() {
+                this.setBodyScrollLock(false);
                 if (this.scrollListener) {
                     window.removeEventListener('scroll', this.scrollListener);
                 }
@@ -170,10 +172,26 @@ $showWishlist = $block->getShowWishlist() !== null ? (bool)$block->getShowWishli
                     tempInput.remove();
                 });
             },
+            setBodyScrollLock(isLocked) {
+                if (isLocked) {
+                    if (this.bodyScrollLockOverflow === null) {
+                        this.bodyScrollLockOverflow = document.body.style.overflow;
+                    }
+                    document.body.classList.add('overflow-hidden');
+                    document.body.style.overflow = 'hidden';
+                    return;
+                }
+
+                document.body.classList.remove('overflow-hidden');
+                if (this.bodyScrollLockOverflow !== null) {
+                    document.body.style.overflow = this.bodyScrollLockOverflow;
+                    this.bodyScrollLockOverflow = null;
+                }
+            },
             toggleSearch() {
                 if (window.innerWidth >= 1024) return;
                 this.searchOpen = !this.searchOpen;
-                document.body.classList.toggle('overflow-hidden', this.searchOpen);
+                this.setBodyScrollLock(this.searchOpen);
                 if (this.searchOpen) {
                 this.$dispatch('search-open');
                     this.focusMobileSearch();
@@ -182,13 +200,13 @@ $showWishlist = $block->getShowWishlist() !== null ? (bool)$block->getShowWishli
             toggleSearchOpen() {
                 if (window.innerWidth >= 1024) return;
                 this.searchOpen = true;
-                document.body.classList.add('overflow-hidden');
+                this.setBodyScrollLock(true);
                 this.$dispatch('search-open');
                 this.focusMobileSearch();
             },
             searchClose() {
                 this.searchOpen = false;
-                document.body.classList.remove('overflow-hidden');
+                this.setBodyScrollLock(false);
                 this.$refs.searchButton.focus();
             },
             searchEscape() {
