@@ -103,7 +103,7 @@ foreach ($availableOrders as $orderCode => $orderLabel) {
             x-transition:enter-end="opacity-100"
             :class="{ 'bottom-0 mb-10' : selectDropdownPosition == 'top', 'top-0 mt-[42px]' : selectDropdownPosition == 'bottom' }"
             class="absolute w-full mt-1 overflow-auto text-sm bg-white rounded-[10px] max-h-56 focus:outline-none
-                   border border-slate-300 min-w-48 max-w-[300px] text-slate-800 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.10),0_4px_6px_-2px_rgba(0,0,0,0.05)] end-0 lg:start-0"
+                   border border-slate-300 min-w-48 max-w-[300px] text-slate-800 shadow-[0_10px_15px_-3px_rgba(0,0,0,0.10),0_4px_6px_-2px_rgba(0,0,0,0.05)] start-0"
             x-cloak>
             <template x-for="item in selectableItems" :key="item.value">
                 <li
