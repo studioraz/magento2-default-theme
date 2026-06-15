@@ -33,7 +33,7 @@ $reviewHtml = trim($block->getChildHtml('product.info.review'));
 ?>
 <div class="w-full mb-6">
 
-    <div class="hidden md:block text-xs font-normal leading-4 mb-4">
+    <div class="hidden md:block text-xs font-normal leading-4 mb-4 product-sku">
         <span class="text-slate-700"><?= __('SKU:') ?> </span><span class="text-slate-500"><?= $product->getSku() ?></span>
     </div>
 
@@ -101,7 +101,7 @@ $reviewHtml = trim($block->getChildHtml('product.info.review'));
         </div>
     <?php endif; ?>
 
-    <section id="description" class="lg:hidden mt-4">
+    <section id="description" class="lg:hidden mt-4 description-mobile">
         <h2 class="mb-2 text-xl md:text-start font-semibold">
             <?= $escaper->escapeHtml(__('About the product')) ?>
         </h2>
