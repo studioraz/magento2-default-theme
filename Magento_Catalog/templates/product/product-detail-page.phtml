@@ -13,14 +13,67 @@ use Magento\Framework\Escaper;
 /** @var Escaper $escaper */
 
 $product = $block->getProduct();
+$is3Col = ($product->getData('page_layout') === '3columns');
 ?>
+<?php if ($is3Col): ?>
+
+
+
+    <?= $block->getChildHtml('product.title') ?>
+
+    <div class="product-3col-grid">
+
+        <div class="product-3col-gallery">
+            <?= $block->getChildHtml('product.media') ?>
+        </div>
+
+        <div class="product-3col-attributes">
+            <div class="flex sku text-sm font-normal leading-5">
+                <dt class="product-detail-label w-2/5 text-start text-slate-500"><?= __('SKU:') ?> </dt>
+                <dd class="product-detail-value w-3/5 ms-2 text-start text-slate-700"><?= $escaper->escapeHtml($product->getSku()) ?></dd>
+            </div>
+            <?php
+            $featuredAttrsBlock = $block->getLayout()->getBlock('product.attributes.featured');
+            if ($featuredAttrsBlock) {
+                echo $featuredAttrsBlock->toHtml();
+            }
+?>
+        </div>
+
+        <div class="product-3col-info">
+            <?php
+            $productInfoBlock = $block->getChildBlock('product.info');
+            if ($productInfoBlock) {
+                $productInfoBlock->setData('hide_featured_attrs', true);
+                echo $productInfoBlock->toHtml();
+            }
+            ?>
+        </div>
+
+    </div>
+
+    <section>
+        <?= $block->getChildHtml('product_options_wrapper_bottom') ?>
+    </section>
+
+    <?= $block->getChildHtml('product.info.details') ?>
+
+    <section>
+        <?= $block->getChildHtml('related') ?>
+        <?= $block->getChildHtml('upsell') ?>
+        <?= $block->getChildHtml('review_list') ?>
+        <?= $block->getChildHtml('review_form') ?>
+    </section>
+<?php else: ?>
+
 <section class="flex flex-col md:flex-row md:gap-4 lg:gap-4 2xl:gap-11">
     <h1 class="md:hidden text-2xl font-bold leading-6 text-slate-700 mb-1">
         <?= $escaper->escapeHtml($product->getName()) ?>
     </h1>
 
     <div class="md:hidden text-xs font-normal leading-4 mb-5">
-        <span class="text-slate-700"><?= __('SKU:') ?> </span><span class="text-slate-500"><?= $product->getSku() ?></span>
+            <span class="text-slate-700"><?= __('SKU:') ?> </span>
+            <span class="text-slate-500"><?= $escaper->escapeHtml($product->getSku()) ?></span>
     </div>
 
     <div class="w-full md:w-1/2">
@@ -38,7 +91,7 @@ $product = $block->getProduct();
     <?= $block->getChildHtml('product_options_wrapper_bottom') ?>
 </section>
 
-<?= $block->getChildHtml('product.info.details'); ?>
+    <?= $block->getChildHtml('product.info.details') ?>
 
 <section>
     <?= $block->getChildHtml('related') ?>
@@ -46,3 +99,4 @@ $product = $block->getProduct();
     <?= $block->getChildHtml('review_list') ?>
     <?= $block->getChildHtml('review_form') ?>
 </section>
+<?php endif; ?>
