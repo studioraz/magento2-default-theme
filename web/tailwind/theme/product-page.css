@@ -91,10 +91,6 @@
     }
 }
 
-/* ============================================================
-   3-COLUMN PRODUCT PAGE — project-level overrides
-   ============================================================ */
-
 .page-layout-3columns.catalog-product-view {
 
     .columns {
@@ -159,6 +155,10 @@
 
                 @apply max-md:shadow-lg;
             }
+        }
+
+        .product-sku {
+            @apply hidden!;
         }
     }
 
