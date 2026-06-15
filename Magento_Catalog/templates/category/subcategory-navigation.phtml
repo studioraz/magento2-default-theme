@@ -1,0 +1,125 @@
+<?php
+/**
+ * Copyright © 2026 Studio Raz. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\LucideIcons;
+use Magento\Catalog\Model\Category;
+use Magento\Framework\Escaper;
+use SR\SubcategoryNavigation\Block\Category\SubcategoryNavigation;
+
+/**
+ * @var Escaper $escaper
+ * @var SubcategoryNavigation $block
+ * @var ViewModelRegistry $viewModels
+ */
+
+$categories = $block->getCategories();
+$swiperUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
+
+/** @var LucideIcons $lucideIcons */
+$lucideIcons = $viewModels->require(LucideIcons::class);
+?>
+<?php if ($categories): ?>
+    <script>
+        'use strict';
+
+        function initSubcategoryNavigationSlider() {
+            return {
+                swiperInstance: null,
+
+                initSwiper() {
+                    if (typeof Swiper !== 'undefined') {
+                        this.runSwiperConfig();
+                        return;
+                    }
+
+                    const swiperSrc = '<?= $escaper->escapeUrl($swiperUrl) ?>';
+                    const existingScript = document.querySelector(`script[src="${swiperSrc}"]`);
+
+                    if (!existingScript) {
+                        const script = document.createElement('script');
+                        script.src = swiperSrc;
+                        script.async = true;
+                        script.onload = () => this.runSwiperConfig();
+                        document.head.appendChild(script);
+                    } else {
+                        const checkInterval = setInterval(() => {
+                            if (typeof Swiper !== 'undefined') {
+                                clearInterval(checkInterval);
+                                this.runSwiperConfig();
+                            }
+                        }, 50);
+                    }
+                },
+
+                runSwiperConfig() {
+                    if (this.swiperInstance || !this.$refs.slider) return;
+
+                    this.swiperInstance = new Swiper(this.$refs.slider, {
+                        slidesPerView: 'auto',
+                        spaceBetween: 8,
+                        freeMode: true,
+                        watchSlidesProgress: true,
+                        navigation: {
+                            nextEl: this.$refs.nextButton,
+                            prevEl: this.$refs.prevButton,
+                        },
+                        breakpoints: {
+                            768: {
+                                spaceBetween: 10,
+                            },
+                        },
+                    });
+                },
+            }
+        }
+    </script>
+
+    <nav
+        class="subcategory-navigation mt-4"
+        aria-label="<?= $escaper->escapeHtmlAttr(__('Subcategories')) ?>"
+        x-data="initSubcategoryNavigationSlider()"
+        x-init="initSwiper()"
+    >
+        <div class="relative flex items-center gap-2">
+            <button
+                class="swiper-button-prev subcategory-navigation-prev static mt-0 hidden h-9 w-9 shrink-0 rounded-full border border-gray-300 text-gray-700 after:hidden hover:border-primary hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary md:flex"
+                type="button"
+                aria-label="<?= $escaper->escapeHtmlAttr(__('Previous subcategory')) ?>"
+                x-ref="prevButton"
+            >
+                <?= $lucideIcons->renderHtml('chevron-left', 'rtl:-rotate-180', 20, 20, ['aria-hidden' => 'true']); ?>
+            </button>
+
+            <div class="swiper swiper-container subcategory-navigation-swiper min-h-11 overflow-hidden" x-ref="slider">
+                <ul class="swiper-wrapper items-center" role="list">
+                    <?php foreach ($categories as $category): ?>
+                        <?php /** @var Category $category */ ?>
+                        <li class="swiper-slide !w-auto">
+                            <a
+                                class="block whitespace-nowrap rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-800 transition hover:border-primary hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary"
+                                href="<?= $escaper->escapeUrl($category->getUrl()) ?>"
+                            >
+                                <?= $escaper->escapeHtml($category->getName()) ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+
+            <button
+                class="swiper-button-next subcategory-navigation-next static mt-0 hidden h-9 w-9 shrink-0 rounded-full border border-gray-300 text-gray-700 after:hidden hover:border-primary hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary md:flex"
+                type="button"
+                aria-label="<?= $escaper->escapeHtmlAttr(__('Next subcategory')) ?>"
+                x-ref="nextButton"
+            >
+                <?= $lucideIcons->renderHtml('chevron-right', 'rtl:-rotate-180', 20, 20, ['aria-hidden' => 'true']); ?>
+            </button>
+        </div>
+    </nav>
+<?php endif; ?>
