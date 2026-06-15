@@ -93,7 +93,7 @@ $lucideIcons = $viewModels->require(LucideIcons::class);
                 aria-label="<?= $escaper->escapeHtmlAttr(__('Previous subcategory')) ?>"
                 x-ref="prevButton"
             >
-                <?= $lucideIcons->renderHtml('chevron-left', 'rtl:-rotate-180', 20, 20, ['aria-hidden' => 'true']); ?>
+                <?= $lucideIcons->renderHtml('chevron-left', '', 20, 20, ['aria-hidden' => 'true']); ?>
             </button>
 
             <div class="swiper swiper-container subcategory-navigation-swiper min-h-11 overflow-hidden" x-ref="slider">
@@ -118,7 +118,7 @@ $lucideIcons = $viewModels->require(LucideIcons::class);
                 aria-label="<?= $escaper->escapeHtmlAttr(__('Next subcategory')) ?>"
                 x-ref="nextButton"
             >
-                <?= $lucideIcons->renderHtml('chevron-right', 'rtl:-rotate-180', 20, 20, ['aria-hidden' => 'true']); ?>
+                <?= $lucideIcons->renderHtml('chevron-right', '', 20, 20, ['aria-hidden' => 'true']); ?>
             </button>
         </div>
     </nav>
