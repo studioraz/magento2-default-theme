@@ -7,6 +7,11 @@
                 <argument name="css_classes" xsi:type="string">text-3xl font-bold mb-6 lg:text-4xl</argument>
                 <argument name="wrapper_spacing_css" xsi:type="string">mb-2 md:mb-5 lg:mb-8</argument>
             </arguments>
+            <block class="SR\SubcategoryNavigation\Block\Category\SubcategoryNavigation"
+                   name="subcategory.navigation"
+                   as="subcategory_navigation"
+                   template="Magento_Catalog::category/subcategory-navigation.phtml"
+                   after="-"/>
         </referenceBlock>
 
         <referenceContainer name="top.container">
@@ -74,7 +79,7 @@
         </referenceContainer>
 
         <move element="category.description2" destination="content" after="category.products" />
-        <move element="category.description" destination="page.main.title" after="-"/>
+        <move element="category.description" destination="page.main.title" after="subcategory.navigation"/>
 
     </body>
 </page>
