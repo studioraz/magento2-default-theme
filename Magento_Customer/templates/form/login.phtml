@@ -53,26 +53,24 @@ $recaptcha = $block->getData('viewModelRecaptcha');
                 <p class="mb-8">
                     <?= $escaper->escapeHtml(__('If you have an account, sign in with your email address.')) ?>
                 </p>
-                <div class="field email required">
-                    <label class="label" for="email">
-                        <span><?= $escaper->escapeHtml(__('Email')) ?></span>
-                    </label>
+                <div class="field email required floating-labels">
                     <div class="control">
                         <input name="login[username]"
-                               class="form-input w-full"
+                               class="form-input w-full peer"
                                required
                                value="<?= $escaper->escapeHtmlAttr($block->getUsername()) ?>"
                                autocomplete="<?= $block->isAutocompleteDisabled() ? 'off' : 'username' ?>"
                                id="email"
                                type="email"
                                title="<?= $escaper->escapeHtmlAttr(__('Email')) ?>"
+                               placeholder=" "
                         >
+                        <label class="label floating-labels-label" for="email">
+                            <span><?= $escaper->escapeHtml(__('Email')) ?></span>
+                        </label>
                     </div>
                 </div>
-                <div class="field password required">
-                    <label for="pass" class="label">
-                        <span><?= $escaper->escapeHtml(__('Password')) ?></span>
-                    </label>
+                <div class="field password required floating-labels">
                     <div class="control flex items-center">
                         <div class="sr-only" aria-live="polite">
                             <span x-show="!showPassword">
@@ -85,13 +83,17 @@ $recaptcha = $block->getData('viewModelRecaptcha');
                             </template>
                         </div>
                         <input name="login[password]"
-                            class="form-input w-full"
+                            class="form-input w-full peer"
                             required
                             :type="showPassword ? 'text' : 'password'"
                             autocomplete="<?= $block->isAutocompleteDisabled() ? 'off' : 'current-password' ?>"
                             id="pass"
                             title="<?= $escaper->escapeHtmlAttr(__('Password')) ?>"
+                            placeholder=" "
                         >
+                        <label for="pass" class="label floating-labels-label">
+                            <span><?= $escaper->escapeHtml(__('Password')) ?></span>
+                        </label>
                         <button
                             type="button"
                             x-on:click="showPassword = !showPassword"
