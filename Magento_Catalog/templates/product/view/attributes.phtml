@@ -39,7 +39,7 @@ $layoutStyleTableCellItem = $getLayoutStyle === ""
     <div class="table-wrapper overflow-x-auto" id="product-attributes">
         <div class="additional-attributes table-fixed w-full">
             <?php foreach ($attributes as $attribute): ?>
-                <div class="flex text-sm font-normal leading-5">
+                <div class="flex text-sm font-normal leading-5 max-lg:mb-1">
                     <dt class="col label product-attribute-label text-start w-1/4 text-sm font-semibold leading-5 md:text-base md:leading-6 break-words hyphens-auto md:py-2"
                     ><?= $escaper->escapeHtml($attribute['label']) ?></dt>
                     <dd class="col data product-attribute-value text-start w-3/4 text-sm font-normal leading-5 md:text-base md:leading-6 text-slate-700 break-words hyphens-auto md:py-2"

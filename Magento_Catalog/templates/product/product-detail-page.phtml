@@ -6,11 +6,14 @@
 
 declare(strict_types=1);
 
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\ProductPage;
 use Magento\Catalog\Block\Product\View;
 use Magento\Framework\Escaper;
 
 /** @var View $block */
 /** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
 
 $product = $block->getProduct();
 $is3Col = ($product->getData('page_layout') === '3columns');
@@ -23,29 +26,41 @@ $is3Col = ($product->getData('page_layout') === '3columns');
 
     <div class="product-3col-grid">
 
-        <div class="product-3col-gallery">
+        <div class="product-3col-one">
             <?= $block->getChildHtml('product.media') ?>
         </div>
 
-        <div class="product-3col-attributes">
+        <div class="product-3col-two">
             <div class="flex sku text-sm font-normal leading-5">
-                <dt class="product-detail-label w-2/5 text-start text-slate-500"><?= __('SKU:') ?> </dt>
-                <dd class="product-detail-value w-3/5 ms-2 text-start text-slate-700"><?= $escaper->escapeHtml($product->getSku()) ?></dd>
+                <dt class="product-detail-label w-2/5 text-start text-slate-500 py-2"><?= __('SKU:') ?> </dt>
+                <dd class="product-detail-value w-3/5 ms-2 text-start text-slate-700 py-2"><?= $escaper->escapeHtml($product->getSku()) ?></dd>
             </div>
             <?php
             $featuredAttrsBlock = $block->getLayout()->getBlock('product.attributes.featured');
             if ($featuredAttrsBlock) {
                 echo $featuredAttrsBlock->toHtml();
+                $block->getLayout()->unsetElement('product.attributes.featured');
             }
 ?>
+            <?php
+            /** @var ProductPage $productViewModel */
+            $productViewModel = $viewModels->require(ProductPage::class);
+            if ($shortDescription = $productViewModel->getShortDescription(false, false)):
+            ?>
+                <div class="mb-4 mt-2 product-description prose text-sm font-normal leading-5 text-slate-700">
+                    <?= /* @noEscape */ $shortDescription ?>
+                </div>
+            <?php endif; ?>
         </div>
 
-        <div class="product-3col-info">
+        <div class="product-3col-three">
             <?php
             $productInfoBlock = $block->getChildBlock('product.info');
             if ($productInfoBlock) {
                 $productInfoBlock->setData('hide_featured_attrs', true);
+                $productInfoBlock->setData('hide_short_description', true);
                 echo $productInfoBlock->toHtml();
+                $productInfoBlock->unsetData('hide_short_description');
             }
             ?>
         </div>

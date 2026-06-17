@@ -13,31 +13,142 @@ declare(strict_types=1);
 use Magento\Catalog\Block\Product\View\Details;
 use Magento\Framework\Escaper;
 
+// Get product to check layout
+$product = null;
+$productBlock = $block->getLayout()->getBlock('product.info');
+if ($productBlock) {
+    $product = $productBlock->getProduct();
+}
+
+$is3Col = $product && $product->getData('page_layout') === '3columns';
+
+// Collect sections
+$sections = [];
 $titleRenderer = $block->getChildBlock('product.section.title.renderer');
 $defaultTitleTemplate = $titleRenderer->getTemplate();
 
-?>
-<div class="grid lg:grid-cols-2 gap-8">
-<?php
 foreach ($block->getGroupSortedChildNames('detailed_info', '') as $sectionName) {
-    $sectionBlock  = $block->getLayout()->getBlock($sectionName);
-    $sectionHtml   = (string) $sectionBlock->toHtml();
-    $titleTemplate = $sectionBlock->getData('title_template') ?? $defaultTitleTemplate;
+    $sectionBlock = $block->getLayout()->getBlock($sectionName);
+    $sectionHtml = (string) $sectionBlock->toHtml();
 
     if (empty(trim($sectionHtml))) {
         continue;
     }
+
+    $sections[] = [
+        'id' => $sectionBlock->getNameInLayout(),
+        'title' => $sectionBlock->getTitle() ?: str_replace(['_', '-'], ' ', ucfirst($sectionBlock->getNameInLayout())),
+        'html' => $sectionHtml,
+        'block' => $sectionBlock,
+    ];
+}
     ?>
-    <section id="<?= $escaper->escapeHtmlAttr($sectionBlock->getNameInLayout()) ?>"
-             class="<?= $sectionBlock->getNameInLayout() === 'description' ? 'hidden lg:block' : '' ?>">
+
+<?php if ($is3Col && !empty($sections)): ?>
+<!-- 3-Column Layout: Tabs (Desktop) + Accordion (Mobile) -->
+<div x-data="initProductTabs" class="pt-4">
+    <!-- Desktop Tab Navigation (lg and up) -->
+    <div class="hidden lg:flex border-b border-slate-300 overflow-x-auto snap overscroll-x-contain">
+        <template x-for="section in sections" :key="section.id">
+            <button
+                type="button"
+                @click="activeTab = section.id; showMobileAccordion = false"
+                :aria-selected="activeTab === section.id"
+                class="relative px-4 py-3 text-base font-medium whitespace-nowrap transition-colors
+                    text-slate-600 hover:text-slate-900
+                    aria-selected:text-slate-900 aria-selected:font-semibold
+                    after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-transparent after:transition-all
+                    aria-selected:after:h-0.5 aria-selected:after:bg-slate-900"
+                x-text="section.title"
+            ></button>
+        </template>
+    </div>
+
+    <!-- Desktop Tab Content (lg and up) -->
+    <div class="hidden lg:block mt-6">
+        <template x-for="section in sections" :key="section.id">
+            <div
+                x-show="activeTab === section.id"
+                x-transition:enter="transition ease-in duration-200"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                :id="section.id"
+                class="prose prose-slate max-w-full"
+            >
+                <div x-html="section.html"></div>
+            </div>
+        </template>
+    </div>
+
+    <!-- Mobile Accordion (hidden on lg and up) -->
+    <div class="lg:hidden divide-y divide-slate-200">
+        <template x-for="(section, index) in sections" :key="section.id">
+            <details
+                :id="section.id"
+                class="group"
+            >
+                <summary
+                    class="flex items-center justify-between py-4 px-0 text-[15px] font-medium cursor-pointer
+                        text-slate-900 hover:text-slate-700 group-open:text-slate-900
+                        [&::-webkit-details-marker]:hidden"
+                >
+                    <span x-text="section.title"></span>
+                    <span class="transition-transform duration-200 group-open:rotate-180">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="m6 9 6 6 6-6"></path>
+                        </svg>
+                    </span>
+                </summary>
+                <div class="pb-4 prose prose-slate max-w-full">
+                    <div x-html="section.html"></div>
+                </div>
+            </details>
+        </template>
+    </div>
+</div>
+
+<script>
+    function initProductTabs() {
+        const sectionsData = [
+            <?php $count = count($sections); ?>
+            <?php foreach ($sections as $index => $section): ?>
+            {
+                id: '<?= $escaper->escapeJs($section['id']) ?>',
+                title: '<?= $escaper->escapeJs($section['title']) ?>',
+                html: `<?= str_replace(['`', '$'], ['\`', '\$'], $section['html']) ?>`
+            }<?php if ($index < $count - 1): ?>,<?php endif; ?>
+            <?php endforeach; ?>
+        ];
+
+        return {
+            sections: sectionsData,
+            activeTab: '<?= $sections[0]['id'] ?? '' ?>',
+            showMobileAccordion: false,
+            init() {
+                if (this.sections.length > 0) {
+                    this.activeTab = this.sections[0].id;
+                }
+            }
+        }
+    }
+    window.addEventListener('alpine:init', () => Alpine.data('initProductTabs', initProductTabs), { once: true });
+</script>
+
+<?php else: ?>
+<!-- Original Grid Layout for 1-Column, 2-Column, and Default Layouts -->
+<div class="grid lg:grid-cols-2 gap-8">
+<?php foreach ($sections as $section): ?>
+    <section id="<?= $escaper->escapeHtmlAttr($section['id']) ?>"
+             class="<?= $section['id'] === 'description' ? 'hidden lg:block' : '' ?>">
         <?=
-            $titleRenderer->setTemplate($titleTemplate)
-                          ->assign('sectionBlock', $sectionBlock)
+            $titleRenderer->setTemplate($section['block']->getData('title_template') ?? $defaultTitleTemplate)
+                          ->assign('sectionBlock', $section['block'])
                           ->toHtml()
         ?>
         <div class="card w-full">
-            <?= /** @noEscape  */ $sectionHtml ?>
+            <?= /** @noEscape  */ $section['html'] ?>
         </div>
     </section>
-<?php } ?>
+<?php endforeach; ?>
 </div>
+<?php endif; ?>

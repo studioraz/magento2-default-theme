@@ -42,101 +42,114 @@
     display: flex;
     position: absolute;
     z-index: 8;
-    flex-grow: 1
+    flex-grow: 1;
+    translate: none;
 }
 
 .cataloglabel.cataloglabel-placeholder.position-TL {
     top: 0;
-    left: 0
+    left: 0;
+    inset-inline-start: auto;
 }
 
 .cataloglabel.cataloglabel-placeholder.position-TR {
     top: 0;
-    right: 0
+    right: 0;
+    inset-inline-end: auto;
 }
 
 .cataloglabel.cataloglabel-placeholder.position-TC {
     top: 0;
     left: 50%;
-    transform: translateX(-50%)
+    transform: translateX(-50%);
+    inset-inline-start: auto;
 }
 
 .cataloglabel.cataloglabel-placeholder.position-ML {
     top: 50%;
     left: 0;
-    transform: translateY(-50%)
+    transform: translateY(-50%);
+    inset-inline-start: auto;
 }
 
 .cataloglabel.cataloglabel-placeholder.position-MR {
     top: 50%;
     right: 0;
-    transform: translateY(-50%)
+    transform: translateY(-50%);
+    inset-inline-end: auto;
 }
 
 .cataloglabel.cataloglabel-placeholder.position-MC {
     top: 50%;
     left: 50%;
-    transform: translate(-50%,-50%)
+    transform: translate(-50%, -50%);
+    inset-inline-start: auto;
 }
 
 .cataloglabel.cataloglabel-placeholder.position-BL {
     bottom: 0;
-    left: 0
+    left: 0;
+    inset-inline-start: auto;
 }
 
 .cataloglabel.cataloglabel-placeholder.position-BR {
     bottom: 0;
-    right: 0
+    right: 0;
+    inset-inline-end: auto;
 }
 
 .cataloglabel.cataloglabel-placeholder.position-BC {
     bottom: 0;
     left: 50%;
-    transform: translateX(-50%)
+    transform: translateX(-50%);
+    inset-inline-start: auto;
 }
 
 .cataloglabel.cataloglabel-placeholder.direction-horizontal {
-    flex-direction: row
+    flex-direction: row;
 }
 
-.cataloglabel.cataloglabel-placeholder.direction-horizontal>* {
-    margin-right: 5px
+.cataloglabel.cataloglabel-placeholder.direction-horizontal > * {
+    margin-right: 5px;
+    margin-inline-end: unset;
 }
 
-.cataloglabel.cataloglabel-placeholder.direction-horizontal>:last-child {
-    margin-right: 0
+.cataloglabel.cataloglabel-placeholder.direction-horizontal > :last-child {
+    margin-right: 0;
+    margin-inline-end: unset;
 }
 
 .cataloglabel.cataloglabel-placeholder.direction-vertical {
-    flex-direction: column
+    flex-direction: column;
 }
 
-.cataloglabel.cataloglabel-placeholder.direction-vertical>* {
-    margin-bottom: 5px
+.cataloglabel.cataloglabel-placeholder.direction-vertical > * {
+    margin-bottom: 5px;
 }
 
-.cataloglabel.cataloglabel-placeholder.direction-vertical>:last-child {
-    margin-bottom: 0
+.cataloglabel.cataloglabel-placeholder.direction-vertical > :last-child {
+    margin-bottom: 0;
 }
 
 .cataloglabel.cataloglabel-placeholder.position-MANUAL {
-    position: relative
+    position: relative;
 }
 
 .cataloglabel.cataloglabel-product-top-label {
     display: table;
-    text-align: center
+    text-align: center;
 }
 
-.cataloglabel.cataloglabel-product-top-label>span {
+.cataloglabel.cataloglabel-product-top-label > span {
     display: table-cell;
     vertical-align: middle;
     line-height: 14px;
     padding: 10px;
     white-space: pre-wrap;
-    word-wrap: break-word
+    word-wrap: break-word;
 }
 
 .cataloglabel.cataloglabel-product-list img {
-    margin-right: 3px
+    margin-right: 3px;
+    margin-inline-end: unset;
 }
