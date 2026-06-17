@@ -51,7 +51,7 @@ $reviewHtml = trim($block->getChildHtml('product.info.review'));
         <?php endif; ?>
     </div>
 
-    <?php if ($shortDescription = $productViewModel->getShortDescription(false, false)) { ?>
+    <?php if (!$block->getData('hide_short_description') && $shortDescription = $productViewModel->getShortDescription(false, false)) { ?>
         <div class="mb-4 product-description prose text-sm font-normal leading-5 text-slate-700">
             <?= /* @noEscape */ $shortDescription ?>
         </div>
