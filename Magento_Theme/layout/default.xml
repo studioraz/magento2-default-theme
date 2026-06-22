@@ -80,6 +80,11 @@
                     <container name="cart-drawer.items.after"/>
 
                     <container name="cart-drawer.totals.before"/>
+                    <container name="cart-drawer.totals.subtotal.after"/>
+                    <container name="cart-drawer.totals.discount.after"/>
+                    <container name="cart-drawer.totals.shipping.after"/>
+                    <container name="cart-drawer.totals.grand.before"/>
+                    <container name="cart-drawer.totals.after"/>
                     <container name="cart-drawer.bottom"/>
                 </block>
 
