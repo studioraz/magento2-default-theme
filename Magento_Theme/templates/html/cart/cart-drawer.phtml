@@ -488,22 +488,27 @@ $clearCartBlock = $block->getChildBlock('clear_cart');
                 <dt class="text-slate-900"><?= $escaper->escapeHtml(__('Subtotal')) ?></dt>
                 <dd class="text-price" x-html="cart.subtotal"></dd>
             </dl>
+            <?= $block->getChildHtml('cart-drawer.totals.subtotal.after'); ?>
             <template x-if="cart.discountAmount != 0">
                 <dl class="flex gap-2 justify-between items-center text-sm font-bold">
                     <dt class="text-slate-900"><?= $escaper->escapeHtml(__('Discount')) ?></dt>
                     <dd class="text-price" x-html="cart.discount"></dd>
                 </dl>
             </template>
+            <?= $block->getChildHtml('cart-drawer.totals.discount.after'); ?>
             <template x-if="cart.shippingAmount != 0">
                 <dl class="flex gap-2 justify-between items-center text-sm font-bold">
                     <dt class="text-slate-900"><?= $escaper->escapeHtml(__('Shipping')) ?></dt>
                     <dd class="text-price" x-html="cart.shipping"></dd>
                 </dl>
             </template>
+            <?= $block->getChildHtml('cart-drawer.totals.shipping.after'); ?>
+            <?= $block->getChildHtml('cart-drawer.totals.grand.before'); ?>
             <dl class="flex gap-2 justify-between items-center text-base lg:text-lg font-bold">
                 <dt class="text-slate-900"><?= $escaper->escapeHtml(__('Grand Total')) ?></dt>
                 <dd class="text-price" x-html="cart.grandTotal"></dd>
             </dl>
+            <?= $block->getChildHtml('cart-drawer.totals.after'); ?>
 
             <div class="flex flex-col justify-between mt-2">
                 <div class="text-center text-sm font-semibold text-[#334155] mt-1 mb-3">
