@@ -81,8 +81,11 @@ $letter  = '';
                 <?= $useAlphabeticalIndex ? 'data-letter="' .  $block->getFirstLetter($label) . '"' : '' ?>
             >
                 <?php if ($numberOfResults >= 0): ?>
-                    <?php
+                    <?php if ($block->isCategoryFilterModeLink()) {
+                        $url = $filterItem->getData('url');
+                    } else {
                     $url = $isItemChecked ? $filterItem->getRemoveUrl() : $filterItem->getUrl();
+                    }
                     $id  = $block->getItemId($filterItem);
                     ?>
                     <a href="<?= $numberOfResults > 0 ? $escaper->escapeUrl($url) : '#' ?>"
