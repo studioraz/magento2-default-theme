@@ -72,7 +72,7 @@ $hasError = !empty(array_filter(
 $rowCss = 'sm:py-5 sm:px-2 xl:px-4 sm:table-cell';
 $imageCss = 'product-item-photo shrink-0 !absolute sm:!static start-3 top-6 sm:max-w-16 ' . ($hasError ? 'opacity-40' : '');
 ?>
-<tbody class="cart item relative border-b border-gray-300 last:border-0"
+<tbody class="cart item relative border-b border-gray-300 last:border-0 max-sm:block"
     <?php foreach ($block->getData('cart_item_data_attributes') ?? [] as $attribute => $include): ?>
         <?php if ($include): ?>
             <?php /** Append data-* attributes based on layout XML arguments */ ?>
@@ -80,9 +80,9 @@ $imageCss = 'product-item-photo shrink-0 !absolute sm:!static start-3 top-6 sm:m
         <?php endif; ?>
     <?php endforeach; ?>
 >
-    <tr class="item-info flex flex-col gap-2.5 lg:gap-4 sm:table-row min-h-[96px] sm:min-h-0 ps-[120px] py-6 px-3 sm:p-0 <?= $hasError ? 'bg-gray-50': '' ?>">
+    <tr class="item-info max-sm:block flex flex-col gap-2.5 lg:gap-4 sm:table-row min-h-[96px] sm:min-h-0 ps-[120px] py-6 px-3 sm:p-0 <?= $hasError ? 'bg-gray-50': '' ?>">
         <td data-th="<?= $escaper->escapeHtml(__('Item')) ?>"
-            class="col item <?= $rowCss ?> sm:ps-4 xl:ps-8">
+            class="col item <?= $rowCss ?> sm:ps-4 xl:ps-8 max-sm:block max-sm:mb-4">
             <div class="sm:flex sm:gap-2 xl:gap-4">
                 <?php if ($block->hasProductUrl()): ?>
                 <a href="<?= $escaper->escapeUrl($block->getProductUrl()) ?>"
@@ -141,14 +141,14 @@ $imageCss = 'product-item-photo shrink-0 !absolute sm:!static start-3 top-6 sm:m
             </div>
         </td>
 
-        <td class="col price flex items-center gap-2 <?= $rowCss ?> text-lg sm:text-xl">
+        <td class="col price max-sm:mb-4 flex items-center gap-2 <?= $rowCss ?> text-lg sm:text-xl">
                 <span class="sm:hidden text-sm leading-5 font-normal">
                     <?= $escaper->escapeHtml(__('Price:')) ?>
                 </span>
             <?= $block->getUnitPriceHtml($item) ?>
         </td>
 
-        <td class="col qty <?= $rowCss ?> <?= $hasError ? 'opacity-40' : '' ?>">
+        <td class="max-sm:block max-sm:mb-4 col qty <?= $rowCss ?> <?= $hasError ? 'opacity-40' : '' ?>">
             <label class="sr-only" for="cart-<?= $escaper->escapeHtmlAttr($item->getId()) ?>-qty">
                 <?= $escaper->escapeHtml(__('Qty')) ?>
             </label>
@@ -223,7 +223,7 @@ $imageCss = 'product-item-photo shrink-0 !absolute sm:!static start-3 top-6 sm:m
             </div>
         </td>
 
-        <td class="col subtotal flex items-center gap-2 <?= $rowCss ?> text-lg sm:text-xl">
+        <td class="col subtotal max-sm:mb-4 flex items-center gap-2 <?= $rowCss ?> text-lg sm:text-xl">
                 <span class="sm:hidden text-sm leading-5 font-normal">
                     <?= $escaper->escapeHtml(__('Subtotal:')) ?>
                 </span>
