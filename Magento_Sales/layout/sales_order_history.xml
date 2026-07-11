@@ -21,5 +21,6 @@
             </block>
             <block class="Magento\Customer\Block\Account\Dashboard" name="customer.account.link.back" template="Magento_Customer::account/link/back.phtml" cacheable="false"/>
         </referenceContainer>
+        <referenceBlock name="customer.account.link.back" display="false"/>
     </body>
 </page>

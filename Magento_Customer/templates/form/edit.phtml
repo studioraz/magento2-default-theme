@@ -164,7 +164,7 @@ $isAutocompleteEnabled = $storeConfig->getStoreConfig('customer/password/autocom
                                id="password"
                                required
                                data-validate='{"password-strength": {"minCharacterSets": <?= (int) $passwordMinCharacterSets ?>}}'
-                               @input="onChange"
+                               @blur="onChange"
                                minlength="<?= $escaper->escapeHtmlAttr($minimumPasswordLength) ?>"
                                autocomplete="<?= $isAutocompleteEnabled ? 'new-password' : 'off' ?>"
                                aria-describedby="password-strength-meter"
@@ -204,7 +204,7 @@ $isAutocompleteEnabled = $storeConfig->getStoreConfig('customer/password/autocom
                                class="form-input peer"
                                name="password_confirmation" id="password-confirmation"
                                data-validate='{"equalTo": "password"}'
-                               @input="onChange"
+                               @blur="onChange"
                                autocomplete="<?= $isAutocompleteEnabled ? 'new-password' : 'off' ?>"
                                aria-describedby="password-strength-meter"
                                placeholder=" "
@@ -239,11 +239,6 @@ $isAutocompleteEnabled = $storeConfig->getStoreConfig('customer/password/autocom
                 <span><?= $escaper->escapeHtml(__('Save')) ?></span>
             </button>
         </div>
-        <div class="secondary">
-            <a class="action back" href="<?= $escaper->escapeUrl($block->getBackUrl()) ?>">
-                <span><?= $escaper->escapeHtml(__('Go back')) ?></span>
-            </a>
-        </div>
     </div>
 </form>
 <div class="w-full">
@@ -261,6 +256,15 @@ $isAutocompleteEnabled = $storeConfig->getStoreConfig('customer/password/autocom
             showPasswordConfirm: false,
             showPasswordCurrent: false,
             showPasswordFields: <?= $block->getChangePassword() ? $escaper->escapeJs('true') : $escaper->escapeJs('false') ?>,
+            init() {
+                this.$el.addEventListener('focusin', (e) => {
+                    const field = this.fields[e.target.name];
+                    if (field) {
+                        this.removeMessages(field);
+                        this.getMessageContainer(field).classList.remove('field-error', 'field-success');
+                    }
+                });
+            },
             setErrorMessages(messages) {
                 this.errorMessages = [messages]
                 this.displayErrorMessage = this.errorMessages.length

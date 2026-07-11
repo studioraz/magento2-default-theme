@@ -118,7 +118,7 @@ if (! $customer->customerLoggedIn()) {
                     <ol role="list" id="cart-sidebar-reorder" class="product-items product-items-names">
                         <template x-for="product in reorderItems">
                             <li class="flex items-start mb-4">
-                                <div class="shrink-0 mr-2">
+                                <div class="shrink-0 me-2">
                                     <div class="control">
                                         <input type="checkbox"
                                                name="order_items[]"
@@ -156,12 +156,6 @@ if (! $customer->customerLoggedIn()) {
                                 <?= $escaper->escapeHtml(__('Add to Cart')) ?>
                             </button>
                         </template>
-                        <a href="<?= $escaper->escapeUrl($block->getUrl('customer/account')) ?>#recentOrders"
-                           class="btn text-sm shadow-none bg-transparent text-inherit"
-                           aria-label="<?= $escaper->escapeHtmlAttr(__('View all recent orders')) ?>"
-                        >
-                            <?= $escaper->escapeHtml(__('View All')); ?>
-                        </a>
                     </div>
                 </div>
             </template>
