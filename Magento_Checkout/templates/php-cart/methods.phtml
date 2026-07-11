@@ -16,7 +16,7 @@ use Magento\Framework\Escaper;
 ?>
 <?php if (!$block->hasError()): ?>
     <?php $methods = $block->getMethods('methods') ?: $block->getMethods('top_methods') ?>
-    <nav aria-label="<?= $escaper->escapeHtmlAttr(__('Go to Checkout')) ?>">
+    <nav class="max-md:fixed max-md:bottom-0 max-md:inset-x-0 max-md:w-full max-md:z-[29] max-md:p-2.5 max-md:bg-white max-md:shadow-[0_-2px_4px_0_rgba(0,0,0,0.06)]" aria-label="<?= $escaper->escapeHtmlAttr(__('Go to Checkout')) ?>">
         <ul class="checkout methods items checkout-methods-items space-y-2">
             <?php foreach ($methods as $method): ?>
                 <?php $methodHtml = $block->getMethodHtml($method); ?>

@@ -9,6 +9,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <update handle="default_hyva"/>
     <update handle="hyva_form_validation"/>
+    <update handle="hyva_modal"/>
     <body>
         <attribute name="x-data" value="initScrollLocker"/>
         <attribute name="x-bind" value="eventListeners"/>
@@ -79,6 +80,11 @@
                     <container name="cart-drawer.items.after"/>
 
                     <container name="cart-drawer.totals.before"/>
+                    <container name="cart-drawer.totals.subtotal.after"/>
+                    <container name="cart-drawer.totals.discount.after"/>
+                    <container name="cart-drawer.totals.shipping.after"/>
+                    <container name="cart-drawer.totals.grand.before"/>
+                    <container name="cart-drawer.totals.after"/>
                     <container name="cart-drawer.bottom"/>
                 </block>
 
@@ -170,6 +176,15 @@
                    name="swiper.manager.js"
                    template="Magento_PageBuilder::swiper/init.phtml"/>
             <block name="bf.cache.reload" template="Magento_Theme::js/bf-cache.phtml"/>
+            <block name="scroll.to.top" template="Magento_Theme::scroll-to-top.phtml">
+                <arguments>
+                    <argument name="position" xsi:type="string">end</argument> <!-- Button position (start/center/end) -->
+                    <argument name="visible_offset" xsi:type="number">200</argument> <!-- Offset before showing the button -->
+                    <argument name="visible_only_to_top" xsi:type="boolean">true</argument> <!-- Only show when scrolling to top (true/false) -->
+                    <argument name="hide_on_inactivity" xsi:type="number">6000</argument> <!-- Hide after x ms -->
+                </arguments>
+            </block>
+
         </referenceContainer>
 
         <block name="head.additional" as="head.additional" template="Magento_Theme::html/container.phtml"/>

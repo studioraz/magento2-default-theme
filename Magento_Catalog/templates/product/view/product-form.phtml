@@ -28,6 +28,7 @@ $productInfoBlock = $block->getLayout()->getBlock('product.info');
     <form method="post"
           action="<?= $escaper->escapeUrl($productInfoBlock->getSubmitUrl($product)) ?>"
           id="product_addtocart_form" <?php if ($product->getOptions()): ?> enctype="multipart/form-data"<?php endif; ?>
+          class="max-lg:w-full"
           x-data="{...initProductAddToCart(), ...hyva.formValidation($el)}"
           x-bind="eventListeners"
     >

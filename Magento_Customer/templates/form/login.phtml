@@ -35,7 +35,7 @@ $loginButtonViewModel = $viewModels->require(LoginButton::class);
 // on the Magento_ReCaptchaCustomer module
 $recaptcha = $block->getData('viewModelRecaptcha');
 ?>
-<div class="card">
+<div class="mx-auto max-w-sm px-4 py-4">
     <div aria-labelledby="block-customer-login-heading">
         <form class="form form-login"
               action="<?= $escaper->escapeUrl($block->getPostActionUrl()) ?>"
@@ -45,35 +45,25 @@ $recaptcha = $block->getData('viewModelRecaptcha');
               id="customer-login-form">
             <?= $block->getBlockHtml('formkey') ?>
             <fieldset class="fieldset login">
-                <legend class="mb-3">
-                    <h2 class="text-xl font-medium title-font">
-                        <?= $escaper->escapeHtml(__('Login')) ?>
-                    </h2>
-                </legend>
-                <p class="mb-8">
-                    <?= $escaper->escapeHtml(__('If you have an account, sign in with your email address.')) ?>
-                </p>
-                <div class="field email required">
-                    <label class="label" for="email">
-                        <span><?= $escaper->escapeHtml(__('Email')) ?></span>
-                    </label>
+                <div class="field field-reserved email required floating-labels">
                     <div class="control">
                         <input name="login[username]"
-                               class="form-input w-full"
+                               class="form-input w-full peer"
                                required
                                value="<?= $escaper->escapeHtmlAttr($block->getUsername()) ?>"
                                autocomplete="<?= $block->isAutocompleteDisabled() ? 'off' : 'username' ?>"
                                id="email"
                                type="email"
                                title="<?= $escaper->escapeHtmlAttr(__('Email')) ?>"
+                               placeholder=" "
                         >
+                        <label class="label floating-labels-label" for="email">
+                            <span><?= $escaper->escapeHtml(__('Email')) ?></span>
+                        </label>
                     </div>
                 </div>
-                <div class="field password required">
-                    <label for="pass" class="label">
-                        <span><?= $escaper->escapeHtml(__('Password')) ?></span>
-                    </label>
-                    <div class="control flex items-center">
+                <div class="field field-reserved password required floating-labels">
+                    <div class="control relative">
                         <div class="sr-only" aria-live="polite">
                             <span x-show="!showPassword">
                                 <?= $escaper->escapeHtml(__('Password hidden')) ?>
@@ -85,18 +75,22 @@ $recaptcha = $block->getData('viewModelRecaptcha');
                             </template>
                         </div>
                         <input name="login[password]"
-                            class="form-input w-full"
+                            class="form-input w-full peer pe-12"
                             required
                             :type="showPassword ? 'text' : 'password'"
                             autocomplete="<?= $block->isAutocompleteDisabled() ? 'off' : 'current-password' ?>"
                             id="pass"
                             title="<?= $escaper->escapeHtmlAttr(__('Password')) ?>"
+                            placeholder=" "
                         >
+                        <label for="pass" class="label floating-labels-label">
+                            <span><?= $escaper->escapeHtml(__('Password')) ?></span>
+                        </label>
                         <button
                             type="button"
                             x-on:click="showPassword = !showPassword"
                             :aria-pressed="showPassword ? 'true' : 'false'"
-                            class="px-4 py-3"
+                            class="absolute inset-y-0 end-0 flex items-center px-3"
                             :aria-label="showPassword ? '<?= $escaper->escapeJs(__('Hide Password')) ?>' : '<?= $escaper->escapeJs(__('Show Password')) ?>'"
                         >
                             <?= $heroiconssolid->eyeHtml('', 20, 20, ['x-show' => '!showPassword', 'aria-hidden' => 'true']); ?>
@@ -106,24 +100,32 @@ $recaptcha = $block->getData('viewModelRecaptcha');
                         </button>
                     </div>
                 </div>
+                <div class="text-end -mt-4 mb-4">
+                    <a class="text-xs underline"
+                       href="<?= $escaper->escapeUrl($block->getForgotPasswordUrl()) ?>">
+                        <span><?= $escaper->escapeHtml(__('Forgot Your Password?')) ?></span>
+                    </a>
+                </div>
 
                 <?= $recaptcha ? $recaptcha->getInputHtml(ReCaptcha::RECAPTCHA_FORM_ID_CUSTOMER_LOGIN) : '' ?>
                 <?= $block->getChildHtml('form_additional_info') ?>
-                <div class="actions-toolbar pt-6 pb-2">
-                        <button type="submit" class="btn btn-primary" name="send"
-                            <?php if ($loginButtonViewModel->disabled()): ?> disabled data-recaptcha-btn<?php endif; ?>
-                        >
-                            <span><?= $escaper->escapeHtml(__('Sign In')) ?></span>
-                        </button>
-                        <a class="underline" href="<?= $escaper->escapeUrl(
-                            $block->getForgotPasswordUrl()
-                        ) ?>"><span><?= $escaper->escapeHtml(__('Forgot Your Password?')) ?></span>
-                        </a>
+                <div class="actions-toolbar">
+                    <button type="submit" class="btn btn-primary w-full" name="send"
+                        <?php if ($loginButtonViewModel->disabled()): ?> disabled data-recaptcha-btn<?php endif; ?>
+                    >
+                        <span><?= $escaper->escapeHtml(__('Sign In')) ?></span>
+                    </button>
+                </div>
+                <div class="mt-4 text-center">
+                    <a href="<?= $escaper->escapeUrl($block->getUrl('customer/account/create')) ?>"
+                       class="underline text-sm">
+                        <span><?= $escaper->escapeHtml(__('Create an Account')) ?></span>
+                    </a>
                 </div>
                 <div>
                     <template x-if="displayErrorMessage">
                         <p class="text-red flex items-center">
-                            <span class="inline-block w-8 h-8 mr-3">
+                            <span class="inline-block w-8 h-8 me-3">
                                 <?= $heroiconsoutline->exclamationCircleHtml('', 24, 24, ['aria-hidden' => true]); ?>
                             </span>
                             <template x-for="errorMessage in errorMessages">
@@ -162,7 +164,7 @@ $recaptcha = $block->getData('viewModelRecaptcha');
                             window.location.href
                         )
                     }
-                    
+
                     if (this.errors === 0) {
                         $form.submit();
                     }

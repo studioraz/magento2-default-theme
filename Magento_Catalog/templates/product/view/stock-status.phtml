@@ -9,64 +9,36 @@ declare(strict_types=1);
 use Hyva\Theme\Model\ViewModelRegistry;
 use Hyva\Theme\ViewModel\CurrentProduct;
 use Magento\Catalog\Model\Product;
-use Magento\CatalogInventory\Block\Stockqty\DefaultStockqty;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
-use Hyva\Theme\ViewModel\LucideIcons;
-
-// phpcs:disable Magento2.Templates.ThisInTemplate.FoundThis
 
 /** @var Template $block */
 /** @var Escaper $escaper */
 /** @var ViewModelRegistry $viewModels */
-/** @var DefaultStockqty $block */
-/** @var LucideIcons $lucideIcons */
 
 /** @var CurrentProduct $currentProduct */
 $currentProduct = $viewModels->require(CurrentProduct::class);
 
-/** @var LucideIcons $lucideIcons */
-$lucideIcons = $viewModels->require(LucideIcons::class);
-
 /** @var Product $product */
-$product = $block->hasData('product')
-    ? $block->getData('product')
-    : $currentProduct->get();
+$product = $currentProduct->get();
 
-if (!$product || !$product->getId()) {
+if (!$product->getId()) {
     return;
-}
-
-$inStock = $product->getIsSalable();
-$stockQtyBlock = $block->getChildBlock('stock_qty');
-$isQtyMsgVisible = $stockQtyBlock && $stockQtyBlock->isMsgVisible();
-$stockMessage = '';
-$stockCss = '';
-$stockIconCss = '';
-
-if ($isQtyMsgVisible) {
-    $stockMessage = __('Only %1 left', ($stockQtyBlock->getStockQtyLeft()));
-    $stockCss = 'only-x-left';
-    $stockIconCss = 'text-amber-400';
-} else {
-    $stockMessage = $inStock ? __('In stock') : __('Out of stock');
-    $stockCss = $inStock ? 'available' : 'unavailable';
-    $stockIconCss = $inStock ? 'text-emerald-500' : 'text-red-500';
 }
 ?>
 
-<?php if ($isQtyMsgVisible || $block->getParentBlock()->displayProductStockStatus()): ?>
-    <div class="availability flex items-center gap-x-[4px] stock <?= $stockCss ?>"
-         title="<?= $escaper->escapeHtmlAttr(__('Availability')) ?>">
-        <?php if ($isQtyMsgVisible): ?>
-            <?= $lucideIcons->renderHtml('alert-circle', "ms-1 mb-[2px] $stockIconCss", 20, 20); ?>
-        <?php else: ?>
-            <?php if ($inStock): ?>
-                <?= $lucideIcons->checkHtml( "ms-1 mb-[2px] $stockIconCss", 20, 20); ?>
-            <?php else: ?>
-                <?= $lucideIcons->renderHtml('x-circle', "ms-1 mb-[2px] $stockIconCss", 20, 20); ?>
-            <?php endif; ?>
-        <?php endif; ?>
-        <span><?= $escaper->escapeHtml($stockMessage) ?></span>
-    </div>
-<?php endif; ?>
+<div class="text-right">
+    <?php if ($product->getIsSalable()): ?>
+        <p class="flex items-center justify-start align-middle available gap-x-2 stock"
+           title="<?= $escaper->escapeHtmlAttr(__('Availability')) ?>">
+            <span class="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></span>
+            <span><?= $escaper->escapeHtml(__('In stock')) ?></span>
+        </p>
+    <?php else: ?>
+        <p class="flex items-center justify-start align-middle gap-x-2 unavailable stock"
+           title="<?= $escaper->escapeHtmlAttr(__('Availability')) ?>">
+            <span class="w-3 h-3 bg-red-500 rounded-full flex-shrink-0"></span>
+            <span><?= $escaper->escapeHtml(__('Out of stock')) ?></span>
+        </p>
+    <?php endif; ?>
+</div>

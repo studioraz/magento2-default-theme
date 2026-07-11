@@ -131,27 +131,30 @@
 
         /* Reserve space for single line form validation messages */
         &.field-reserved {
-            --reserved-space: --spacing(5);
-            margin-block-end: var(--reserved-space);
+        --reserved-space: --spacing(4);
+        --gap-before-error: 1px;
+        --gap-after-error: --spacing(3);
+        margin-block-end: var(--reserved-space);
 
-            ul {
-                @apply text-sm;
+        ul, .messages {
+            @apply text-xs;
+            margin-block-start: var(--gap-before-error);
 
-                &:last-of-type {
-                    margin-block-end: calc(var(--reserved-space) * -1);
-                }
+            &:last-of-type {
+                margin-block-end: calc((var(--reserved-space) * -1) + var(--gap-after-error));
             }
+        }
         }
 
         &.choice {
-            @apply flex items-center;
+            @apply flex items-start;
 
             label {
                 @apply mb-0;
             }
 
             input {
-                @apply me-3;
+                @apply me-2 mt-[3px] shrink-0;
             }
         }
 

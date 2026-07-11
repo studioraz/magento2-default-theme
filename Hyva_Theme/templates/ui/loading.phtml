@@ -22,15 +22,12 @@ $hyvaicons = $viewModels->require(SvgIcons::class);
 // @tailwind 'animate-spin'
 ?>
 <div
-    class="z-50 fixed inset-0 flex justify-center items-center bg-white/70 select-none"
+    class="z-50 fixed inset-0 flex justify-center items-center bg-white/70 select-none text-primary-darker"
     x-show="isLoading"
     x-cloak
     x-transition.opacity.duration.200ms
 >
     <div class="flex items-center">
-        <?= $hyvaicons->renderHtml('loader', '', 54, 54, ['aria-hidden' => 'true']); ?>
-        <div class="ml-10 text-xl">
-            <?= $escaper->escapeHtml(__('Loading...')) ?>
-        </div>
+        <?= $hyvaicons->renderHtml('loader', '', 40, 40, ['aria-hidden' => 'true']); ?>
     </div>
 </div>

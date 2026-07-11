@@ -245,6 +245,7 @@ $globalConfig = [
         };
 
         const initializeSwiper = (slider, config) => {
+            if (!slider) return;
             if (slider.classList.contains('slider-instantiated')) return;
             slider.classList.add('slider-instantiated');
 

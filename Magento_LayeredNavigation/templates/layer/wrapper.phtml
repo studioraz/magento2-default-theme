@@ -35,12 +35,14 @@ $isSideBar = $parentName === 'sidebar.main';
             isMobile: false,
             desktopAllowed: Boolean(options.desktopAllowed || false),
             blockOpen: false,
+            bodyScrollLocked: false,
             checkIsMobileResolution() {
                 this.isMobile = window.matchMedia('(max-width: 1024px)').matches;
                 // Close if we move to desktop where drawer is not allowed
                 if (!this.isMobile && !this.desktopAllowed && this.blockOpen) {
                     this.closeDrawer();
                 }
+                this.updateBodyScrollLock();
             },
             toggleDrawer(event) {
                 const detail = event && event.detail ? event.detail : {};
@@ -55,6 +57,7 @@ $isSideBar = $parentName === 'sidebar.main';
             openDrawer() {
                 if (this.isMobile || this.desktopAllowed) {
                     this.blockOpen = true;
+                    this.updateBodyScrollLock();
                     this.$nextTick(() => {
                         this.$refs && this.$refs.layeredNavDialog && hyva.trapFocus(this.$refs.layeredNavDialog);
                     });
@@ -62,7 +65,31 @@ $isSideBar = $parentName === 'sidebar.main';
             },
             closeDrawer() {
                 this.blockOpen = false;
+                this.updateBodyScrollLock();
                 this.$refs && this.$refs.layeredNavDialog && hyva.releaseFocus(this.$refs.layeredNavDialog);
+            },
+            updateBodyScrollLock() {
+                if (this.blockOpen && this.isMobile) {
+                    this.lockBodyScroll();
+                } else {
+                    this.unlockBodyScroll();
+                }
+            },
+            lockBodyScroll() {
+                if (this.bodyScrollLocked) {
+                    return;
+                }
+
+                document.body.classList.add('overflow-hidden');
+                this.bodyScrollLocked = true;
+            },
+            unlockBodyScroll() {
+                if (!this.bodyScrollLocked) {
+                    return;
+                }
+
+                document.body.classList.remove('overflow-hidden');
+                this.bodyScrollLocked = false;
             },
             headerFixToggle() {
                 const header = document.querySelector('#header');
@@ -138,7 +165,7 @@ $isSideBar = $parentName === 'sidebar.main';
             </div>
 
             <div class="flex flex-col h-full md:h-full bg-white rounded-ss-2xl rounded-es-2xl">
-                <header class="bg-white mb-[3px] p-[12px] h-[64px] md:h-[88px] md:p-[24px] shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] flex items-center rounded-ss-2xl">
+                <header class="bg-white mb-[3px] p-[12px] h-[64px] md:h-[88px] md:p-[24px] shadow-[0_1px_2px_0_rgba(0,0,0,0.15)] flex items-center rounded-ss-2xl">
                     <div class="flex items-center w-full leading-[normal]">
                         <div id="layered-navigation-drawer-title">
                             <strong class="text-2xl"><?= $block->escapeHtml(__('Shop By')) ?></strong>
@@ -149,14 +176,13 @@ $isSideBar = $parentName === 'sidebar.main';
                     <?= $block->getChildHtml('catalog.leftnav') ?>
                     <?= $block->getChildHtml('catalogsearch.leftnav') ?>
                 </div>
-                <div class="absolute bottom-0 w-full pt-2 pb-3 px-4 md:py-6 bg-white grid grid-cols-1 md:grid-cols-2 md:gap-4 shadow-[0_-2px_4px_0_rgba(0,0,0,0.06)] rounded-es-2xl">
+                <div class="absolute bottom-0 w-full pt-2 pb-2 px-4 md:py-6 bg-white grid grid-cols-1 md:grid-cols-2 md:gap-4 shadow-[0_-2px_4px_0_rgba(0,0,0,0.15)] rounded-es-2xl">
                     <button
                         @click="closeDrawer"
-                        class="btn btn-primary w-full mb-2"
+                        class="btn btn-primary w-full"
                         aria-label="<?= $block->escapeHtmlAttr(__('Show results')) ?>">
                         <span><?= $block->escapeHtmlAttr(__('Show results')) ?></span>
                     </button>
-                    <?= $block->getChildHtml('clear.all.leftnav') ?>
                 </div>
             </div>
         </div>

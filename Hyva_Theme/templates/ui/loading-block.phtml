@@ -20,7 +20,7 @@ use Magento\Framework\Escaper;
 $hyvaicons = $viewModels->require(SvgIcons::class);
 ?>
 <template x-if="isLoading">
-    <div class="z-10 absolute w-full h-full flex items-center justify-center bg-white/60">
+    <div class="z-10 absolute w-full h-full flex items-center justify-center bg-white/60 text-primary-darker">
         <?= $hyvaicons->renderHtml('loader', '', 20, 20, ['aria-hidden' => 'true']); ?>
     </div>
 </template>

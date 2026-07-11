@@ -14,5 +14,5 @@ use Magento\Framework\View\Element\AbstractBlock;
 
 ?>
 <h2 class="mb-2 text-xl md:text-start font-semibold">
-    <?= $sectionBlock->getTitle() ? $escaper->escapeHtml($sectionBlock->getTitle()) : '&nbsp;' ?>
+    <?= $sectionBlock->getTitle() ? /** @noEscape */ $sectionBlock->getTitle() : '&nbsp;' ?>
 </h2>

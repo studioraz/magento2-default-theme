@@ -21,6 +21,9 @@ use Magento\Catalog\Helper\Output as CatalogOutputHelper;
  * @var CatalogOutputHelper $catalogOutputHelper
  */
 
+/** @var SvgIcons $hyvaicons */
+$hyvaicons = $viewModels->require(SvgIcons::class);
+
 $catalogOutputHelper = $this->helper(CatalogOutputHelper::class);
 $lucideIcons = $viewModels->require(LucideIcons::class);
 $icons = $viewModels->require(SvgIcons::class);
@@ -29,16 +32,16 @@ $product = $block->getProduct();
 $productName = $catalogOutputHelper->productAttribute($product, $product->getName(), 'name');
 ?>
 <button
-    class="btn btn-primary text-sm h-10 w-full relative"
+    class="btn btn-primary text-xs lg:text-sm h-8 lg:h-10 w-full relative"
     title="<?= $escaper->escapeHtmlAttr(__('Add to Cart') . ' ' . $productName) ?>"
     aria-label="<?= $escaper->escapeHtmlAttr(__('Add to Cart') . ' ' . $productName) ?>"
 >
     <template x-if="typeof isLoading !== 'undefined' && isLoading">
         <span
             class="absolute inset-0 flex justify-center items-center loader rounded-md text-primary-darker bg-white/75 shadow-[0_0_3px_2px_#fff]">
-            <?= $icons->spinnerHtml('h-full w-auto'); ?>
+            <?= $hyvaicons->renderHtml('loader', '', 20, 20, ['aria-hidden' => 'true']); ?>
         </span>
     </template>
-    <?= $lucideIcons->renderHtml('shopping-cart', 'me-[6px]', 19, 19); ?>
+    <?= $lucideIcons->renderHtml('shopping-cart', 'lg:me-[6px] max-lg:w-[15px]', 19, 19); ?>
     <?= $escaper->escapeHtml(__('Add to Cart')) ?>
 </button>

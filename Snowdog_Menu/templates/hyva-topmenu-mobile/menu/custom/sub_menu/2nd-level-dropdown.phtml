@@ -1,6 +1,7 @@
 <?php
 
 use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\LucideIcons;
 use Magento\Framework\Escaper;
 use Snowdog\Menu\Block\Menu;
 
@@ -17,7 +18,7 @@ $lucideIcons = $viewModels->require(LucideIcons::class);
     $title = $parentNode->getTitle();
     ?>
     <ul x-ref="submenu-<?= /* @noEscape */ (string) $parentNodeIndex ?>"
-        class="pb-2 ps-4"
+        class="pb-2 ps-8"
         x-show="<?= /* @noEscape */ (string) $parentNodeIndex ?>"
         x-collapse
         :aria-hidden="<?= /* @noEscape */ (string) $parentNodeIndex ?> === false ? 'true' : 'false'"

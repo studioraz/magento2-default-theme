@@ -24,7 +24,7 @@ $customOptionsViewModel = $viewModels->require(CustomOption::class);
 
 ?>
 <div class="flex flex-col py-2 w-full text-slate-800">
-    <label class="label font-semibold leading-5 text-start w-full"
+    <label class="label font-regular leading-5 text-start w-full"
            for="options_<?= $escaper->escapeHtmlAttr($option->getId()) ?>"
     >
         <span><?= $escaper->escapeHtml($option->getTitle()) ?></span>

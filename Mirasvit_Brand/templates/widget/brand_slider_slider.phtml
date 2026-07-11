@@ -40,8 +40,11 @@ $isShowPagination = (int)$block->getData('is_show_pagination');
 $storeConfig = $viewModels->require(StoreConfig::class);
 $storeBrandSliderConfig = $storeConfig->getStoreConfig('brand/brand_slider/slider_config');
 $configJson = is_string($storeBrandSliderConfig) ? $storeBrandSliderConfig : '{}';
-$parsedJson = json_encode(json_decode($configJson ?? '{}', true));
-$isConfigNotEmpty = !empty($configArray = json_decode($configJson ?? '{}', true)) && is_array($configArray);
+$configArray = is_array($decoded = json_decode($configJson ?? '{}', true)) ? $decoded : [];
+$parsedJson = json_encode($configArray);
+
+$isMarqueeMode = isset($configArray['slidesPerView']) && $configArray['slidesPerView'] === 'auto';
+$sliderConfigCssClass = $isMarqueeMode ? 'has-slider-config' : '';
 
 $swiperUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
 ?>
@@ -87,13 +90,16 @@ $swiperUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
             runSwiperConfig() {
                 if (this.swiperInstance) return;
 
-                this.swiperInstance = new Swiper('.brand-swiper-container', {
+                const isLoop = !!this.isAutoplayLoop;
+                const itemCount = <?= count($items) ?>;
+
+                const swiperOptions = {
                     autoplay: this.isAutoplay ? {
                         delay: this.autoplayInterval,
+                        disableOnInteraction: false,
                         pauseOnMouseEnter: this.pauseOnHover
                     } : false,
-                    loop: this.isAutoplayLoop,
-                    swiper: null,
+                    loop: isLoop,
                     freeMode: true,
                     watchSlidesProgress: true,
                     pagination: this.isShowPagination ? {
@@ -105,48 +111,97 @@ $swiperUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
                         prevEl: '.swiper-button-prev.brand',
                     },
                     breakpoints: {
-                        0: {
-                            slidesPerView: 2.5,
-                            spaceBetween: 5,
-                        },
-                        425: {
-                            slidesPerView: 3.5,
-                            spaceBetween: 5
-                        },
-                        768: {
-                            slidesPerView: 6,
-                            slidesPerGroup: 6,
-                            spaceBetween: 10
-                        },
-                        1024: {
-                            slidesPerView: 6,
-                            slidesPerGroup: 1,
-                            spaceBetween: 10
-                        },
-                        1440: {
-                            slidesPerView: 7,
-                            slidesPerGroup: 1,
-                            spaceBetween: 10
-                        }
+                        0: { slidesPerView: 2.5, spaceBetween: 5 },
+                        425: { slidesPerView: 3.5, spaceBetween: 5 },
+                        768: { slidesPerView: 6, slidesPerGroup: 6, spaceBetween: 10 },
+                        1024: { slidesPerView: 6, slidesPerGroup: 1, spaceBetween: 10 },
+                        1440: { slidesPerView: 7, slidesPerGroup: 1, spaceBetween: 10 }
                     },
-                    ...this.config,
                     on: {
-                        progress: (swiper, progress) => {
+                        progress: (swiper) => {
+                            if (!swiper.visibleSlides) return;
                             swiper.visibleSlides.forEach((slide) => {
                                 const img = slide.querySelector('img[loading="lazy"]');
-
                                 if (img) {
                                     img.setAttribute('loading', 'eager');
                                 }
                             });
                         }
                     }
-                });
+                };
+
+                const isMarquee = this.config.slidesPerView === 'auto';
+
+                // Marquee mode: slides use CSS width, so Swiper must use slidesPerView:'auto'
+                // and breakpoints must be fully excluded to prevent numeric overrides
+                if (isMarquee) {
+                    delete swiperOptions.breakpoints;
+                    swiperOptions.slidesPerView = 'auto';
+                    swiperOptions.spaceBetween = 10;
+                    if (isLoop) {
+                        swiperOptions.loopedSlides = itemCount;
+                    }
+                }
+
+                const { breakpoints: cfgBreakpoints, loop: cfgLoop, slidesPerView: cfgSpv, ...safeConfig } = (this.config || {});
+
+                const finalConfig = {
+                    ...swiperOptions,
+                    ...safeConfig,
+                    breakpoints: isMarquee
+                        ? undefined
+                        : (swiperOptions.breakpoints && cfgBreakpoints)
+                            ? { ...swiperOptions.breakpoints, ...cfgBreakpoints }
+                            : (cfgBreakpoints || swiperOptions.breakpoints),
+                    ...(isMarquee ? { slidesPerView: 'auto' } : {}),
+                    on: {
+                        ...swiperOptions.on,
+                        ...(this.config.on || {})
+                    },
+                    loop: isLoop,
+                };
+
+                this.swiperInstance = new Swiper('.brand-swiper-container', finalConfig);
+
+                if (isMarquee && this.pauseOnHover && this.swiperInstance) {
+                    const container = this.$el.querySelector('.brand-swiper-container');
+                    if (container) {
+                        let frozenTargetTransform = '';
+                        let frozenTargetDuration = '';
+
+                        container.addEventListener('mouseenter', () => {
+                            const wrapper = this.swiperInstance.wrapperEl;
+                            if (!wrapper) return;
+
+                            // Save where Swiper was animating TO (the inline target)
+                            frozenTargetTransform = wrapper.style.transform;
+                            frozenTargetDuration = wrapper.style.transitionDuration;
+
+                            // Capture current visual position and freeze there
+                            const computedTransform = getComputedStyle(wrapper).transform;
+                            wrapper.style.transitionDuration = '0ms';
+                            wrapper.style.transform = computedTransform;
+
+                            this.swiperInstance.autoplay.stop();
+                        });
+
+                        container.addEventListener('mouseleave', () => {
+                            const wrapper = this.swiperInstance.wrapperEl;
+                            if (!wrapper) return;
+
+                            // Resume the original transition to where Swiper intended
+                            wrapper.style.transitionDuration = frozenTargetDuration;
+                            wrapper.style.transform = frozenTargetTransform;
+
+                            this.swiperInstance.autoplay.start();
+                        });
+                    }
+                }
             },
         }
     }
 </script>
-<section class="mt-0 mb-8 text-gray-700 body-font <?= $isConfigNotEmpty ? 'has-slider-config' : ''; ?>"
+<section class="mt-0 mb-8 text-gray-700 body-font <?= $escaper->escapeHtmlAttr($sliderConfigCssClass) ?>"
          x-data="initBrandSliderComponent()"
          x-init="initSwiper()"
 >
@@ -160,7 +215,7 @@ $swiperUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
                     </h3>
                 </div>
             <?php endif; ?>
-            <div class="swiper swiper-container brand-swiper-container">
+            <div class="swiper swiper-container brand-swiper-container overflow-hidden">
                 <div class="swiper-wrapper items-center">
                     <?php foreach ($items as $item): ?>
                         <div class="swiper-slide">

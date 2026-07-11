@@ -57,11 +57,11 @@ if (!$productId || !$attributeId) {
                 :value="item.id"
                 name="super_attribute[<?= (int) $attributeId ?>]"
                 type="radio"
-                class="inline-block absolute p-0 border-0 focus:border-0 focus:ring-0 product-option-value-input"
+                class="inline-block absolute p-0 border-0 focus:border-0 focus:ring-0 product-option-value-input top-0"
                 style="z-index:-1"
                 x-on:focus="focusLabel(item.id)"
                 x-on:blur="blurLabel()"
-                x-on:change="changeOption(<?= (int) $attributeId ?>, $event.target.value)"
+                x-on:change="typeof clearSwatchValidation === 'function' && clearSwatchValidation(<?= (int) $attributeId ?>, $event); changeOption(<?= (int) $attributeId ?>, $event.target.value)"
                 x-on:click="clearOptionIfActive(<?= (int) $attributeId ?>, item.id)"
                 x-model="selectedValues[<?= (int) $attributeId ?>]"
                 :required="getAllowedAttributeOptions(<?= (int) $attributeId ?>).filter(

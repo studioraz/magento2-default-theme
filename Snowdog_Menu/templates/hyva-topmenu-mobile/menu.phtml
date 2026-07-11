@@ -20,143 +20,529 @@ use Snowdog\Menu\Block\Menu;
 $lucideIcons = $viewModels->require(LucideIcons::class);
 
 $menu = $block->getMenu();
+$menuIdentifier = $menu ? $menu->getIdentifier() : 'hyva-topmenu';
+$graphqlEndpoint = rtrim($block->getBaseUrl(), '/') . '/graphql';
 $uniqueId = '_' . uniqid();
+$mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
+$storeCode = $block->getStoreCode() ?: 'default';
+$baseUrl = rtrim($block->getBaseUrl(), '/') . '/';
+
+// Build server-side URL map for all menu nodes — same approach as desktop category.phtml:
+// $categoryUrl = $block->getCategoryUrl($nodeId) — but for ALL nodes at once
+$nodeUrlMap = [];
+if ($menu) {
+    /** @var \Snowdog\Menu\Api\NodeRepositoryInterface $nodeRepository */
+    $nodeRepository = \Magento\Framework\App\ObjectManager::getInstance()
+        ->get(\Snowdog\Menu\Api\NodeRepositoryInterface::class);
+    /** @var \Magento\Catalog\Api\CategoryRepositoryInterface $categoryRepository */
+    $categoryRepository = \Magento\Framework\App\ObjectManager::getInstance()
+        ->get(\Magento\Catalog\Api\CategoryRepositoryInterface::class);
+
+    $allNodes = $nodeRepository->getByMenu($menu->getId());
+    foreach ($allNodes as $node) {
+        if (!$node->getIsActive()) {
+            continue;
+        }
+        $nodeId = (string) $node->getNodeId();
+        $nodeType = $node->getType();
+        $url = null;
+
+        try {
+            switch ($nodeType) {
+                case 'category':
+                    $categoryId = (int) $node->getContent();
+                    if ($categoryId) {
+                        $url = $categoryRepository->get($categoryId)->getUrl();
+                    }
+                    break;
+                case 'custom_url':
+                    $url = $node->getContent() ?: null;
+                    break;
+                case 'product':
+                    // product nodes are rare in menus; url_key from GraphQL handles them
+                    break;
+                case 'cms_page':
+                    // cms_page nodes; url_key from GraphQL handles them
+                    break;
+            }
+        } catch (\Exception $e) {
+            // category/product not found or disabled
+        }
+
+        if ($url) {
+            $nodeUrlMap[$nodeId] = $url;
+        }
+    }
+}
 ?>
 
 <?php if ($menu): ?>
+    <style>
+        @keyframes slideOutLeft {
+            from { transform: translateX(0); opacity: 1; }
+            to   { transform: translateX(-30%); opacity: 0; }
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(30%); opacity: 0; }
+            to   { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to   { transform: translateX(30%); opacity: 0; }
+        }
+        @keyframes slideInLeft {
+            from { transform: translateX(-30%); opacity: 0; }
+            to   { transform: translateX(0); opacity: 1; }
+        }
+        .animate-slide-out-left  { animation: slideOutLeft 200ms ease-in forwards; }
+        .animate-slide-in-right  { animation: slideInRight 250ms ease-out forwards; }
+        .animate-slide-out-right { animation: slideOutRight 200ms ease-in forwards; }
+        .animate-slide-in-left   { animation: slideInLeft 250ms ease-out forwards; }
+    </style>
     <script>
         'use strict';
 
-        const initMenuMobile<?= $escaper->escapeHtml($uniqueId) ?> = () => ({
-            open: false,
-            openMenu(event) {
-                this.open = true
-                this.$nextTick(() => hyva.trapFocus(this.$refs['menu-dialog']))
-                // Prevent from body scrolling while mobile menu opened
-                document.body.classList.add('fixed', 'w-full')
-            },
-            close(event) {
-                event && event.stopPropagation()
-                document.body.classList.remove('fixed', 'w-full')
-                this.open = false
-                this.$nextTick(() => this.$refs['open-menu-button'].focus() || hyva.releaseFocus())
-            },
-            toggleSubmenu(index) {
-                this[index] = !this[index]
+        (function() {
+            const cacheKey = 'sr_menu_graphql_v5_<?= $escaper->escapeJs($menuIdentifier) ?>_<?= $escaper->escapeJs($storeCode) ?>';
+            const cached = sessionStorage.getItem(cacheKey);
+            if (cached) {
+                try {
+                    const parsed = JSON.parse(cached);
+                    if (parsed.expiry > Date.now()) return; // already cached
+                } catch(e) {}
+            }
+            const prefetch = () => {
+                const query = `{
+                    snowdogMenus(identifiers: ["<?= $escaper->escapeJs($menuIdentifier) ?>"]) {
+                        items {
+                            menu_id identifier title css_class
+                            nodes { items {
+                                ... on SnowdogMenuNodeInterface { node_id menu_id type classes parent_id position level title node_template submenu_template url_key additional_data }
+                                ... on SnowdogMenuNodeContentFieldInterface { content }
+                                ... on SnowdogMenuNodeImageFieldInterface { image image_alt_text }
+                                ... on SnowdogMenuCustomUrlNodeInterface { target }
+                            }}
+                        }
+                    }
+                }`;
+                fetch('<?= $escaper->escapeJs($graphqlEndpoint) ?>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Store': '<?= $escaper->escapeJs($storeCode) ?>'
+                    },
+                    body: JSON.stringify({query})
+                }).then(r => r.json()).then(result => {
+                    const items = result.data?.snowdogMenus?.items?.[0]?.nodes?.items;
+                    if (items) {
+                        sessionStorage.setItem(cacheKey, JSON.stringify({
+                            data: items,
+                            expiry: Date.now() + 300000
+                        }));
+                    }
+                }).catch(() => {});
+            };
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(prefetch);
+            } else {
+                setTimeout(prefetch, 200);
+            }
+        })();
 
-                if (this[index]) {
-                    const focusableElements = 'button:not([disabled]), a[href]:not([tabindex="-1"]), [tabindex]:not([tabindex="-1"])'
-                    this.$nextTick(() => {
-                        this.$refs['submenu-' + index]?.querySelector(focusableElements)?.focus()
-                    })
+        const initMobileMenuGraphql<?= $escaper->escapeJs($uniqueId) ?> = () => ({
+            open: false,
+            loading: false,
+            loaded: false,
+            error: null,
+            menuTree: [],
+            navigationStack: [],
+            mediaBaseUrl: '<?= $escaper->escapeJs($mediaBaseUrl) ?>',
+            baseUrl: '<?= $escaper->escapeJs($baseUrl) ?>',
+            storeCode: '<?= $escaper->escapeJs($storeCode) ?>',
+            serverUrlMap: <?= json_encode((object) $nodeUrlMap, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES) ?>,
+
+            async openMenu() {
+                this.open = true;
+                this.navigationStack = [];
+                this.$nextTick(() => {
+                    hyva.trapFocus(this.$refs['mobile-menu-dialog']);
+                    // Remove focus from the close button so it doesn't show focus ring on touch devices
+                    if (document.activeElement) {
+                        document.activeElement.blur();
+                    }
+                });
+                document.body.classList.add('fixed', 'w-full');
+
+                if (!this.loaded && !this.loading) {
+                    await this.fetchMenu();
                 }
             },
-        })
+
+            async fetchMenu() {
+                const cacheKey = 'sr_menu_graphql_v5_<?= $escaper->escapeJs($menuIdentifier) ?>_<?= $escaper->escapeJs($storeCode) ?>';
+                const cached = sessionStorage.getItem(cacheKey);
+
+                if (cached) {
+                    try {
+                        const parsed = JSON.parse(cached);
+                        if (parsed.expiry > Date.now() && Array.isArray(parsed.data) && parsed.data.length > 0) {
+                            this.menuTree = this.buildTree(parsed.data);
+                            this.loaded = true;
+                            this.loading = false;
+                            return;
+                        }
+                    } catch (e) { /* ignore bad cache */ }
+                }
+
+                // No cache available - show loading state
+                this.loading = true;
+
+                const query = `{
+                snowdogMenus(identifiers: ["<?= $escaper->escapeJs($menuIdentifier) ?>"]) {
+                    items {
+                        menu_id
+                        identifier
+                        title
+                        css_class
+                        nodes {
+                            items {
+                                ... on SnowdogMenuNodeInterface {
+                                    node_id
+                                    menu_id
+                                    type
+                                    classes
+                                    parent_id
+                                    position
+                                    level
+                                    title
+                                    node_template
+                                    submenu_template
+                                    url_key
+                                    additional_data
+                                }
+                                ... on SnowdogMenuNodeContentFieldInterface {
+                                    content
+                                }
+                                ... on SnowdogMenuNodeImageFieldInterface {
+                                    image
+                                    image_alt_text
+                                }
+                                ... on SnowdogMenuCustomUrlNodeInterface {
+                                    target
+                                }
+                            }
+                        }
+                    }
+                }
+            }`;
+
+                try {
+                    const response = await fetch('<?= $escaper->escapeJs($graphqlEndpoint) ?>', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Store': '<?= $escaper->escapeJs($storeCode) ?>'
+                        },
+                        body: JSON.stringify({ query })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+
+                    const result = await response.json();
+
+                    if (result.errors) {
+                        throw new Error(result.errors.map(e => e.message).join(', '));
+                    }
+
+                    const menuData = result.data?.snowdogMenus?.items?.[0];
+                    if (!menuData?.nodes?.items) {
+                        throw new Error('No menu data returned');
+                    }
+
+                    this.menuTree = this.buildTree(menuData.nodes.items);
+                    this.loaded = true;
+
+                    sessionStorage.setItem(cacheKey, JSON.stringify({
+                        data: menuData.nodes.items,
+                        expiry: Date.now() + 300000 // 5 min TTL
+                    }));
+                } catch (e) {
+                    this.error = e.message || 'Failed to load menu';
+                    console.error('Menu GraphQL error:', e);
+                } finally {
+                    this.loading = false;
+                }
+            },
+
+            buildTree(nodes) {
+                const sorted = [...nodes].sort((a, b) => a.position - b.position);
+                const map = {};
+                const roots = [];
+
+                sorted.forEach(node => {
+                    map[node.node_id] = { ...node, children: [] };
+                });
+
+                sorted.forEach(node => {
+                    if (node.type === 'wrapper') return;
+                    const item = map[node.node_id];
+                    let parentId = node.parent_id;
+                    while (parentId && map[parentId] && map[parentId].type === 'wrapper') {
+                        parentId = map[parentId].parent_id;
+                    }
+                    if (parentId && map[parentId]) {
+                        map[parentId].children.push(item);
+                    } else {
+                        roots.push(item);
+                    }
+                });
+
+                return roots;
+            },
+
+
+            close() {
+                document.body.classList.remove('fixed', 'w-full');
+                this.open = false;
+                this.$nextTick(() => {
+                    this.$refs['open-menu-button']?.focus();
+                    hyva.releaseFocus();
+                });
+            },
+
+            // Drill-down navigation
+            animationTimer: null,
+
+            get currentNodes() {
+                if (this.navigationStack.length === 0) return this.menuTree;
+                return this.navigationStack[this.navigationStack.length - 1].children;
+            },
+
+            get currentParent() {
+                if (this.navigationStack.length === 0) return null;
+                return this.navigationStack[this.navigationStack.length - 1];
+            },
+
+            cancelAnimation() {
+                if (this.animationTimer) {
+                    clearTimeout(this.animationTimer);
+                    this.animationTimer = null;
+                }
+                const container = this.$refs.menuContent;
+                if (container) container.style.animation = '';
+            },
+
+            drillDown(node) {
+                if (!node.children || node.children.length === 0) return;
+                this.cancelAnimation();
+                const container = this.$refs.menuContent;
+                if (container) {
+                    container.style.animation = 'slideOutLeft 150ms ease-in forwards';
+                    this.animationTimer = setTimeout(() => {
+                        this.navigationStack.push(node);
+                        container.style.animation = 'slideInRight 200ms ease-out forwards';
+                        this.animationTimer = setTimeout(() => {
+                            container.style.animation = '';
+                            this.animationTimer = null;
+                        }, 210);
+                    }, 160);
+                } else {
+                    this.navigationStack.push(node);
+                }
+            },
+
+            goBack() {
+                this.cancelAnimation();
+                const container = this.$refs.menuContent;
+                if (container) {
+                    container.style.animation = 'slideOutRight 150ms ease-in forwards';
+                    this.animationTimer = setTimeout(() => {
+                        this.navigationStack.pop();
+                        container.style.animation = 'slideInLeft 200ms ease-out forwards';
+                        this.animationTimer = setTimeout(() => {
+                            container.style.animation = '';
+                            this.animationTimer = null;
+                        }, 210);
+                    }, 160);
+                } else {
+                    this.navigationStack.pop();
+                }
+            },
+
+            getNodeUrl(node) {
+                // 1. Server-side URL map (beautiful URLs resolved via PHP, same as desktop)
+                const serverUrl = this.serverUrlMap[String(node.node_id)];
+                if (serverUrl) {
+                    return serverUrl;
+                }
+
+
+                // 2. Custom URL nodes: content holds the actual URL
+                if (node.type === 'custom_url' && node.content) {
+                    if (node.content.startsWith('http') || node.content.startsWith('/') || node.content.startsWith('#')) {
+                    return node.content;
+                }
+                    return this.baseUrl + node.content;
+                }
+
+                // 3. GraphQL url_key fallback (resolved from url_rewrite table)
+                if (node.url_key) {
+                    if (node.url_key.startsWith('http')) {
+                        return node.url_key;
+                }
+                    return this.baseUrl + node.url_key;
+                }
+
+                // 4. Wrapper and other structural nodes don't have URLs
+                return '#';
+            },
+
+            getNodeTarget(node) {
+                return node.target ? '_blank' : '_self';
+            },
+
+            getImageUrl(node) {
+                return node.image ? this.mediaBaseUrl + node.image : '';
+            },
+
+            showViewAll(node) {
+                const noViewAll = ['cms_block', 'wrapper'];
+                if (node.children.length === 0 || noViewAll.includes(node.type)) {
+                    return false;
+                }
+                // Only show "View All" if the node actually has a URL (e.g. linked to a real category)
+                return this.getNodeUrl(node) !== '#';
+            },
+
+            viewAllLabel: '<?= $escaper->escapeJs(__('View All')) ?>'
+        });
     </script>
+
     <nav
-        class="
-            <?= $escaper->escapeHtmlAttr($menu->getCssClass()) ?>
-            snowdog-topmenu-mobile z-20 order-2 text-slate-950 sm:order-1 navigation lg:hidden w-10 text-center
-        "
-        x-data="initMenuMobile<?= $escaper->escapeHtml($uniqueId) ?>()"
-        @keydown.escape="open && close"
-        @click.outside="open && close"
-        aria-label="<?= $escaper->escapeHtmlAttr(__('Main menu')) ?>"
-        role="navigation"
+            class="<?= $escaper->escapeHtmlAttr($menu->getCssClass()) ?> snowdog-topmenu-mobile z-20 order-2 text-slate-950 sm:order-1 navigation lg:hidden w-10 text-center"
+            x-data="initMobileMenuGraphql<?= $escaper->escapeJs($uniqueId) ?>()"
+            @keydown.escape="open && close()"
+            aria-label="<?= $escaper->escapeHtmlAttr(__('Main menu')) ?>"
+            role="navigation"
     >
         <button x-ref="open-menu-button"
-            @click="openMenu"
-            type="button"
-            aria-label="<?= $escaper->escapeHtmlAttr(__('Open menu')) ?>"
-            :aria-expanded="open"
-            aria-haspopup="menu"
+                @click="openMenu"
+                type="button"
+                class="mt-[2px] lg:mt-0"
+                aria-label="<?= $escaper->escapeHtmlAttr(__('Open menu')) ?>"
+                :aria-expanded="open"
+                aria-haspopup="menu"
         >
-            <?= $lucideIcons->renderHtml('menu', '', 24, 24, ['aria-hidden' => 'true']) ?>
+            <?= $lucideIcons->renderHtml('menu', '', 26, 26, ['aria-hidden' => 'true']) ?>
         </button>
+
         <dialog
-            id="mobile-menu-popup"
-            aria-labelledby="mobile-menu-popup-title"
-            class="w-[505px] h-full max-h-full me-0 open:flex flex-col transition ease-out duration-300 motion-reduce:duration-0 rounded-e-none"
-            x-show="open"
-            x-htmldialog="close"
-            closeby="any"
-            x-transition:enter="transition ease-in-out duration-500"
-            x-transition:enter-start="translate-x-full rtl:-translate-x-full"
-            x-transition:enter-end="translate-x-0"
-            x-transition:leave="transition ease-in-out duration-300"
-            x-transition:leave-start="translate-x-0"
-            x-transition:leave-end="translate-x-full rtl:-translate-x-full"
+                x-ref="mobile-menu-dialog"
+                id="mobile-menu-popup"
+                aria-labelledby="mobile-menu-popup-title"
+                class="w-[505px] h-full max-h-full ms-0 me-auto open:flex flex-col transition ease-out duration-300 motion-reduce:duration-0 rounded-s-none"
+                x-show="open"
+                x-htmldialog="close"
+                closeby="any"
+                x-transition:enter="transition ease-in-out duration-500"
+                x-transition:enter-start="translate-x-full"
+                x-transition:enter-end="translate-x-0"
+                x-transition:leave="transition ease-in-out duration-300"
+                x-transition:leave-start="translate-x-0"
+                x-transition:leave-end="translate-x-full"
         >
-            <div class="flex gap-2 justify-between items-center pb-1">
+            <div class="flex gap-2 justify-end items-center pb-1">
                 <p id="mobile-menu-popup-title" class="sr-only flex items-center">
                     <strong class="text-2xl"><?= $escaper->escapeHtml(__('Main Menu')) ?></strong>
                 </p>
                 <button
-                    type="button"
-                    class="btn bg-transparent border-transparent p-2"
-                    @click="close"
-                    aria-label="<?= $escaper->escapeHtmlAttr('Close panel') ?>"
+                        type="button"
+                        class="btn bg-transparent border-transparent p-2 focus:outline-none focus-visible:outline"
+                        @click.stop.prevent="close()"
+                        aria-label="<?= $escaper->escapeHtmlAttr(__('Close panel')) ?>"
                 >
                     <?= $lucideIcons->xHtml('', 24, 24, ['aria-hidden' => 'true']); ?>
                 </button>
             </div>
-            <div class="flex flex-col h-full overflow-y-auto bg-white">
-                <ul class="mb-1 divide-y divide-container">
-                    <?php foreach ($block->getNodes() as $node): ?>
-                        <?php
-                        $childrenLevel = $node->getLevel() + 1;
-                        $children = $block->getNodes($childrenLevel, $node);
-                        $node->setIsParent((bool)$children);
-                        $indexId = 'node' . $node->getId();
-                        $title = $node->getTitle();
-                        $nodeType = $node->getType();
-                        $nodeClasses = $node->getClasses();
-                        ?>
-                        <li x-data="{'<?= /* @noEscape */ (string) $indexId ?>': false }"
-                            class="<?= /* @noEscape */ (string) $nodeType === 'wrapper' ? $escaper->escapeHtmlAttr($nodeClasses) : '' ?>""
-                        >
-                        <?php if ($node->getIsParent() && !$node->getIsViewAllLink()): ?>
-                            <?php
-                            $image = $node->getImage();
-                            $imageUrl = $image ? $block->getBaseUrl() . 'media/snowdog/menu/node/' . $image : '';
-                            $imageAltText = $node->getImageAltText();
-                            $imageWidth = $node->getImageWidth();
-                            $imageHeight = $node->getImageHeight();
-                            ?>
+
+            <div class="flex flex-col h-full overflow-y-auto bg-white text-start">
+                <!-- Loading state -->
+                <div x-show="loading" class="px-8 py-6 space-y-4" role="status" aria-label="<?= $escaper->escapeHtmlAttr(__('Loading menu...')) ?>">
+                    <template x-for="i in 5" :key="i">
+                        <div class="animate-pulse flex items-center space-x-3">
+                            <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                        </div>
+                    </template>
+                    <span class="sr-only"><?= $escaper->escapeHtml(__('Loading menu...')) ?></span>
+                </div>
+
+                <!-- Error state -->
+                <div x-show="!loading && error" x-cloak class="px-8 py-4 text-red-600" role="alert">
+                    <p><?= $escaper->escapeHtml(__('Unable to load menu.')) ?></p>
+                    <button
+                            type="button"
+                            class="underline mt-2 text-sm"
+                            @click="loading = true; error = null; fetchMenu()"
+                    ><?= $escaper->escapeHtml(__('Try again')) ?></button>
+                </div>
+
+                <!-- Menu tree - Drill Down -->
+                <div x-show="loaded && !error" class="relative overflow-hidden h-full">
+                    <div x-ref="menuContent" class="h-full">
+                        <!-- Back button -->
+                        <div x-show="currentParent" x-cloak>
                             <button
-                                class="flex items-center w-full px-8 py-4"
-                                @click="toggleSubmenu('<?= /* @noEscape */ (string) $indexId ?>')"
-                                aria-label="<?= $escaper->escapeHtmlAttr(__('Toggle submenu for %1', $title)) ?>"
-                                :aria-expanded="<?= /* @noEscape */ (string) $indexId ?> === true"
-                                type="button"
+                                    type="button"
+                                    class="flex items-center w-full ps-[25px] pe-8 py-4 font-medium text-left"
+                                    @click="goBack()"
                             >
-                                <?php if ($image): ?>
-                                    <img class="me-2"
-                                         src="<?= $escaper->escapeUrl($imageUrl) ?>"
-                                         alt="<?= $escaper->escapeHtmlAttr($imageAltText) ?>"
-                                         loading="lazy"
-                                         width="<?= $escaper->escapeHtmlAttr($imageWidth) ?>"
-                                         height="<?= $escaper->escapeHtmlAttr($imageHeight) ?>"
-                                    />
-                                <?php endif; ?>
-                                <span>
-                                        <?= $escaper->escapeHtml($title) ?>
-                                    </span>
-                                <div class="ms-auto transition-transform"
-                                     :class="{'rotate-180' : <?= /* @noEscape */ (string) $indexId ?> === true}"
-                                >
-                                    <?= $lucideIcons->renderHtml('chevron-down', 'text-gray-500', 20, 20, ['aria-hidden' => 'true']); ?>
-                                </div>
+                                <?= $lucideIcons->renderHtml('chevron-left', 'text-gray-500 me-2', 20, 20, ['aria-hidden' => 'true']); ?>
+                                <span x-text="currentParent ? currentParent.title : ''"></span>
                             </button>
-                            <?= /* @noEscape */ $block->renderSubmenu($children, $node, $childrenLevel) ?>
-                        <?php else: ?>
-                            <div class="group">
-                                <?= /* @noEscape */ $block->renderMenuNode($node) ?>
-                            </div>
-                        <?php endif; ?>
-                        </li>
-                    <?php endforeach ?>
-                </ul>
+                            <!-- View All link for current parent -->
+                            <template x-if="currentParent && showViewAll(currentParent)">
+                                <a :href="getNodeUrl(currentParent)"
+                                   class="flex items-center px-8 py-3 text-base"
+                                   x-text="viewAllLabel + ' ' + currentParent.title"
+                                ></a>
+                            </template>
+                        </div>
+
+                        <!-- Current level nodes -->
+                        <ul class="current-level-nodes-container divide-y divide-container overflow-y-auto" :class="currentParent ? 'h-[calc(100%-80px)] pb-4' : 'h-full'">
+                            <template x-for="node in currentNodes" :key="node.node_id">
+                                <li>
+                                    <!-- Node with children - drill down button -->
+                                    <template x-if="node.children && node.children.length > 0">
+                                        <button
+                                                type="button"
+                                                class="flex items-center w-full ps-8 pe-2.75 py-4 text-left"
+                                                @click="drillDown(node)"
+                                        >
+                                            <template x-if="getImageUrl(node)">
+                                                <img class="me-2" :src="getImageUrl(node)" :alt="node.image_alt_text || ''" loading="lazy" width="24" height="24" />
+                                            </template>
+                                            <span x-text="node.title"></span>
+                                            <div class="ms-auto">
+                                                <?= $lucideIcons->renderHtml('chevron-right', 'text-gray-500', 20, 20, ['aria-hidden' => 'true']); ?>
+                                            </div>
+                                        </button>
+                                    </template>
+                                    <!-- Leaf node -->
+                                    <template x-if="!node.children || node.children.length === 0">
+                                        <a class="flex items-center px-8 py-4"
+                                           :href="getNodeUrl(node)"
+                                           :target="getNodeTarget(node)"
+                                           x-text="node.title"
+                                        ></a>
+                                    </template>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </dialog>
     </nav>

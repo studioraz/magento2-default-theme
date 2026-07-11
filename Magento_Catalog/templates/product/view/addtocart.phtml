@@ -20,6 +20,9 @@ use Hyva\Theme\ViewModel\LucideIcons;
  * @var SvgIcons $icons
  * @var LucideIcons $lucideIcons
  */
+
+/** @var SvgIcons $hyvaicons */
+$hyvaicons = $viewModels->require(SvgIcons::class);
 $icons = $viewModels->require(SvgIcons::class);
 $lucideIcons = $viewModels->require(LucideIcons::class);
 ?>
@@ -33,7 +36,7 @@ $lucideIcons = $viewModels->require(LucideIcons::class);
 >
     <template x-if="isLoading">
         <span class="absolute inset-0 flex justify-center items-center loader rounded-md text-primary-darker bg-white/75 shadow-[0_0_3px_2px_#fff]">
-            <?= $icons->spinnerHtml('h-full w-auto'); ?>
+            <?= $hyvaicons->renderHtml('loader', '', 20, 20, ['aria-hidden' => 'true']); ?>
         </span>
     </template>
     <?= $lucideIcons->renderHtml('shopping-cart', '', 17, 17, ["aria-hidden" => "true"]) ?>

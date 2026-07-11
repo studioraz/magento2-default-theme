@@ -79,7 +79,7 @@ $suffix = $block->showSuffix();
                    class="form-input peer w-full <?= $escaper->escapeHtmlAttr(
                        $block->getAttributeValidationClass('firstname')
                    ) ?>"
-                   @input.debounce="onChange"
+                   @blur="onChange"
                 <?= ($block->getAttributeValidationClass('firstname') == 'required-entry') ? ' required' : '' ?>
             >
             <label class="label floating-labels-label" for="<?= $escaper->escapeHtmlAttr($block->getFieldId('firstname')) ?>">
@@ -100,7 +100,7 @@ $suffix = $block->showSuffix();
                    placeholder=" "
                    class="form-input peer
                      <?= $escaper->escapeHtmlAttr($block->getAttributeValidationClass('middlename')) ?>"
-                   @input.debounce="onChange"
+                   @blur="onChange"
                    <?= $isMiddlenameRequired ? ' required' : '' ?>
             >
             <label class="label floating-labels-label" for="<?= $escaper->escapeHtmlAttr($block->getFieldId('middlename')) ?>">
@@ -120,7 +120,7 @@ $suffix = $block->showSuffix();
                    class="form-input group-input peer w-full <?= $escaper->escapeHtmlAttr(
                        $block->getAttributeValidationClass('lastname')
                    ) ?>"
-                   @input.debounce="onChange"
+                   @blur="onChange"
                 <?= ($block->getAttributeValidationClass('lastname') == 'required-entry') ? ' required' : '' ?>
             >
             <label class="label group-label floating-labels-label" for="<?= $escaper->escapeHtmlAttr($block->getFieldId('lastname')) ?>">
