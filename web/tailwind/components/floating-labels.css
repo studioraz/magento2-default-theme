@@ -11,13 +11,14 @@
     }
 
     .floating-labels-label {
-        @apply absolute text-xs duration-300 top-4.5 px-2 start-1 rounded-sm cursor-text;
+        @apply absolute text-sm duration-300 top-4.5 start-2.5 rounded-sm cursor-text;
 
+        transform-origin: 100% 50%;
         transform: translateY(-1rem) scale(.75);
     }
 
     .peer:placeholder-shown ~ .floating-labels-label {
-        top: 24px;
+        top: 50%;
         transform: translateY(-50%) scale(1);
     }
 
@@ -50,11 +51,8 @@
     }
 
     .floating-labels-label {
-        @apply text-label-primary bg-input-background-bg;
-    }
-
-    .peer:focus ~ .floating-labels-label {
-        @apply text-input-border-focus;
+        @apply text-gray-500;
+        background: transparent;
     }
 
     .field-error .peer ~ .floating-labels-label {

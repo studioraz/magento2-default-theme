@@ -122,7 +122,7 @@ $isAutocompleteEnabled = $block->getConfig('customer/password/autocomplete_on_st
                             title="<?= $escaper->escapeHtmlAttr(__('Email')) ?>"
                             class="form-input w-full peer"
                             placeholder=" "
-                            @input.debounce="onChange"
+                            @blur="onChange"
                         >
                         <label for="email_address" class="label floating-labels-label">
                             <span><?= $escaper->escapeHtml(__('Email')) ?></span>
@@ -154,7 +154,7 @@ $isAutocompleteEnabled = $block->getConfig('customer/password/autocomplete_on_st
                             class="form-input peer"
                                 required
                                 data-validate='{"password-strength": {"minCharacterSets": <?= (int) $passwordMinCharacterSets ?>}}'
-                                @input.debounce="onChange"
+                                @blur="onChange"
                                 autocomplete="<?= $isAutocompleteEnabled ? 'new-password' : 'off' ?>"
                             placeholder=" "
                             >
@@ -212,7 +212,7 @@ $isAutocompleteEnabled = $block->getConfig('customer/password/autocomplete_on_st
                             title="<?= $escaper->escapeHtmlAttr(__('Confirm Password')) ?>"
                             id="password-confirmation"
                             data-validate='{"equalTo": "password"}'
-                            @input.debounce="onChange"
+                            @blur="onChange"
                             required
                             class="form-input peer"
                             autocomplete="<?= $isAutocompleteEnabled ? 'new-password' : 'off' ?>"
@@ -275,7 +275,7 @@ $isAutocompleteEnabled = $block->getConfig('customer/password/autocomplete_on_st
                     <div class="control">
                         <input type="text" name="street[]"
                                required
-                               @input.debounce="onChange"
+                               @blur="onChange"
                                value="<?= $escaper->escapeHtmlAttr($block->getFormData()->getStreet(0)) ?>"
                                title="<?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('street') ?>"
                                id="street_1"
@@ -312,7 +312,7 @@ $isAutocompleteEnabled = $block->getConfig('customer/password/autocomplete_on_st
                     <div class="control">
                         <input type="text" name="city"
                                required
-                               @input.debounce="onChange"
+                               @blur="onChange"
                                value="<?= $escaper->escapeHtmlAttr($block->getFormData()->getCity()) ?>"
                                title="<?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('city') ?>"
                                class="form-input peer <?= $escaper->escapeHtmlAttr($this

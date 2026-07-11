@@ -13,6 +13,7 @@
     </head>
     <body>
         <referenceBlock name="customer-account-navigation-downloadable-products-link" display="false"/>
+        <referenceBlock name="customer-account-navigation-newsletter-subscriptions-link" display="false"/>
 
         <referenceContainer name="sidebar.main">
             <block class="Magento\Framework\View\Element\Template" name="sidebar.main.account_nav"
