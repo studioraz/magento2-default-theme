@@ -97,18 +97,23 @@ $uniqueId = '_' . uniqid();
                         }
                     }
                 });
+
                 fetch(postParams.action, {
                     "headers": {
                         "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+                        "X-Requested-With": "XMLHttpRequest"
                     },
                     "body": postData,
                     "method": "POST",
                     "mode": "cors",
                     "credentials": "include"
                 }).then((response) => {
-                    if (response.redirected) {
-                        window.location.href = response.url;
-                    } else if (response.ok) {
+                    if (response.redirected || response.url.includes('customer/account/login')) {
+                        window.location.href = response.url || (BASE_URL + "customer/account/login/");
+                        return;
+                    }
+
+                    if (response.ok) {
                         return response.json();
                     } else {
                         typeof window.dispatchMessages !== "undefined" && window.dispatchMessages(
@@ -150,6 +155,7 @@ $uniqueId = '_' . uniqid();
 <button x-data="initWishlist<?= /** @noEscape */ $uniqueId ?>(<?= (int)$product->getId() ?>)"
         x-defer="intersect"
         @click.prevent="addToWishlist(<?= (int)$product->getId() ?>)"
+        type="button"
         title="<?= $escaper->escapeHtmlAttr(
             ($updateParams) ? __('Update Wish List') : __('Add to Wish List')
         ) ?>"
