@@ -162,7 +162,6 @@
 
         <referenceContainer name="after.body.start">
             <block class="Magento\Framework\View\Element\Js\Components" name="head.components" as="components" template="Magento_Theme::html/container.phtml"/>
-            <block name="mobile-safari-bug-workaround" template="Magento_Theme::html/mobile-safari-bug-workaround.phtml"/>
         </referenceContainer>
 
         <referenceContainer name="before.body.end">

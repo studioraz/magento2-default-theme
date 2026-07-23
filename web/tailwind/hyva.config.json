@@ -2,6 +2,12 @@
   "tailwind": {
     "exclude": [
       "generated/hyva-source.css"
+    ],
+    "include": [
+      {
+        "comment": "Example of how to include parent themes or modules. Use the 'src' key, instead of 'example_src' to use this",
+        "example_src": "vendor/hyva-themes/magento2-default-theme"
+      }
     ]
   },
   "tokens": {
@@ -205,7 +211,9 @@
         "label": {
           "primary": "var(--color-slate-900)",
           "secondary": "var(--color-slate-500)"
-        }
+        },
+        "on-primary": "var(--color-brand-primary-text)",
+        "on-secondary": "var(--color-brand-secondary-text)"
       },
       "form": {
         "radius": "var(--radius-lg)",
@@ -213,5 +221,9 @@
         "active-color": "var(--color-brand-primary)"
       }
     }
-  }
+  },
+  "notice": [
+    "This is a complementary config file for Tailwind v4 and is not a replacement for the Tailwind v3 config file.",
+    "For usage, see the docs: https://docs.hyva.io/hyva-themes/working-with-tailwindcss/using-hyva-modules/"
+  ]
 }

@@ -14,14 +14,6 @@
         <attribute name="itemtype" value="https://schema.org/Product"/>
         <attribute name="itemscope" value="itemscope"/>
 
-        <referenceContainer name="head.additional">
-            <block
-                name="catalog.preload.product.gallery"
-                class="Magento\Catalog\Block\Product\View\Gallery"
-                template="Magento_Catalog::page/catalog-preload-product-gallery.phtml"
-            />
-        </referenceContainer>
-
         <referenceBlock name="page.main.title">
             <arguments>
                 <argument name="css_classes" xsi:type="string">text-3xl font-semibold mb-8 text-center md:sr-only</argument>
@@ -170,6 +162,7 @@
                         <arguments>
                             <argument name="gallery_options" xsi:type="object">Magento\Catalog\Block\Product\View\GalleryOptions</argument>
                         </arguments>
+                        <container name="gallery.additional" />
                     </block>
 
                     <block class="Magento\Catalog\Block\Product\View"
@@ -181,9 +174,7 @@
                            template="Magento_Catalog::product/slider/product-slider.phtml">
                         <arguments>
                             <argument name="type" xsi:type="string">upsell</argument>
-                            <argument name="title" xsi:type="string"
-                                      translate="true">We found other products you might like!
-                            </argument>
+                            <argument name="title" xsi:type="string" translate="true">We found other products you might like!</argument>
                             <argument name="heading_tag" xsi:type="string">h2</argument>
                         </arguments>
                     </block>

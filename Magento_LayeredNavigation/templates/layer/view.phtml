@@ -9,6 +9,7 @@
 declare(strict_types=1);
 
 use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\HyvaCsp;
 use Hyva\Theme\ViewModel\LucideIcons;
 use Magento\Framework\Escaper;
 use Magento\LayeredNavigation\Block\Navigation;
@@ -18,6 +19,7 @@ use Magento\LayeredNavigation\Block\Navigation;
 /** @var Navigation $block */
 /** @var Escaper $escaper */
 /** @var ViewModelRegistry $viewModels */
+/** @var HyvaCsp $hyvaCsp */
 
 /** @var LucideIcons $lucideIcons */
 $lucideIcons = $viewModels->require(LucideIcons::class);
@@ -26,10 +28,10 @@ $isSidebarNav = in_array($block->getNameInLayout(), ['catalog.leftnav', 'catalog
 <?php if ($block->canShowBlock()): ?>
     <div
         x-data="initLayeredNavigation()"
-        x-init="checkIsMobileResolution()"
+        x-init="init()"
         @resize.window.debounce="checkIsMobileResolution()"
         @visibilitychange.window.debounce="checkIsMobileResolution()"
-        class="block md:bg-transparent md:py-0 md:px-0"
+        class="block border border-gray-300 bg-gray-100 p-4 md:border-0 md:bg-transparent md:py-0 md:px-0 my-6"
         role="region"
         aria-label="<?= $escaper->escapeHtmlAttr(__('Product filters')) ?>"
     >
@@ -39,12 +41,12 @@ $isSidebarNav = in_array($block->getNameInLayout(), ['catalog.leftnav', 'catalog
         >
             <button
                 type="button"
-                @click="blockOpen = !blockOpen"
+                @click="toggleBlockOpen"
                 class="block-title flex items-center justify-between w-full text-start"
                 aria-controls="filters-content"
                 :aria-expanded="blockOpen"
-                :aria-disabled="!isMobile"
-                :disabled="!isMobile ? '' : null"
+                :aria-disabled="isNotMobile()"
+                :disabled="isNotMobile()"
             >
                 <span class="text-lg font-bold leading-6 text-slate-900 uppercase">
                     <?= $escaper->escapeHtml(__('Shop By')) ?>
@@ -159,14 +161,31 @@ $isSidebarNav = in_array($block->getNameInLayout(), ['catalog.leftnav', 'catalog
         function initLayeredNavigation() {
             return {
                 isMobile: false,
-                blockOpen: true,
+                blockOpen: false,
+                init() {
+                    this.checkIsMobileResolution();
+                    this.blockOpen = !this.isMobile;
+                },
+                isNotMobile() {
+                    return !this.isMobile;
+                },
+                toggleBlockOpen() {
+                    if (this.isMobile) {
+                        this.blockOpen = !this.blockOpen;
+                    }
+                },
                 checkIsMobileResolution() {
                     const mobileElement = this.$refs.LayeredNavigationMobileToggleIcon;
                     this.isMobile = mobileElement
                         ? getComputedStyle(mobileElement).display !== "none"
                         : window.matchMedia('(max-width: 767px)').matches; // Fallback to `md` breakpoint
+
+                    if (!this.isMobile) {
+                        this.blockOpen = true;
+                    }
                 }
             }
         }
     </script>
+    <?php $hyvaCsp->registerInlineScript() ?>
 <?php endif; ?>

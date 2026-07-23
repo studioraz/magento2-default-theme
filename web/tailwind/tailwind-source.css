@@ -30,9 +30,11 @@
 @import "./generated/hyva-tokens.css";
 
 @theme {
+    --color-ink: var(--color-slate-950);
+    --color-ink-muted: var(--color-slate-600);
     --color-bg: var(--color-white);
-    --color-fg: var(--color-slate-950);
-    --color-fg-secondary: var(--color-slate-600);
+    --color-fg: var(--color-ink);
+    --color-fg-secondary: var(--color-ink-muted);
     --color-surface: var(--color-white);
 
     --color-tooltip-bg: var(--color-gray-100);

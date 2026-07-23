@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <!--
 /**
  * Hyvä Themes - https://hyva.io
@@ -6,8 +6,10 @@
  * See COPYING.txt for license details.
  */
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="urn:magento:framework:Config/etc/view.xsd">
+<view
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:magento:framework:Config/etc/view.xsd"
+>
     <media>
         <images module="Magento_Catalog">
             <image id="bundled_product_customization_page" type="thumbnail">
@@ -51,12 +53,12 @@
                 <height>100</height>
             </image>
             <image id="mini_cart_product_thumbnail" type="thumbnail">
-                <width>96</width>
-                <height>96</height>
+                <width>78</width>
+                <height>78</height>
             </image>
             <image id="new_products_content_widget_grid" type="small_image">
-                <width>216</width>
-                <height>216</height>
+                <width>240</width>
+                <height>300</height>
             </image>
             <image id="new_products_content_widget_list" type="small_image">
                 <width>270</width>
@@ -74,7 +76,7 @@
                 <width>140</width>
                 <height>140</height>
             </image>
-            <image id="product_page_image_large" type="image"/>
+            <image id="product_page_image_large" type="image" />
             <image id="product_page_image_medium" type="image">
                 <width>700</width>
                 <height>700</height>
@@ -83,7 +85,7 @@
                 <width>72</width>
                 <height>72</height>
             </image>
-            <image id="product_swatch_image_large" type="image"/>
+            <image id="product_swatch_image_large" type="image" />
             <image id="product_swatch_image_medium" type="image">
                 <width>360</width>
                 <height>360</height>
@@ -101,8 +103,8 @@
                 <height>700</height>
             </image>
             <image id="product_page_more_views" type="thumbnail">
-                <width>90</width>
-                <height>90</height>
+                <width>80</width>
+                <height>80</height>
             </image>
             <image id="product_stock_alert_email_product_image" type="small_image">
                 <width>76</width>
@@ -188,10 +190,14 @@
                 <width>240</width>
                 <height>300</height>
             </image>
-
+            <!-- Width and height define the bounding box. Images scale to fit while preserving the original aspect ratio. -->
             <image id="swatch_image" type="swatch_image">
                 <width>90</width>
                 <height>60</height>
+            </image>
+            <image id="swatch_thumb" type="swatch_thumb">
+                <width>90</width>
+                <height>90</height>
             </image>
             <image id="fixed_bundle_selection_thumbnail" type="thumbnail">
                 <width>75</width>
@@ -204,12 +210,16 @@
         </images>
     </media>
     <vars module="Magento_Catalog">
-        <var name="product_small_image_sidebar_size">100</var>
-        <var name="product_base_image_size">275</var>
-        <var name="product_base_image_icon_size">48</var>
-        <var name="product_list_image_size">166</var>
-        <var name="product_zoom_image_size">370</var>
+        <var name="product_small_image_sidebar_size">100</var>  <!-- Override for small product image -->
+        <var name="product_base_image_size">275</var>           <!-- Override for base product image -->
+        <var name="product_base_image_icon_size">48</var>       <!-- Base product image icon size -->
+
+        <var name="product_list_image_size">166</var>           <!-- New Product image size used in product list -->
+        <var name="product_zoom_image_size">370</var>           <!-- New Product image size used for zooming -->
+
         <var name="category_page_category_image">
+            <!-- <var name="width">580</var> -->
+            <!-- <var name="height">372</var> -->
         </var>
 
         <var name="product_image_white_borders">1</var>
@@ -225,6 +235,9 @@
             <var name="fullscreenicon">false</var>
             <var name="navoverflow">true</var>
             <var name="autoplay">true</var>
+            <var name="pager">thumbs</var>
+            <var name="pagerdir">vertical</var>
+            <var name="maxthumbs">0</var>
             <var name="magnifier">
                 <var name="enable">false</var>
                 <var name="zoom">80</var>
@@ -234,10 +247,10 @@
         </var>
     </vars>
     <vars module="Magento_Bundle">
-        <var name="product_summary_image_size">58</var>
+        <var name="product_summary_image_size">58</var>         <!-- New Product image size used for summary block-->
     </vars>
     <vars module="Magento_ConfigurableProduct">
-        <var name="gallery_switch_strategy">append</var>
+        <var name="gallery_switch_strategy">append</var> <!-- 'append' or 'replace' -->
     </vars>
     <vars module="Js_Bundle">
         <var name="bundle_size">1MB</var>

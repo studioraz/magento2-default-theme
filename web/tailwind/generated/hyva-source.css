@@ -6,6 +6,8 @@
  * please exclude them in your theme using the hyva.config.json configuration.
  */
 
+@source "../../../../magento2-theme-module/src";
 
 
+@import "../../../../../mollie/magento2-hyva-compatibility/src/view/frontend/tailwind/module.css";
 

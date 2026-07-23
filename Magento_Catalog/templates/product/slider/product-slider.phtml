@@ -39,7 +39,7 @@ $headingTag = $block->getHeadingTag() ?: 'h3';
 $cssClasses = $block->getCssClasses() ?: 'product-slider lg:mb-[13px] body-font max-lg ps-4';
 $headingCssClasses = $block->getHeadingCssClasses() ?: 'text-xl lg:text-3xl font-bold text-[#1d2024] title-font text-center';
 
-$columnCount = $block->getColumnCount() ?? 4;
+$columnCount = $block->getColumnCount() ?? $block->getData('column_count') ?? 4;
 $sliderClasses = implode(' ', array_filter([
         'swiper-wrapper',
         'mx-auto',
@@ -209,10 +209,10 @@ $sliderConfig = [
                 <?php endif; ?>
                 <?php if ($sliderConfig['showArrows'] === 'true'): ?>
                     <div class="swiper-button-prev invisible">
-                        <?= $lucideIcons->renderHtml('chevron-right', '', 24, 24, ['aria-hidden' => 'true']) ?>
+                        <?= $lucideIcons->arrowLeftHtml('rtl:rotate-180', 24, 24, ['aria-hidden' => 'true']) ?>
                     </div>
                     <div class="swiper-button-next invisible">
-                        <?= $lucideIcons->renderHtml('chevron-left', '', 24, 24, ['aria-hidden' => 'true']) ?>
+                        <?= $lucideIcons->arrowRightHtml('rtl:rotate-180', 24, 24, ['aria-hidden' => 'true']) ?>
                     </div>
                 <?php endif; ?>
             </div>

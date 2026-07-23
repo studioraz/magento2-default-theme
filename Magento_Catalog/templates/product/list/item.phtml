@@ -180,12 +180,12 @@ $hasBrand = false;
             <?= /* @noEscape */ $productListItemViewModel->getProductPriceHtml($product) ?>
         </div>
 
-        <div class="actions pt-2 w-full flex items-center">
+        <div class="actions mt-auto w-full flex flex-wrap items-center justify-between gap-x-2 gap-y-4 pt-3">
             <?php if ($product->isSaleable()): ?>
                 <?php if ($isProductGroupedOrBundle): ?>
                 <a
                     href="<?= $escaper->escapeUrl($product->getProductUrl()) ?>"
-                    class="btn btn-primary"
+                    class="btn btn-primary text-sm"
                     title="<?= $escaper->escapeHtmlAttr(__('Configure %1 on the product page')) ?>"
                     aria-label="<?= $escaper->escapeHtmlAttr(__('Configure %1 on the product page', $productName)) ?>"
                 >

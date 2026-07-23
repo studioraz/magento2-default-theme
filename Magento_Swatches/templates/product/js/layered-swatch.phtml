@@ -5,27 +5,21 @@
  * See COPYING.txt for license details.
  */
 
-declare(strict_types=1);
-
+use Hyva\Theme\Model\ViewModelRegistry;
 use Hyva\Theme\ViewModel\HyvaCsp;
 use Magento\Framework\Escaper;
-use Magento\Framework\View\Element\Template;
 
-/** @var Template $block */
 /** @var Escaper $escaper */
 /** @var HyvaCsp $hyvaCsp */
-
+/** @var ViewModelRegistry $viewModels */
 ?>
 <script>
-    function initSwatchOptions() {
+    function initLayeredSwatch() {
         return {
             activeTooltipItem: false,
             tooltipPositionElement: false,
             isTooltipVisible() {
                 return !!this.activeTooltipItem;
-            },
-            isCurrentTooltipVisual() {
-                return this.activeTooltipItem && ['color', 'image'].includes(this.activeTooltipItem.type);
             },
             getTooltipImageStyle() {
                 const item = this.activeTooltipItem;
@@ -49,7 +43,6 @@ use Magento\Framework\View\Element\Template;
                 const el = this.tooltipPositionElement;
                 const elRect = el.getBoundingClientRect();
                 const left = elRect.left + elRect.width / 2;
-
                 return {
                     bottom: `${window.innerHeight - elRect.top}px`,
                     left: `${left}px`,
@@ -59,16 +52,19 @@ use Magento\Framework\View\Element\Template;
             getTooltipLabel() {
                 return this.activeTooltipItem ? this.activeTooltipItem.label : '';
             },
-            showTooltip(event) {
+            showTooltip() {
                 if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-                const input = event.currentTarget.querySelector('input');
-                this.activeTooltipItem = JSON.parse(input.dataset.tooltip);
-                this.tooltipPositionElement = event.currentTarget;
+                this.activeTooltipItem = JSON.parse(this.$event.currentTarget.dataset.tooltip);
+                this.tooltipPositionElement = this.$event.currentTarget;
             },
             hideTooltip() {
                 this.activeTooltipItem = false;
-            },
+            }
         }
     }
+
+    window.addEventListener('alpine:init', () => {
+        Alpine.data('initLayeredSwatch', initLayeredSwatch)
+    }, { once: true });
 </script>
 <?php $hyvaCsp->registerInlineScript() ?>
