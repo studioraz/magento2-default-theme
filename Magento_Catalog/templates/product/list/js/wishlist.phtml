@@ -30,56 +30,63 @@ $wishlistViewModel = $viewModels->require(Wishlist::class);
                     const sectionData = event.detail.data;
 
                     if (sectionData.wishlist && sectionData.wishlist.item_ids) {
-                        this.isInWishlist = sectionData.wishlist.item_ids.find(item => item === this.productId) != undefined;
+                        this.isInWishlist = sectionData.wishlist.item_ids.find(item => +item === this.productId) !== undefined;
                     }
                 },
                 addToWishlist(productId) {
                     const formKey = hyva.getFormKey();
                     const postUrl = BASE_URL + 'wishlist/index/add/';
 
-                fetch(postUrl, {
-                    "headers": {
-                        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-                    },
-                    "body": "form_key=" + formKey + "&product=" + productId + "&uenc=" + hyva.getUenc(),
-                    "method": "POST",
-                    "mode": "cors",
-                    "credentials": "include"
-                }).then(function (response) {
-                    if (response.redirected) {
-                        window.location.href = response.url;
-                    } else if (response.ok) {
-                        return response.json();
-                    } else {
+                    fetch(postUrl, {
+                        "headers": {
+                            "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                        "body": "form_key=" + formKey + "&product=" + productId + "&uenc=" + hyva.getUenc(),
+                        "method": "POST",
+                        "mode": "cors",
+                        "credentials": "include"
+                    }).then(function (response) {
+                        if (response.redirected || response.url.includes('customer/account/login')) {
+                            window.location.href = response.url || (BASE_URL + "customer/account/login/");
+                        } else if (response.ok) {
+                            return response.json();
+                        } else {
+                            typeof window.dispatchMessages !== "undefined" && window.dispatchMessages(
+                                [{
+                                    type: "warning",
+                                    text: "<?= $escaper->escapeJs(__('Could not add item to wishlist.')) ?>"
+                                }], 5000
+                            );
+                        }
+                    }).then(function (response) {
+                        if (!response) {
+                            return;
+                        }
+
+                        if (response.success === false) {
+                            typeof window.dispatchMessages !== "undefined" && window.dispatchMessages(
+                                [{
+                                    type: "error",
+                                    text: response.error_message || "<?= $escaper->escapeJs(__('Could not add item to wishlist.')) ?>"
+                                }], 5000
+                            );
+                        }
+
+                        const reloadCustomerDataEvent = new CustomEvent("reload-customer-section-data");
+                        window.dispatchEvent(reloadCustomerDataEvent);
+                    }).catch(function (error) {
                         typeof window.dispatchMessages !== "undefined" && window.dispatchMessages(
                             [{
-                                type: "warning",
-                                text: "<?= $escaper->escapeJs(__('Could not add item to wishlist.')) ?>"
+                                type: "error",
+                                text: error && error.message
+                                    ? error.message
+                                    : "<?= $escaper->escapeJs(__('Could not add item to wishlist.')) ?>"
                             }], 5000
                         );
-                    }
-                }).then(function (response) {
-                    if (!response) { return }
-                    typeof window.dispatchMessages !== "undefined" && window.dispatchMessages(
-                        [{
-                            type: (response.success) ? "success" : "error",
-                            text: (response.success)
-                                ? "<?= $escaper->escapeJs(__("%1 has been added to your Wish List.", __("Product"))) ?>"
-                                : response.error_message
-                        }], 5000
-                    );
-                    const reloadCustomerDataEvent = new CustomEvent("reload-customer-section-data");
-                    window.dispatchEvent(reloadCustomerDataEvent);
-                }).catch(function (error) {
-                    typeof window.dispatchMessages !== "undefined" && window.dispatchMessages(
-                        [{
-                            type: "error",
-                            text: error
-                        }], 5000
-                    );
-                });
+                    });
+                }
             }
         }
-    }
-</script>
+    </script>
 <?php endif; ?>
