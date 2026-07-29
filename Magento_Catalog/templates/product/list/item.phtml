@@ -180,6 +180,24 @@ $hasBrand = false;
             <?= /* @noEscape */ $productListItemViewModel->getProductPriceHtml($product) ?>
         </div>
 
+        <div class="flex flex-wrap gap-2">
+            <?php if ($showAddToWishlist && $wishlistBlock): ?>
+                <?= /* @noEscape */ $wishlistBlock->setData('product', $product)->toHtml() ?>
+            <?php endif; ?>
+            <?php if ($showAddToCompare): ?>
+                <button x-data="initCompareOnProductList()"
+                        x-defer="intersect"
+                        @click.prevent="addToCompare(<?= (int)$productId ?>)"
+                        aria-label="<?= $escaper->escapeHtmlAttr(__('Add to Compare') . ' ' . $productName) ?>"
+                        type="button"
+                        class="btn p-2 rounded-full"
+                        data-addto="compare"
+                >
+                    <?= $lucideIcons->scaleHtml('', 20, 20, ['aria-hidden' => 'true']) ?>
+                </button>
+            <?php endif; ?>
+        </div>
+
         <div class="actions pt-2 w-full flex items-center">
             <?php if ($product->isSaleable()): ?>
                 <?php if ($isProductGroupedOrBundle): ?>

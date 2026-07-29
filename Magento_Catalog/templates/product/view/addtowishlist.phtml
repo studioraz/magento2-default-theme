@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 use Hyva\Theme\Model\ViewModelRegistry;
 use Hyva\Theme\ViewModel\CurrentProduct;
+use Hyva\Theme\ViewModel\HyvaCsp;
 use Hyva\Theme\ViewModel\LucideIcons;
 use Hyva\Theme\ViewModel\Wishlist;
 use Magento\Catalog\Model\Product;
@@ -18,8 +19,10 @@ use Hyva\Theme\ViewModel\SvgIcons;
 /** @var Template $block */
 /** @var Escaper $escaper */
 /** @var ViewModelRegistry $viewModels */
+/** @var HyvaCsp $hyvaCsp */
 /** @var SvgIcons $icons */
 $icons = $viewModels->require(SvgIcons::class);
+$hyvaCsp = $viewModels->require(HyvaCsp::class);
 
 /** @var Wishlist $wishlistViewModel */
 $wishlistViewModel = $viewModels->require(Wishlist::class);
@@ -51,12 +54,16 @@ $uniqueId = '_' . uniqid();
 
             init() {
                 window.addEventListener('private-content-loaded', this.onPrivateContentLoaded.bind(this));
+                this.$el.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.addToWishlist(this.productId);
+                });
             },
             onPrivateContentLoaded(event) {
                 const sectionData = event.detail.data;
 
                 if (sectionData.wishlist && sectionData.wishlist.item_ids) {
-                    this.isInWishlist = sectionData.wishlist.item_ids.find(item => +item === this.productId) != undefined;
+                    this.isInWishlist = sectionData.wishlist.item_ids.find(item => +item === this.productId) !== undefined;
                 }
             },
             addToWishlist(productId) {
@@ -97,24 +104,29 @@ $uniqueId = '_' . uniqid();
                         }
                     }
                 });
+
                 fetch(postParams.action, {
                     "headers": {
                         "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+                        "X-Requested-With": "XMLHttpRequest"
                     },
                     "body": postData,
                     "method": "POST",
                     "mode": "cors",
                     "credentials": "include"
                 }).then((response) => {
-                    if (response.redirected) {
-                        window.location.href = response.url;
-                    } else if (response.ok) {
+                    if (response.redirected || response.url.includes('customer/account/login')) {
+                        window.location.href = response.url || (BASE_URL + "customer/account/login/");
+                        return;
+                    }
+
+                    if (response.ok) {
                         return response.json();
                     } else {
                         typeof window.dispatchMessages !== "undefined" && window.dispatchMessages(
                             [{
                                 type: "warning",
-                                text: "<?= $escaper->escapeHtml(__('Could not add item to wishlist.')) ?>"
+                                text: "<?= $escaper->escapeJs(__('Could not add item to wishlist.')) ?>"
                             }], 5000
                         );
                     }
@@ -122,23 +134,25 @@ $uniqueId = '_' . uniqid();
                     if (!response) {
                         return;
                     }
-                    typeof window.dispatchMessages !== "undefined" && window.dispatchMessages(
-                        [{
-                            type: (response.success) ? "success" : "error",
-                            text: (response.success)
-                                ? "<?= $escaper->escapeHtml(
-                                    __("%1 has been added to your Wish List.", __("Product"))
-                                ) ?>"
-                                : response.error_message
-                        }], 5000
-                    );
+
+                    if (response.success === false) {
+                        typeof window.dispatchMessages !== "undefined" && window.dispatchMessages(
+                            [{
+                                type: "error",
+                                text: response.error_message || "<?= $escaper->escapeJs(__('Could not add item to wishlist.')) ?>"
+                            }], 5000
+                        );
+                    }
+
                     const reloadCustomerDataEvent = new CustomEvent("reload-customer-section-data");
                     window.dispatchEvent(reloadCustomerDataEvent);
                 }).catch((error) => {
                     typeof window.dispatchMessages !== "undefined" && window.dispatchMessages(
                         [{
                             type: "error",
-                            text: error
+                            text: error && error.message
+                                ? error.message
+                                : "<?= $escaper->escapeJs(__('Could not add item to wishlist.')) ?>"
                         }], 5000
                     );
                 });
@@ -146,10 +160,11 @@ $uniqueId = '_' . uniqid();
         }
     }
 </script>
+<?php $hyvaCsp->registerInlineScript() ?>
 
 <button x-data="initWishlist<?= /** @noEscape */ $uniqueId ?>(<?= (int)$product->getId() ?>)"
         x-defer="intersect"
-        @click.prevent="addToWishlist(<?= (int)$product->getId() ?>)"
+        type="button"
         title="<?= $escaper->escapeHtmlAttr(
             ($updateParams) ? __('Update Wish List') : __('Add to Wish List')
         ) ?>"
@@ -157,7 +172,7 @@ $uniqueId = '_' . uniqid();
             ($updateParams) ? __('Update Wish List') : __('Add to Wish List')
         ) ?>"
         id="add-to-wishlist"
-        class="flex items-center justify-center w-10 h-10 rounded-full text-slate-500 bg-slate-200 hover:text-primary hover:bg-slate-100"
+        class="flex items-center justify-center w-10 h-10 rounded-full text-neta-light-brown bg-transparent hover:text-primary hover:bg-slate-100"
         data-addto="wishlist"
 >
     <?= $lucideIcons->renderHtml('heart', '', 20, 20, ['aria-hidden' => 'true']) ?>
