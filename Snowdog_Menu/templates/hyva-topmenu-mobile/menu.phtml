@@ -24,7 +24,7 @@ $menuIdentifier = $menu ? $menu->getIdentifier() : 'hyva-topmenu';
 $graphqlEndpoint = rtrim($block->getBaseUrl(), '/') . '/graphql';
 $uniqueId = '_' . uniqid();
 $mediaBaseUrl = $block->getBaseUrl() . 'media/snowdog/menu/node/';
-$storeCode = $block->getStoreCode() ?: 'default';
+$storeCode = $viewModels->require(\Hyva\Theme\ViewModel\Store::class)->getStoreCode() ?: 'default';
 $baseUrl = rtrim($block->getBaseUrl(), '/') . '/';
 
 // Build server-side URL map for all menu nodes — same approach as desktop category.phtml:
