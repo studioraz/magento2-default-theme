@@ -4,20 +4,23 @@
         display: grid;
         place-items: center;
         min-block-size: var(--swatch-size);
-        min-inline-size: max(var(--swatch-size), 40px);
+        min-inline-size: var(--swatch-size);
         padding-block: var(--swatch-py, 3px);
         padding-inline: var(--swatch-px, 6px);
         border-radius: var(--swatch-radius, 0.5em);
         border-width: 1px;
         border-color: var(--form-stroke);
-        background: var(--swatch-visual, var(--form-bg)) center/contain no-repeat;
+        background: var(--swatch-visual, var(--form-bg)) center/contain
+        no-repeat;
         color: var(--form-color);
         line-height: 1.1;
         cursor: pointer;
 
         > * {
             grid-area: 1/1;
-            border-radius: calc(var(--swatch-radius, 0.5em) - var(--swatch-px, 6px));
+            border-radius: calc(
+                var(--swatch-radius, 0.5em) - var(--swatch-px, 6px)
+            );
         }
 
         &[data-swatch-type="visual"] {
@@ -29,7 +32,12 @@
             border-color: var(--form-active-color);
         }
 
-        &:is(:has(:checked), [aria-checked="true"], [aria-selected="true"], [aria-current="page"]) {
+        &:is(
+            :has(:checked),
+            [aria-checked="true"],
+            [aria-selected="true"],
+            [aria-current="page"]
+        ) {
             border-color: var(--form-active-color);
             box-shadow: inset 0 0 0 1px var(--form-active-color);
         }
@@ -56,111 +64,5 @@
         display: flex;
         flex-wrap: wrap;
         gap: --spacing(2);
-    }
-
-    .swatch-validation-note {
-        @apply absolute inset-s-0 z-10 mt-2 w-fit rounded-md border border-system-error bg-system-error-bg px-3 py-2 text-sm text-system-error-text;
-
-        &::before {
-            content: '';
-            position: absolute;
-            top: -5px;
-            inset-inline-start: 14px;
-            width: 8px;
-            height: 8px;
-            background: var(--color-system-error-bg);
-            border-block-start: 1px solid var(--color-system-error);
-            border-inline-end: 1px solid var(--color-system-error);
-            rotate: 45deg;
-        }
-    }
-
-    .swatch-attribute {
-        .product-option-values,
-        .swatch-option {
-            .field {
-                &.field-reserved {
-                    ul.messages {
-                        position: absolute;
-                        white-space: nowrap;
-                        inset-inline-start: 50%;
-                        transform: translateX(-50%);
-                        z-index: 99;
-                        color: #333;
-                        background: white;
-                        top: calc(100% + 2px);
-                        padding: 8px 12px;
-                        border-radius: 6px;
-                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-                        font-size: 13px;
-                        line-height: 1.4;
-
-                        &::before {
-                            content: '';
-                            position: absolute;
-                            top: 0;
-                            inset-inline-start: 50%;
-                            transform: translateX(-50%);
-                            width: 12px;
-                            height: 12px;
-                            background: white;
-                            border-radius: 2px;
-                            rotate: 45deg;
-                            box-shadow: -1px -1px 2px rgba(0, 0, 0, 0.08);
-                        }
-                    }
-                }
-            }
-        }
-
-        .swatch-option {
-            @apply relative;
-
-            .field.field-reserved {
-                @apply sr-only;
-            }
-        }
-    }
-
-    .product-info-addtocart-container {
-        > .field {
-            &.field-reserved {
-                margin: 0;
-
-                .form-input {
-                    border-color: var(--color-input-border) !important;
-                }
-            }
-        }
-    }
-
-    @media (max-width: 768px) {
-        .swatch-attribute {
-            .product-option-values {
-                .field {
-                    &.field-reserved {
-                        ul.messages {
-                            transform: translateX(-20%);
-
-                            &::before {
-                                inset-inline-start: 18.5%;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    .color {
-        .swatch-option {
-            @apply min-w-auto rounded-full !h-5 !w-5;
-        }
-    }
-
-    &:not(.color) {
-        .swatch-option {
-            @apply min-w-auto px-1.5 py-0.75 text-sm leading-none;
-        }
     }
 }

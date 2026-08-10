@@ -1,0 +1,32 @@
+<?php
+/** @var CmsPage $block */
+/** @var Escaper $escaper */
+
+use Magento\Framework\Escaper;
+use Snowdog\Menu\Block\NodeType\CmsPage;
+
+?>
+<?php
+$nodeId = $block->getId();
+$pageUrl = $block->getPageUrl($nodeId) ?: '#';
+$title = $block->getTitle();
+$nodeClasses = $block->getNodeClasses();
+$level = (int)$block->getLevel();
+
+if ($level === 0) {
+    $linkClasses = 'snowdog-menu-link level-0 block py-2 px-1 rounded aria-[current=page]:font-medium';
+} else {
+    $startPadding = $level >= 2 ? 'ps-6' : 'ps-4';
+    $linkClasses = "snowdog-menu-link block py-3 leading-6 {$startPadding} pe-5 hover:bg-gray-100 aria-[current=page]:font-medium flex-1 min-w-0";
+}
+$linkClasses .= $nodeClasses ? ' ' . $nodeClasses : '';
+?>
+
+<a class="<?= $escaper->escapeHtmlAttr($linkClasses) ?>"
+    href="<?= $escaper->escapeUrl($pageUrl) ?>"
+    <?php if ($nodeId): ?>
+        data-menu="menu-<?= $escaper->escapeHtmlAttr($nodeId) ?>"
+    <?php endif; ?>
+>
+    <?= $escaper->escapeHtml($title) ?>
+</a>

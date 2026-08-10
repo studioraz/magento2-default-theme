@@ -269,14 +269,12 @@ $showWishlist = $block->getShowWishlist() !== null ? (bool)$block->getShowWishli
             <?= $block->getChildHtml('logo'); ?>
         </div>
 
-        <div class="header-icons-container ms-auto flex lg:gap-3 items-end lg:items-center order-3 lg:order-2 max-lg:justify-end max-lg:min-w-30.25">
+        <div class="header-icons-container ms-auto flex lg:gap-2 items-end lg:items-center order-3 lg:order-2 max-lg:justify-end max-lg:min-w-30.25">
             <?php if ($showCompare): ?>
                 <?= $block->getChildHtml('compare'); ?>
             <?php endif; ?>
 
-            <div>
-                <?= $block->getChildHtml('customer') ?>
-            </div>
+            <?= $block->getChildHtml('customer') ?>
 
             <?php if ($showWishlist): ?>
                 <div class="max-lg:hidden">
@@ -307,7 +305,7 @@ $showWishlist = $block->getShowWishlist() !== null ? (bool)$block->getShowWishli
                         aria-label="<?= $escaper->escapeHtmlAttr(__('View cart')) ?>"
                     <?php endif ?>
             >
-                <?= $lucideIcons->shoppingCartHtml("md:h-6 md:w-6", 28, 28, ["aria-hidden" => "true"]) ?>
+                <?= $lucideIcons->shoppingCartHtml("md:h-6 md:w-6", 24, 24, ["aria-hidden" => "true"]) ?>
                 <span
                         x-text="summaryCount"
                         x-show="summaryCount"

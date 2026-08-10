@@ -8,8 +8,7 @@
     }
 }
 
-.scrollable-list,
-.current-level-nodes-container {
+.scrollable-list {
     direction: ltr;
 
     * {

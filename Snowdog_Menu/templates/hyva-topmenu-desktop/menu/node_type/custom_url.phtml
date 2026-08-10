@@ -17,15 +17,21 @@ $content = $block->getContent();
 $title = $block->getTitle();
 $dataAttribute = 'data-menu="menu-' . $nodeId . '"';
 $nodeClasses = $block->getNodeClasses();
-$nodeId = $block->getId();
+$level = (int)$block->getLevel();
+
+if ($level === 0) {
+    $linkClasses = 'snowdog-menu-link level-0 block py-2 px-1 rounded aria-[current=page]:font-medium';
+} else {
+    $startPadding = $level >= 2 ? 'ps-6' : 'ps-4';
+    $linkClasses = "snowdog-menu-link py-3 leading-6 {$startPadding} pe-5 hover:bg-gray-100 aria-[current=page]:font-medium flex-1 min-w-0";
+    $linkClasses .= $imageUrl ? ' flex items-center gap-2' : ' block';
+}
+$linkClasses .= $nodeClasses ? ' ' . $nodeClasses : '';
 ?>
 
 <?php if ($content): ?>
     <a href="<?= $escaper->escapeUrl($content) ?>"
-       class="snowdog-menu-link flex items-center gap-2 <?= $escaper->escapeHtmlAttr($nodeClasses) ?>"
-       :class="{
-           'text-primary': isSubmenuOpened('<?= $nodeId ?>')
-       }"
+       class="<?= $escaper->escapeHtmlAttr($linkClasses) ?>"
         <?php if ($nodeId): ?>
             data-menu="menu-<?= $escaper->escapeHtmlAttr($nodeId) ?>"
         <?php endif; ?>
@@ -36,7 +42,7 @@ $nodeId = $block->getId();
         <?= $dataAttribute ?>
     >
 <?php else: ?>
-    <span class="snowdog-menu-link flex items-center gap-2 <?= $escaper->escapeHtmlAttr($nodeClasses) ?>"
+    <span class="<?= $escaper->escapeHtmlAttr($linkClasses) ?>"
      <?= $dataAttribute ?>
     >
 <?php endif; ?>

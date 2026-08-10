@@ -6,8 +6,18 @@
  * please exclude them in your theme using the hyva.config.json configuration.
  */
 
-@source "../../../../magento2-theme-module/src";
+@source "../../../../../../vendor/hyva-themes/magento2-theme-module/src";
+@source "../../../../../../vendor/studioraz/magento2-hyva-snowdog-menu/src";
+@source "../../../../../../vendor/snowdog/module-menu";
+@source "../../../../../../vendor/mage-os/module-rma";
+@source "../../../../../../vendor/magewirephp/magewire/src";
+@source "../../../../../../vendor/studioraz/magento2-hyva-product-qty-spinner/HyvaProductQtySpinner";
+@source "../../../../magento2-hyva-base-module/HyvaFreeShippingProgressBar";
+@source "../../../../../../vendor/studioraz/magento2-hyva-product-qty-spinner/HyvaAddToCartQtySpinner";
 
+@import "../../../../../../vendor/snowdog/module-menu/view/frontend/tailwind/tailwind-source.css";
+@import "../../../../../../vendor/magewirephp/magewire/src/view/frontend/tailwind/tailwind-source.css";
+@import "../../../../magento2-hyva-base-module/HyvaFreeShippingProgressBar/view/frontend/tailwind/tailwind-source.css";
 
-@import "../../../../../mollie/magento2-hyva-compatibility/src/view/frontend/tailwind/module.css";
+@import "../../../../../../vendor/mollie/magento2-hyva-compatibility/src/view/frontend/tailwind/module.css";
 

@@ -1,7 +1,3 @@
-#header, .navigation {
-    background-color: #FFF8F6;
-}
-
 @layer utilities {
     #search_mini_form {
         @apply max-w-120 mx-auto;

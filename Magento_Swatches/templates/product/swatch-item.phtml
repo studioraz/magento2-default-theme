@@ -97,16 +97,14 @@ $toolTipData = [
         type="radio"
         name="super_attribute[<?= $escaper->escapeHtml($attributeId) ?>]"
         value="<?= $escaper->escapeHtml($optionId) ?>"
-        @change="reflectOption; if (typeof clearSwatchValidation === 'function') clearSwatchValidation(<?= (int) $attributeId ?>, $event)"
-        @invalid="if (typeof showSwatchValidation === 'function') showSwatchValidation(<?= (int) $attributeId ?>, $event)"
+        @change="reflectOption"
         data-attribute-id="<?= $escaper->escapeHtmlAttr($attributeId) ?>"
         data-option-label="<?= $escaper->escapeHtmlAttr($optionLabel) ?>"
-        aria-describedby="attribute-label-<?= $escaper->escapeHtmlAttr($productId . '-' . $attributeId) ?> attribute-validation-<?= $escaper->escapeHtmlAttr($productId . '-' . $attributeId) ?>"
         <?php if ($isVisual && $configurableViewModel->getShowSwatchTooltip()): ?>
             data-tooltip="<?= $escaper->escapeHtmlAttr(json_encode($toolTipData)) ?>"
         <?php endif; ?>
         :disabled="optionIsDisabled"
         required
-        class="opacity-0 size-full m-0 product-option-value-input"
+        class="opacity-0 size-full m-0"
     >
 </label>
