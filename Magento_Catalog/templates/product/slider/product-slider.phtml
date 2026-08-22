@@ -37,7 +37,7 @@ $sliderName = $block->getSliderName() ?: str_replace(['.', '/', '\\'], '_', $blo
 $title = $block->getTitle() ?: '';
 $headingTag = $block->getHeadingTag() ?: 'h3';
 $cssClasses = $block->getCssClasses() ?: 'product-slider lg:mb-[13px] body-font max-lg ps-4';
-$headingCssClasses = $block->getHeadingCssClasses() ?: 'text-xl lg:text-3xl font-bold text-[#1d2024] title-font text-center';
+$headingCssClasses = $block->getHeadingCssClasses() ?: 'text-2xl font-medium';
 
 $columnCount = $block->getColumnCount() ?? $block->getData('column_count') ?? 4;
 $sliderClasses = implode(' ', array_filter([

@@ -20,8 +20,6 @@ $is3Col = ($product->getData('page_layout') === '3columns');
 ?>
 <?php if ($is3Col): ?>
 
-
-
     <?= $block->getChildHtml('product.title') ?>
 
     <div class="product-3col-grid">
@@ -85,11 +83,6 @@ $is3Col = ($product->getData('page_layout') === '3columns');
     <h1 class="md:hidden text-2xl font-bold leading-6 text-slate-700 mb-1">
         <?= $escaper->escapeHtml($product->getName()) ?>
     </h1>
-
-    <div class="md:hidden text-xs font-normal leading-4 mb-5">
-            <span class="text-slate-700"><?= __('SKU:') ?> </span>
-            <span class="text-slate-500"><?= $escaper->escapeHtml($product->getSku()) ?></span>
-    </div>
 
     <div class="w-full md:w-1/2">
         <?= $block->getChildHtml('product.media') ?>

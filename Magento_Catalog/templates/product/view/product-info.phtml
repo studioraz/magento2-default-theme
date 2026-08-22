@@ -33,26 +33,16 @@ $reviewHtml = trim($block->getChildHtml('product.info.review'));
 ?>
 <div class="w-full mb-6">
 
-    <div class="hidden md:block text-xs font-normal leading-4 mb-4 product-sku">
-        <span class="text-slate-700"><?= __('SKU:') ?> </span><span class="text-slate-500"><?= $product->getSku() ?></span>
-    </div>
-
-    <div role="group"
-         aria-label="<?= $escaper->escapeHtmlAttr('Price') ?>"
-         class="product-info-price mb-1">
-        <?= $block->getChildHtml("product.info.price") ?>
-    </div>
-
-    <div class="flex mb-3 md:mb-5">
+    <?php if ($reviewHtml): ?>
+    <div class="flex mb-2 md:mb-2">
         <span class="flex text-sm font-normal leading-5 text-slate-700">
         </span>
-        <?php if ($reviewHtml): ?>
             <?= $reviewHtml ?>
-        <?php endif; ?>
     </div>
+    <?php endif; ?>
 
     <?php if (!$block->getData('hide_short_description') && $shortDescription = $productViewModel->getShortDescription(false, false)) { ?>
-        <div class="mb-4 product-description prose text-sm font-normal leading-5 text-slate-700">
+        <div class="mb-2 product-description prose text-sm font-normal leading-5 text-slate-700">
             <?= /* @noEscape */ $shortDescription ?>
         </div>
     <?php } ?>
@@ -60,6 +50,12 @@ $reviewHtml = trim($block->getChildHtml('product.info.review'));
     <div class="flex flex-col sm:flex-row justify-between my-4">
         <?= $block->getChildHtml("product.info.stockstatus") ?>
         <?= $block->getChildHtml("alert.urls") ?>
+    </div>
+
+    <div role="group" class="my-2"
+         aria-label="<?= $escaper->escapeHtmlAttr('Price') ?>"
+         class="product-info-price mb-1">
+        <?= $block->getChildHtml("product.info.price") ?>
     </div>
 
     <div class="static-add-to-cart flex gap-2">
@@ -101,14 +97,6 @@ $reviewHtml = trim($block->getChildHtml('product.info.review'));
         </div>
     <?php endif; ?>
 
-    <section id="description" class="lg:hidden mt-4 description-mobile">
-        <h2 class="mb-2 text-xl md:text-start font-semibold">
-            <?= $escaper->escapeHtml(__('About the product')) ?>
-        </h2>
-        <div class="card w-full">
-            <?= /** @noEscape */ $block->getLayout()->getBlock('description')->toHtml() ?>
-        </div>
-    </section>
 
     <?= $block->getChildHtml("mst_brand_product_page_logo") ?>
 
