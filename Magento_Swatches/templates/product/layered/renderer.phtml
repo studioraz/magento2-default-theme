@@ -47,14 +47,15 @@ $swatchData = $block->getSwatchData();
             $swatchType = (int) $swatchData['swatches'][$option]['type'];
             $swatchValue = (string) $swatchData['swatches'][$option]['value'];
             $isVisualSwatch = in_array($swatchType, [Swatch::SWATCH_TYPE_VISUAL_COLOR, Swatch::SWATCH_TYPE_VISUAL_IMAGE], true);
+            $swatchTypeClass = $swatchType === Swatch::SWATCH_TYPE_VISUAL_COLOR ? 'color'
+                : ($swatchType === Swatch::SWATCH_TYPE_VISUAL_IMAGE ? 'image' : 'text');
             $swatchThumb = $swatchType === Swatch::SWATCH_TYPE_VISUAL_IMAGE
                 ? $block->getSwatchPath('swatch_thumb', $swatchValue)
                 : $swatchValue;
             $toolTipData = [
                 'preview' => $swatchThumb,
                 'label'   => $label['label'],
-                'type'    => $swatchType === Swatch::SWATCH_TYPE_VISUAL_COLOR ? 'color'
-                    : ($swatchType === Swatch::SWATCH_TYPE_VISUAL_IMAGE ? 'image' : 'text'),
+                'type'    => $swatchTypeClass,
                 'width'   => $swatchThumbWidth,
                 'height'  => $swatchThumbHeight,
             ];
@@ -63,7 +64,7 @@ $swatchData = $block->getSwatchData();
                 href="<?= $escaper->escapeUrl($label['link']) ?>"
                 rel="nofollow"
                 aria-label="<?= $escaper->escapeHtmlAttr(__('Filter %1 %2', $swatchData['attribute_label'], $label['label'])) ?>"
-                class="swatch-option"
+                class="swatch-option <?= $escaper->escapeHtmlAttr($swatchTypeClass) ?>"
                 data-swatch-type="<?= $escaper->escapeHtmlAttr($isVisualSwatch ? 'visual' : 'text') ?>"
                 <?php if ($isVisualSwatch && $configurableViewModel->getShowSwatchTooltip()): ?>
                     data-tooltip="<?= $escaper->escapeHtmlAttr(json_encode($toolTipData)) ?>"

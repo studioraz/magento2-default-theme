@@ -47,8 +47,8 @@ if (!$swatchData) {
 $swatchType = (int) ($swatchData['type'] ?? Swatch::SWATCH_TYPE_TEXTUAL);
 $isVisual = in_array($swatchType, [Swatch::SWATCH_TYPE_VISUAL_COLOR, Swatch::SWATCH_TYPE_VISUAL_IMAGE], true);
 
-$swatchImgWidth = $swatchRendererViewModel->getSwatchDimension('swatch_image', 'width', 30);
-$swatchImgHeight = $swatchRendererViewModel->getSwatchDimension('swatch_image', 'height', 30);
+$swatchImgWidth = $swatchRendererViewModel->getSwatchDimension('swatch_image', 'width', 28);
+$swatchImgHeight = $swatchRendererViewModel->getSwatchDimension('swatch_image', 'height', 28);
 $swatchImgThumbWidth = $swatchRendererViewModel->getSwatchDimension('swatch_thumb', 'width', 90);
 $swatchImgThumbHeight = $swatchRendererViewModel->getSwatchDimension('swatch_thumb', 'height', 90);
 
@@ -75,8 +75,8 @@ $toolTipData = [
         <span
             class="block"
             style="<?= $escaper->escapeHtmlAttr(implode(';', [
-                'width:' . $swatchImgWidth . 'px',
-                'height:' . $swatchImgHeight . 'px',
+                'width:' . 28 . 'px',
+                'height:' . 28 . 'px',
                 'background-color:' . $swatchData['value'],
             ])); ?>"
         ></span>
@@ -97,14 +97,16 @@ $toolTipData = [
         type="radio"
         name="super_attribute[<?= $escaper->escapeHtml($attributeId) ?>]"
         value="<?= $escaper->escapeHtml($optionId) ?>"
-        @change="reflectOption"
+        @change="reflectOption; if (typeof clearSwatchValidation === 'function') clearSwatchValidation(<?= (int) $attributeId ?>, $event)"
+        @invalid="if (typeof showSwatchValidation === 'function') showSwatchValidation(<?= (int) $attributeId ?>, $event)"
         data-attribute-id="<?= $escaper->escapeHtmlAttr($attributeId) ?>"
         data-option-label="<?= $escaper->escapeHtmlAttr($optionLabel) ?>"
+        aria-describedby="attribute-label-<?= $escaper->escapeHtmlAttr($productId . '-' . $attributeId) ?> attribute-validation-<?= $escaper->escapeHtmlAttr($productId . '-' . $attributeId) ?>"
         <?php if ($isVisual && $configurableViewModel->getShowSwatchTooltip()): ?>
             data-tooltip="<?= $escaper->escapeHtmlAttr(json_encode($toolTipData)) ?>"
         <?php endif; ?>
         :disabled="optionIsDisabled"
         required
-        class="opacity-0 size-full m-0"
+        class="opacity-0 size-full m-0 product-option-value-input"
     >
 </label>

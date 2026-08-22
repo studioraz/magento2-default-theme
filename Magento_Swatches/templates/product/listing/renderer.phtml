@@ -7,8 +7,8 @@
 
 declare(strict_types=1);
 
-use Hyva\Theme\ViewModel\HyvaCsp;
 use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\HyvaCsp;
 use Hyva\Theme\ViewModel\SwatchRenderer;
 use Magento\Framework\Escaper;
 use Magento\Swatches\Block\Product\Renderer\Listing\Configurable;
@@ -39,6 +39,15 @@ $swatchItemBlock->setData('product_id', $productId);
 $jsonConfig = $block->getJsonConfig();
 $jsonSwatchConfig = $block->getJsonSwatchConfig();
 $swatchConfig = json_decode($jsonSwatchConfig, true);
+
+$swatchValidationMessages = [];
+foreach ($attributes as $attribute) {
+    $productAttribute = $attribute->getProductAttribute();
+    if ($swatchRendererViewModel->isSwatchAttribute($productAttribute)) {
+        $swatchValidationMessages[(int) $attribute->getAttributeId()] = (string) __('Please select %1.', $productAttribute->getStoreLabel());
+    }
+}
+$swatchAttributeIds = array_keys($swatchValidationMessages);
 ?>
 <?php if ($product->isSaleable() && count($attributes)): ?>
     <script>
@@ -62,6 +71,72 @@ $swatchConfig = json_decode($jsonSwatchConfig, true);
                         this.preselectQuerystringItems();
                         this.applyCheckedState();
                         this.applySelectionToLinks();
+                        this.initSwatchValidation();
+                    },
+                    swatchValidationErrors: {},
+                    swatchAttributeIds: <?= /* @noEscape */ json_encode($swatchAttributeIds) ?>,
+                    swatchValidationMessages: <?= /* @noEscape */ json_encode($swatchValidationMessages, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>,
+                    initSwatchValidation() {
+                        const form = this.$root.closest('form');
+
+                        if (!form) {
+                            return;
+                        }
+
+                        const showMissingSwatches = () => this.validateSwatchesForAddToCart(form);
+                        const submitButtons = new Set([
+                            ...form.querySelectorAll('button[type="submit"], input[type="submit"], button:not([type])'),
+                            ...document.querySelectorAll(`[form="${form.id}"][type="submit"], button[form="${form.id}"]:not([type])`)
+                        ]);
+
+                        submitButtons.forEach(button => {
+                            button.addEventListener('click', showMissingSwatches, true);
+                        });
+                        form.addEventListener('submit', showMissingSwatches, true);
+                    },
+                    validateSwatchesForAddToCart(form) {
+                        const validationErrors = {};
+
+                        this.swatchAttributeIds.forEach(attributeId => {
+                            const hasAvailableOptions = (this.optionConfig.attributes[attributeId]?.options || []).length > 0;
+                            const hasSelection = !!this.selectedValues[attributeId];
+                            const hasError = hasAvailableOptions && !hasSelection;
+                            const radios = form.querySelectorAll(
+                                `input.product-option-value-input[name="super_attribute[${attributeId}]"]`
+                            );
+
+                            radios.forEach(radio => {
+                                radio.setCustomValidity(hasError ? this.swatchValidationMessages[attributeId] : '');
+                            });
+
+                            validationErrors[attributeId] = hasError;
+                        });
+
+                        this.swatchValidationErrors = Object.assign({}, this.swatchValidationErrors, validationErrors);
+                    },
+                    showSwatchValidation(attributeId, event) {
+                        const input = event && event.target;
+
+                        if (input && input.validity && input.validity.valueMissing) {
+                            input.setCustomValidity(this.swatchValidationMessages[attributeId] || input.validationMessage);
+                        }
+
+                        this.swatchValidationErrors = Object.assign({}, this.swatchValidationErrors, {
+                            [attributeId]: true
+                        });
+                    },
+                    clearSwatchValidation(attributeId, event) {
+                        const input = event && event.target;
+
+                        if (input) {
+                            const form = input.form || input.closest('form');
+                            const radios = form ? form.querySelectorAll(`[name="${input.name}"]`) : [input];
+                            radios.forEach(radio => radio.setCustomValidity(''));
+                        }
+
+                        this.swatchValidationErrors = Object.assign({}, this.swatchValidationErrors, {
+                            [attributeId]: false
+                        });
                     },
                     applySelectionToLinks() {
                         const form = this.$root.closest('form');
@@ -125,7 +200,7 @@ $swatchConfig = json_decode($jsonSwatchConfig, true);
         x-defer="intersect"
         data-product-id="<?= (int) $productId ?>"
         data-media-callback="<?= $escaper->escapeUrl($block->getMediaCallback()) ?>"
-        class="mb-2 relative"
+        class="mb-1 relative"
     >
         <script type="application/json"><?= /* @noEscape */ str_replace('</script>', '<\/script>', $jsonConfig) ?></script>
 
@@ -142,18 +217,34 @@ $swatchConfig = json_decode($jsonSwatchConfig, true);
             $productOptions = $attribute->getOptions();
             $attributeSwatchConfig = $swatchConfig[$attributeId] ?? [];
             ?>
-            <fieldset class="mt-4">
+            <fieldset class="swatch-attribute mt-4 <?= $escaper->escapeHtmlAttr($productAttribute->getAttributeCode()) ?>">
                 <legend class="mb-1 text-sm font-medium">
                     <?= $escaper->escapeHtml($productAttribute->getStoreLabel()) ?>
                 </legend>
-                <div class="flex flex-wrap gap-1">
-                    <?php foreach ($productOptions ?? [] as $option): ?>
-                        <?= /* @noEscape */ $swatchItemBlock
-                            ->setData('option', $option)
-                            ->setData('swatch_data', $attributeSwatchConfig[$option['value_index']] ?? null)
-                            ->setData('attribute_id', $attributeId)
-                            ->toHtml(); ?>
-                    <?php endforeach; ?>
+                <div class="relative">
+                    <div
+                        class="swatch-attribute-options flex flex-wrap gap-1"
+                        role="radiogroup"
+                        aria-label="<?= $escaper->escapeHtmlAttr($productAttribute->getStoreLabel()) ?>"
+                        aria-describedby="attribute-validation-<?= $escaper->escapeHtmlAttr($productId . '-' . $attributeId) ?>"
+                    >
+                        <?php foreach ($productOptions ?? [] as $option): ?>
+                            <?= /* @noEscape */ $swatchItemBlock
+                                ->setData('option', $option)
+                                ->setData('swatch_data', $attributeSwatchConfig[$option['value_index']] ?? null)
+                                ->setData('attribute_id', $attributeId)
+                                ->toHtml(); ?>
+                        <?php endforeach; ?>
+                    </div>
+                    <p
+                        id="attribute-validation-<?= $escaper->escapeHtmlAttr($productId . '-' . $attributeId) ?>"
+                        class="swatch-validation-note"
+                        role="alert"
+                        x-cloak
+                        x-show="swatchValidationErrors[<?= (int) $attributeId ?>]"
+                    >
+                        <?= $escaper->escapeHtml($swatchValidationMessages[(int) $attributeId] ?? '') ?>
+                    </p>
                 </div>
             </fieldset>
         <?php endforeach; ?>

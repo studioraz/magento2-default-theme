@@ -3,7 +3,7 @@
         @apply max-w-120 mx-auto;
 
         #search {
-            @apply rounded-md px-3.5 py-2.5 leading-6 text-base;
+            @apply rounded-md rounded-r-none px-3.5 py-2.5 leading-6 text-base;
         }
     }
 

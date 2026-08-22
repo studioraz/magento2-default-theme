@@ -114,7 +114,7 @@ $icons = $viewModels->require(SvgIcons::class);
 
 <div class="toolbar-wrapper flex w-full">
     <?php if ($block->getCollection()->getSize()): ?>
-        <div x-data="initToolbar<?= /** @noEscape */ $uniqueId ?>()" class="toolbar toolbar-products <?= !$block->getIsBottom() ? 'toolbar-top' : '' ?> mb-2 lg:mb-4 flex flex-wrap max-lg:gap-y-2">
+        <div x-data="initToolbar<?= /** @noEscape */ $uniqueId ?>()" class="toolbar toolbar-products <?= !$block->getIsBottom() ? 'toolbar-top' : '' ?> mb-2 lg:mb-4 flex flex-wrap max-lg:gap-y-2 lg:w-full">
             <div class="w-full flex flex-row">
                 <div class="w-full flex flex-row">
                     <?php if ($block->getIsBottom()): ?>
