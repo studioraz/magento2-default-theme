@@ -28,7 +28,7 @@
           "secondary": "var(--color-brand-secondary-text)"
         },
         "price": "var(--color-slate-900)",
-        "special-price": "var(--color-system-error)",
+        "special-price": "var(--color-slate-900)",
         "old-price": "var(--color-slate-400)",
         "form": {
           "DEFAULT": "oklch(0 0 0 / 0.23)",

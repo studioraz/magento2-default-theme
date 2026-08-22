@@ -85,7 +85,7 @@ if ($block->getChildBlock('add_to_cart') && $product->getTypeId() !== Configurab
     $addToCartBlock = $block->getChildBlock('add_to_cart');
 }
 
-$itemCss = 'item product product-item relative h-full flex flex-col grow py-4 w-full bg-white';
+$itemCss = 'item product product-item relative h-full flex flex-col grow w-full';
 // NOTE: stub for future implementation of brand support
 $hasBrand = false;
 ?>
@@ -139,23 +139,16 @@ $hasBrand = false;
         </a>
     </div>
     <div class="product-info flex flex-col grow <?= $viewIsGrid ? '' : 'md:ps-5 md:w-4/6' ?>">
-        <div class="mb-[3px] flex flex-wrap items-center text-xs min-h-5">
-            <div class="product-info-sku me-auto flex text-slate-500">
-                <div class="product-info-sku-label"><?= __('SKU') ?></div>
-                <div class="product-info-sku-separator me-[2px]">:</div>
-                <div class="product-info-sku-value"><?= $escaper->escapeHtml($product->getSku()) ?></div>
-            </div>
-
-            <?php if (!$hideRatingSummary): ?>
-                <?= $block->getReviewsSummaryHtml($product, 'short') ?>
-            <?php endif; ?>
-        </div>
-
         <div class="product-name mb-[2px] md:mb-0 text-sm md:text-base text-slate-800 hover:underline line-clamp-3">
             <a class="product-item-link"
                href="<?= $escaper->escapeUrl($product->getProductUrl()) ?>"><?= /* @noEscape */ $productName ?></a>
         </div>
 
+        <?php if (!$hideRatingSummary): ?>
+            <div class="mb-[3px] flex flex-wrap items-center text-xs min-h-5">
+                <?= $block->getReviewsSummaryHtml($product, 'short') ?>
+            </div>
+        <?php endif; ?>
         <?php if ($product->isAvailable() && !$hideDetails): ?>
             <?= $block->getProductDetailsHtml($product) ?>
         <?php endif; ?>

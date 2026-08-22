@@ -76,9 +76,17 @@ foreach ($availableOrders as $orderCode => $orderLabel) {
         <button x-ref="selectButton" @click="selectOpen=!selectOpen"
                 id="select-button"
                 class="relative flex items-center justify-between py-2 pe-10 text-start cursor-default bg-slate-100 focus:outline-none filter-dropdown-button">
-            <span class="overflow-hidden whitespace-nowrap text-sm font-semibold leading-5 tracking-[0.35px]"
-                  :class="{ 'text-slate-600': selectOpen }"
-            ><?= $escaper->escapeHtmlAttr(__('Sort results by')) ?></span>
+            <span class="grid">
+                <?php foreach ($options as $option): ?>
+                    <span class="invisible col-start-1 row-start-1 whitespace-nowrap text-sm font-semibold leading-5 tracking-[0.35px]"
+                          aria-hidden="true"
+                    ><?= $escaper->escapeHtml($option['title']) ?></span>
+                <?php endforeach; ?>
+                <span class="col-start-1 row-start-1 overflow-hidden whitespace-nowrap text-sm font-semibold leading-5 tracking-[0.35px]"
+                      :class="{ 'text-slate-600': selectOpen }"
+                      x-text="selectLabel"
+                ></span>
+            </span>
             <span class="inset-y-0 end-0 flex items-center ps-3 pointer-events-none text-slate-600 fill-slate-600"
                   :class="{ 'text-slate-600 fill-slate-600': selectOpen }"
             >
@@ -221,7 +229,6 @@ foreach ($availableOrders as $orderCode => $orderLabel) {
             },
             select(option) {
                 let itemSelected = option;
-                this.selectLabel = JSON.parse(JSON.stringify(this.selectableItems))[option];
                 let $toolbarSorter = document.getElementById('toolbar_sorter');
                 $toolbarSorter.value = option;
                 this.selectableItems.forEach(item => {

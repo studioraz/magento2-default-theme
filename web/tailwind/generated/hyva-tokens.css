@@ -13,7 +13,7 @@
 	--color-on-primary: var(--color-brand-primary-text);
 	--color-on-secondary: var(--color-brand-secondary-text);
 	--color-price: var(--color-slate-900);
-	--color-special-price: var(--color-system-error);
+	--color-special-price: var(--color-slate-900);
 	--color-old-price: var(--color-slate-400);
 	--color-form: oklch(0 0 0 / 0.23);
 	--color-form-hover: oklch(0 0 0 / 0.87);
