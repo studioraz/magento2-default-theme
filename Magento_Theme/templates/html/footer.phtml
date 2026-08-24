@@ -23,10 +23,12 @@ $icons = $viewModels->require(SvgIcons::class);
     <?= $block->getChildHtml('newsletter') ?>
 
     <?php $footerMenu = trim((string) $block->getChildHtml('menu-footer')); ?>
-    <?php if ($footerMenu !== ''): ?>
+    <?php $storeColumn = trim((string) $block->getChildHtml('footer-column-store')); ?>
+    <?php if ($footerMenu !== '' || $storeColumn !== ''): ?>
         <div class="bg-gray-100 lg:py-[32px]">
             <div class="container mx-auto px-7 pt-3 pb-2 lb:pt-0 lg:pb-0 lg:flex lg:justify-between">
                 <?= $footerMenu ?>
+                <?= /** @noEscape */ $storeColumn ?>
 
                 <?php $socialIcons = trim((string) $block->getChildHtml('social.icons')); ?>
                 <?php if ($socialIcons !== ''): ?>
