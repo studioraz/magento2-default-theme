@@ -12,11 +12,40 @@
         accent-color: var(--color-primary);
         caret-color: var(--color-primary);
         interpolate-size: allow-keywords;
-        --color-gray-950: #030712;
-        --color-red-950: #450a0a;
-        --color-green-950: #052e16;
-        --color-orange-950: #431407;
-        --color-blue-950: #172554;
+
+        /*!* sample color palette generated with https://oklch.com/ *!
+        !* Gray scale: sage-neutral undertone (~hue 150) *!
+
+        --color-gray-50:  oklch(98.5% 0.004 155);
+        --color-gray-100: oklch(97%   0.004 155);
+        --color-gray-200: oklch(92.3% 0.006 150);
+        --color-gray-300: oklch(86.9% 0.008 148);
+        --color-gray-400: oklch(70.9% 0.012 148);
+        --color-gray-500: oklch(55.3% 0.012 150);
+        --color-gray-600: oklch(44.4% 0.010 150);
+        --color-gray-700: oklch(37.4% 0.008 148);
+        --color-gray-800: oklch(26.8% 0.006 150);
+        --color-gray-900: oklch(21.6% 0.005 150);
+        --color-gray-950: oklch(14.7% 0.004 150);
+
+        !* Primary: muted sage green — institutional Severance aesthetic *!
+        --color-primary-lighter: oklch(58% 0.08 148);
+        --color-primary:         oklch(42% 0.06 148);
+        --color-primary-darker:  oklch(28% 0.04 148);
+        --color-on-primary:      oklch(98% 0.01 150);
+
+        !* Secondary: walnut/cognac — warm accent matching product wood tones *!
+        --color-secondary-lighter: oklch(60% 0.08 55);
+        --color-secondary:         oklch(42% 0.07 50);
+        --color-secondary-darker:  oklch(30% 0.05 48);
+        --color-on-secondary:      oklch(98% 0.01 80);
+
+        !* Semantic: warm cream bg, sage-tinted fg *!
+        --color-bg:           oklch(98.5% 0.004 155);
+        --color-fg:           oklch(14.7% 0.004 150);
+        --color-fg-secondary: oklch(44.4% 0.010 150);
+        --color-surface:      oklch(99.5% 0.002 155);*/
+
     }
 
     body {

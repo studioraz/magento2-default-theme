@@ -124,7 +124,7 @@
                     <argument name="wrapper_container_css_default" xsi:type="string">page-title-container</argument>
                     <argument name="wrapper_block_css_default" xsi:type="string"></argument>
                     <argument name="wrapper_spacing_css_default" xsi:type="string">mb-3</argument>
-                    <argument name="text_css_default" xsi:type="string">page-title text-xl md:text-3xl leading-7 md:leading-9 font-bold</argument>
+                    <argument name="text_css_default" xsi:type="string">page-title text-xl md:text-3xl leading-7 md:leading-9 font-regular</argument>
                     <argument name="css_class" xsi:type="string">md:px-0</argument>
                 </arguments>
             </block>

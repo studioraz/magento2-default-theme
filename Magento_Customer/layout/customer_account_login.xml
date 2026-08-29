@@ -14,7 +14,7 @@
         <referenceBlock name="page.main.title">
             <arguments>
                 <argument name="wrapper_container_css_default" xsi:type="string">page-title-container text-center</argument>
-                <argument name="text_css_default" xsi:type="string">page-title text-xl md:text-3xl leading-7 md:leading-9 font-bold</argument>
+                <argument name="text_css_default" xsi:type="string">page-title text-xl md:text-3xl leading-7 md:leading-9 font-regular</argument>
             </arguments>
         </referenceBlock>
         <referenceContainer name="content">

@@ -24,6 +24,7 @@
 @import "./components";
 @import "./theme";
 @import "./utilities";
+@import "./modules";
 
 /* Import generated styles for Hyvä Compatible Modules and Design Tokens */
 @import "./generated/hyva-source.css";

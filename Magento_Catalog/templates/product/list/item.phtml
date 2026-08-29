@@ -85,7 +85,7 @@ if ($block->getChildBlock('add_to_cart') && $product->getTypeId() !== Configurab
     $addToCartBlock = $block->getChildBlock('add_to_cart');
 }
 
-$itemCss = 'item product product-item relative h-full flex flex-col grow w-full';
+$itemCss = 'item product product-item relative h-full flex flex-col grow w-full ' . ($viewIsGrid ? '' : 'md:flex-row');
 // NOTE: stub for future implementation of brand support
 $hasBrand = false;
 ?>
@@ -124,7 +124,7 @@ $hasBrand = false;
 >
 <?php endif; ?>
     <?php /* Product Image */ ?>
-    <div class="relative mb-2">
+    <div class="relative mb-2 <?= $viewIsGrid ? '' : 'md:w-2/6 md:mb-0 md:shrink-0' ?>">
         <a href="<?= $escaper->escapeUrl($product->getProductUrl()) ?>"
            title="<?= $escaper->escapeHtmlAttr($product->getName()) ?>"
            class="product photo product-item-photo block"
@@ -139,7 +139,7 @@ $hasBrand = false;
         </a>
     </div>
     <div class="product-info flex flex-col grow <?= $viewIsGrid ? '' : 'md:ps-5 md:w-4/6' ?>">
-        <div class="product-name mb-[2px] md:mb-0 text-sm md:text-base text-slate-800 hover:underline line-clamp-3">
+        <div class="product-name mb-[2px] md:mb-0 text-lg text-slate-800 font-semibold  hover:underline line-clamp-3">
             <a class="product-item-link"
                href="<?= $escaper->escapeUrl($product->getProductUrl()) ?>"><?= /* @noEscape */ $productName ?></a>
         </div>
@@ -154,7 +154,7 @@ $hasBrand = false;
         <?php endif; ?>
 
         <?php if ($showDescription): ?>
-        <div class="mt-2 mb-1 items-center justify-center text-primary text-center <?= $viewIsGrid ? '' : 'md:text-start' ?>">
+        <div class="mt-2 mb-1 items-center justify-center text-center <?= $viewIsGrid ? '' : 'md:text-start' ?>">
             <?= /* @noEscape */ $productViewModel->getShortDescriptionForProduct($product) ?>
         </div>
         <?php endif; ?>
@@ -165,7 +165,7 @@ $hasBrand = false;
             </span>
         <?php endif; ?>
 
-        <div class="price-box-wrapper mt-auto"
+        <div class="price-box-wrapper pt-1"
              x-data="initPriceBox()"
              x-defer="intersect"
              @update-prices-<?= (int)$productId ?>.window="updatePrice($event.detail);"

@@ -14,8 +14,8 @@
     "values": {
       "color": {
         "primary": {
-          "lighter": "var(--color-brand-primary-lighter)",
-          "DEFAULT": "var(--color-brand-primary)",
+          "lighter": "oklch(46% 0.2 265)",
+          "DEFAULT": "var(--color-blue-600)",
           "darker": "var(--color-brand-primary-darker)"
         },
         "secondary": {
@@ -24,32 +24,11 @@
           "darker": "var(--color-brand-secondary-darker)"
         },
         "on": {
-          "primary": "var(--color-brand-primary-text)",
-          "secondary": "var(--color-brand-secondary-text)"
-        },
-        "price": "var(--color-slate-900)",
-        "special-price": "var(--color-slate-900)",
-        "old-price": "var(--color-slate-400)",
-        "form": {
-          "DEFAULT": "oklch(0 0 0 / 0.23)",
-          "hover": "oklch(0 0 0 / 0.87)",
-          "focus": "var(--color-brand-primary)",
-          "error": "var(--color-system-error)"
-        },
-        "text": {
-          "header": "var(--color-gray-950)",
-          "primary": "var(--color-slate-800)",
-          "secondary": "var(--color-slate-500)",
-          "muted": "var(--color-slate-400)",
-          "disabled": "var(--color-slate-300)",
-          "inverse": "var(--color-neutral-50)",
-          "link": "var(--color-brand-primary)",
-          "link-hover": "var(--color-brand-primary-lighter)",
-          "link-active": "var(--color-brand-primary-darker)"
+          "primary": "var(--color-brand-primary-text)"
         },
         "brand": {
           "primary": {
-            "DEFAULT": "var(--color-blue-600)",
+            "DEFAULT": "var(--color-primary)",
             "lighter": "var(--color-blue-500)",
             "darker": "var(--color-blue-700)",
             "text": "var(--color-white)"
@@ -61,11 +40,23 @@
             "text": "var(--color-slate-800)"
           }
         },
+        "price": {
+          "DEFAULT": "var(--color-slate-900)",
+          "special": "var(--color-slate-900)",
+          "old": "var(--color-slate-400)"
+        },
+        "form": {
+          "DEFAULT": "oklch(0 0 0 / 0.23)",
+          "hover": "oklch(0 0 0 / 0.87)",
+          "focus": "var(--color-brand-primary)"
+        },
+        "text": {
+          "primary": "var(--color-slate-800)"
+        },
         "input": {
           "border": {
             "default": "var(--color-slate-300)",
             "hover": "var(--color-brand-secondary-darker)",
-            "active": "var(--color-brand-primary-lighter)",
             "error": "var(--color-system-error)",
             "success": "var(--color-system-success)",
             "disabled": "var(--color-slate-200)",
@@ -108,21 +99,10 @@
           }
         },
         "global-borders": {
-          "subtle": "var(--color-slate-200)",
-          "default": "var(--color-slate-400)",
-          "strong": "var(--color-brand-primary)",
-          "disabled": "var(--color-slate-200)",
-          "inverse": "var(--color-white)",
-          "inverse-darker": "var(--color-gray-700)"
+          "subtle": "var(--color-slate-200)"
         },
         "background": {
-          "page": "var(--color-white)",
-          "surface": "var(--color-blue-50)",
-          "surface-alt": "var(--color-blue-100)",
-          "muted": "var(--color-slate-50)",
-          "inverse": "var(--color-blue-900)",
-          "surface-lighter": "var(--color-white)",
-          "surface-darker": "var(--color-zinc-50)"
+          "muted": "var(--color-slate-50)"
         },
         "button": {
           "primary": {
@@ -196,24 +176,13 @@
             "active": "var(--color-blue-800)"
           }
         },
-        "interaction": {
-          "default": "var(--color-white)",
-          "active": "var(--color-brand-secondary)",
-          "selected": "var(--color-brand-primary)",
-          "hover": "var(--color-brand-secondary-lighter)"
-        },
         "icon": {
-          "primary": "var(--color-slate-900)",
-          "secondary": "var(--color-slate-500)",
-          "muted": "var(--color-slate-200)",
-          "inverse": "var(--color-white)"
+          "primary": "var(--color-slate-900)"
         },
         "label": {
-          "primary": "var(--color-slate-900)",
-          "secondary": "var(--color-slate-500)"
+          "primary": "var(--color-slate-900)"
         },
-        "on-primary": "var(--color-brand-primary-text)",
-        "on-secondary": "var(--color-brand-secondary-text)"
+        "on-primary": "var(--color-brand-primary-text)"
       },
       "form": {
         "radius": "var(--radius-lg)",

@@ -1,6 +1,6 @@
 .price-box {
     --price-font-weight: 400;
-    --price-font-size: 22px;
+    --price-font-size: var(--text-xl);
 
     color: var(--color-price, var(--color-blue-800));
 
@@ -20,14 +20,15 @@
 
     & .special-price {
         & .price {
-            color: var(--color-special-price);
+            color: var(--color-price-special);
         }
     }
 
     & .old-price {
         --price-font-size: 0.875em;
         --price-font-weight: normal;
-        color: var(--color-old-price, var(--color-slate-400));
+        --price-font-size-label: 0.875rem;
+        color: var(--color-price-old, var(--color-slate-400));
 
         .price {
             text-decoration: line-through;
@@ -53,16 +54,7 @@
     --price-font-size: 1rem;
 }
 
-.catalog-product-view .page-main .price-container .baseprice {
-    @apply order-3 w-full text-[#757575] mt-[2px];
-}
-
 .price-label {
     @apply hidden;
 }
 
-.price-srmultipass_price {
-    .price-label {
-        @apply inline max-lg:text-xs;
-    }
-}
