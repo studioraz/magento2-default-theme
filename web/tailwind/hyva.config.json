@@ -184,6 +184,9 @@
         },
         "on-primary": "var(--color-brand-primary-text)"
       },
+      "font": {
+        "sans": ["Open Sans", "ui-sans-serif", "system-ui", "sans-serif"]
+      },
       "form": {
         "radius": "var(--radius-lg)",
         "stroke": "var(--color-slate-400)",

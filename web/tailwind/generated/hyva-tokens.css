@@ -101,6 +101,7 @@
 	--color-button-text-active: var(--color-blue-800);
 	--color-icon-primary: var(--color-slate-900);
 	--color-label-primary: var(--color-slate-900);
+	--font-sans: Open Sans, ui-sans-serif, system-ui, sans-serif;
 	--form-radius: var(--radius-lg);
 	--form-stroke: var(--color-slate-400);
 	--form-active-color: var(--color-brand-primary);
