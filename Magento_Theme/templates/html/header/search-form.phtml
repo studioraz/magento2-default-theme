@@ -98,7 +98,7 @@ $searchConfig = $viewModels->require(SearchConfig::class);
     }, { once: true })
 </script>
 <?php $hyvaCsp->registerInlineScript() ?>
-<div class="container py-2 mx-auto text-black" x-data="initMiniSearch">
+<div class="py-2 mx-auto text-black" x-data="initMiniSearch">
     <search title="<?= $escaper->escapeHtmlAttr(__('Store')) ?>" role="search">
         <form
             id="search_mini_form"

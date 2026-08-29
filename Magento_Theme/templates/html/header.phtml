@@ -269,7 +269,7 @@ $showWishlist = $block->getShowWishlist() !== null ? (bool)$block->getShowWishli
             <?= $block->getChildHtml('logo'); ?>
         </div>
 
-        <div class="header-icons-container ms-auto flex lg:gap-2 items-end lg:items-center order-3 lg:order-2 max-lg:justify-end max-lg:min-w-30.25">
+        <div class="header-icons-container ms-auto flex lg:gap-2 items-end lg:items-center order-3 lg:order-2 max-lg:justify-end max-lg:min-w-30.25 lg:min-w-[234px] lg:justify-end">
             <?php if ($showCompare): ?>
                 <?= $block->getChildHtml('compare'); ?>
             <?php endif; ?>
