@@ -36,7 +36,7 @@ $storeViewModel = $viewModels->require(Store::class);
 $sliderName = $block->getSliderName() ?: str_replace(['.', '/', '\\'], '_', $block->getNameInLayout());
 $title = $block->getTitle() ?: '';
 $headingTag = $block->getHeadingTag() ?: 'h3';
-$cssClasses = $block->getCssClasses() ?: 'product-slider lg:mb-[13px] body-font max-lg ps-4';
+$cssClasses = $block->getCssClasses() ?: 'product-slider lg:mb-[13px] body-font';
 $headingCssClasses = $block->getHeadingCssClasses() ?: 'text-2xl font-medium';
 
 $columnCount = $block->getColumnCount() ?? $block->getData('column_count') ?? 4;
@@ -175,7 +175,7 @@ $sliderConfig = [
             data-show-arrows="<?= $escaper->escapeHtmlAttr($sliderConfig['showArrows']) ?>"
             data-show-dots="<?= $escaper->escapeHtmlAttr($sliderConfig['showDots']) ?>"
     >
-        <div class="container flex flex-col items-center justify-between gap-2 max-md:pt-[22px] pt-5 md:pb-3 mx-auto mb-[15px] md:flex-row">
+        <div class="container !px-0 flex flex-col items-center justify-between gap-2 max-md:pt-[22px] pt-5 md:pb-3 mx-auto mb-[15px] md:flex-row">
             <?php if ($showHeading && $title): ?>
                 <?= $escaper->escapeHtml(str_replace(
                         ['%1', '%2', '%3'],

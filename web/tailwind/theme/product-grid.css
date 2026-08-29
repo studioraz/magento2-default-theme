@@ -8,7 +8,6 @@
 
 .product-grid {
     display: grid;
-    gap: 1rem;
     grid-template-columns: repeat(
         var(--product-grid-columns-mobile),
         minmax(0, 1fr)

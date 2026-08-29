@@ -56,7 +56,7 @@ $productCollection = $block->getLoadedProductCollection();
         <div class="products wrapper mode-<?= /* @noEscape */$viewMode ?> products-<?= /* @noEscape */$viewMode ?>">
             <ul
                 role="list"
-                class="mx-auto pt-4 pb-12 <?= /* @noEscape */$viewMode === 'grid' ? 'product-grid' : '' ?>"
+                class="mx-auto pt-4 pb-12 <?= /* @noEscape */$viewMode === 'grid' ? 'product-grid gap-x-4 gap-y-8' : '' ?>"
             >
                 <?php
                 /** @var \Magento\Catalog\Model\Product $product */

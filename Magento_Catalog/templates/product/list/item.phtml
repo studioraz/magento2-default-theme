@@ -144,9 +144,9 @@ $hasBrand = false;
                href="<?= $escaper->escapeUrl($product->getProductUrl()) ?>"><?= /* @noEscape */ $productName ?></a>
         </div>
 
-        <?php if (!$hideRatingSummary): ?>
+        <?php if (!$hideRatingSummary && $reviewsSummaryHtml = $block->getReviewsSummaryHtml($product, 'short')): ?>
             <div class="mb-[3px] flex flex-wrap items-center text-xs min-h-5">
-                <?= $block->getReviewsSummaryHtml($product, 'short') ?>
+                <?= $reviewsSummaryHtml ?>
             </div>
         <?php endif; ?>
         <?php if ($product->isAvailable() && !$hideDetails): ?>
@@ -165,7 +165,7 @@ $hasBrand = false;
             </span>
         <?php endif; ?>
 
-        <div class="price-box-wrapper pt-1"
+        <div class="price-box-wrapper mt-auto pt-1"
              x-data="initPriceBox()"
              x-defer="intersect"
              @update-prices-<?= (int)$productId ?>.window="updatePrice($event.detail);"
@@ -173,7 +173,7 @@ $hasBrand = false;
             <?= /* @noEscape */ $productListItemViewModel->getProductPriceHtml($product) ?>
         </div>
 
-        <div class="actions mt-auto w-full flex flex-wrap items-center justify-between gap-x-2 gap-y-4 pt-3">
+        <div class="actions w-full flex flex-wrap items-center justify-between gap-x-2 gap-y-4 pt-3">
             <?php if ($product->isSaleable()): ?>
                 <?php if ($isProductGroupedOrBundle): ?>
                 <a
