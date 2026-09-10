@@ -38,6 +38,7 @@ $clearCartBlock = $block->getChildBlock('clear_cart');
             open: false,
             isLoading: false,
             cart: {},
+            displayZeroTax: <?= $storeConfig->getStoreConfig('tax/cart_display/zero_tax') ? 'true' : 'false' ?>,
             maxItemsToDisplay: <?= (int) $maxItemsToDisplay ?>,
             itemsCount: 0,
             showSku: <?= $miniCartOptionShowSku ? 'true' : 'false' ?>,
@@ -57,6 +58,15 @@ $clearCartBlock = $block->getChildBlock('clear_cart');
             },
             cartIsEmpty() {
                 return this.itemsCount === 0
+            },
+            showTax() {
+                return !!this.cart.tax && (this.cart.tax.amount > 0 || this.displayZeroTax);
+            },
+            taxTitle() {
+                return this.cart.tax?.title ?? '';
+            },
+            taxAmount() {
+                return hyva.formatPrice(this.cart.tax?.amount ?? 0);
             },
             getData() {
                 const data = this.$event.detail.data;
@@ -504,6 +514,12 @@ $clearCartBlock = $block->getChildBlock('clear_cart');
             </template>
             <?= $block->getChildHtml('cart-drawer.totals.shipping.after'); ?>
             <?= $block->getChildHtml('cart-drawer.totals.grand.before'); ?>
+            <template x-if="showTax">
+                <dl class="flex gap-2 justify-between items-center text-sm font-bold">
+                    <dt class="text-slate-900" x-text="taxTitle"></dt>
+                    <dd class="text-price" x-text="taxAmount"></dd>
+                </dl>
+            </template>
             <dl class="flex gap-2 justify-between items-center text-base lg:text-lg font-bold">
                 <dt class="text-slate-900"><?= $escaper->escapeHtml(__('Grand Total')) ?></dt>
                 <dd class="text-price" x-html="cart.grandTotal"></dd>
