@@ -8,10 +8,12 @@ declare(strict_types=1);
 
 use Hyva\Theme\Model\ViewModelRegistry;
 use Hyva\Theme\ViewModel\CurrentCategory;
+use Hyva\Theme\ViewModel\LucideIcons;
 use Hyva\Theme\ViewModel\ProductListItem;
 use Hyva\Theme\ViewModel\ProductPage;
 use Magento\Catalog\Block\Product\ListProduct;
 use Magento\Framework\Escaper;
+use Magento\Wishlist\Helper\Data as WishlistHelper;
 use Magento\Wishlist\Block\Customer\Wishlist\Items;
 
 /** @var ListProduct $block */
@@ -21,10 +23,14 @@ use Magento\Wishlist\Block\Customer\Wishlist\Items;
 /** @var ProductPage $productViewModel */
 /** @var CurrentCategory $currentCategoryViewModel */
 /** @var \Magento\Catalog\Model\Product $product */
+/** @var LucideIcons $lucideIcons */
+/** @var WishlistHelper $wishlistHelper */
 
 $productViewModel = $viewModels->require(ProductPage::class);
 $productListItemViewModel = $viewModels->require(ProductListItem::class);
 $currentCategoryViewModel = $viewModels->require(CurrentCategory::class);
+$lucideIcons = $viewModels->require(LucideIcons::class);
+$wishlistHelper = $this->helper(WishlistHelper::class);
 $columns = $block->getColumns();
 ?>
 
@@ -40,6 +46,10 @@ $columns = $block->getColumns();
             <?php foreach ($block->getItems() as $item): ?>
                 <?php
                 $product = $item->getProduct();
+                $productUrl = $wishlistHelper->getProductUrl($item);
+                $urlHash = explode('#', $productUrl, 2);
+                $editProductUrl = $block->getUrl('wishlist/index/configure', ['id' => $item->getId()])
+                    . (isset($urlHash[1]) ? '#' . $urlHash[1] : '');
                 $product->setData('_render_context_data', [
                     'scope' => 'wishlist',
                     'item' => $item,
@@ -54,6 +64,30 @@ $columns = $block->getColumns();
                         'category_page_grid',
                         false
                     ); ?>
+                    <div class="flex gap-2">
+                        <?php if ($product->isVisibleInSiteVisibility()): ?>
+                            <a
+                                class="btn p-2"
+                                href="<?= $escaper->escapeUrl($editProductUrl) ?>"
+                            >
+                                <?= $lucideIcons->pencilHtml('', 20, 20, ['aria-hidden' => 'true']); ?>
+                                <span class="sr-only">
+                                    <?= $escaper->escapeHtml(__('Edit %1', $product->getName())) ?>
+                                </span>
+                            </a>
+                        <?php endif; ?>
+                        <button
+                            type="button"
+                            data-role="remove"
+                            onclick='event.preventDefault(); hyva.postForm(<?= /* @noEscape */ $wishlistHelper->getRemoveParams($item) ?>)'
+                            class="btn p-2"
+                        >
+                            <?= $lucideIcons->trashHtml('', 20, 20); ?>
+                            <span class="sr-only">
+                                <?= $escaper->escapeHtml(__('Remove item %1', $product->getName())) ?>
+                            </span>
+                        </button>
+                    </div>
                 </li>
             <?php endforeach; ?>
         </ul>
