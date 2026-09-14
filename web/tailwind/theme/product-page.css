@@ -20,6 +20,12 @@
     }
 }
 
+.product-info-addtocart-container {
+    .field.field-reserved {
+        @apply m-0;
+    }
+}
+
 .product-info-price {
     --price-font-size: 18px;
 

@@ -20,8 +20,6 @@ if ($productBlock) {
     $product = $productBlock->getProduct();
 }
 
-$is3Col = $product && $product->getData('page_layout') === '3columns';
-
 // Collect sections
 $sections = [];
 $titleRenderer = $block->getChildBlock('product.section.title.renderer');
@@ -44,8 +42,7 @@ foreach ($block->getGroupSortedChildNames('detailed_info', '') as $sectionName) 
 }
     ?>
 
-<?php if ($is3Col && !empty($sections)): ?>
-<!-- 3-Column Layout: Tabs (Desktop) + Accordion (Mobile) -->
+<?php if (!empty($sections)): ?>
 <div x-data="initProductTabs" class="pt-4">
     <!-- Desktop Tab Navigation (lg and up) -->
     <div class="hidden lg:flex border-b border-slate-300 overflow-x-auto snap overscroll-x-contain">

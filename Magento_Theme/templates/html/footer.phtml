@@ -19,28 +19,36 @@ use Magento\Framework\View\Element\Template;
 
 $icons = $viewModels->require(SvgIcons::class);
 ?>
-<div class="text-gray-600 text-base leading-6 bg-gray-100 relative">
+<div class="text-base leading-6 relative border-t border-global-borders-subtle">
     <?= $block->getChildHtml('newsletter') ?>
 
-    <div class="bg-gray-100 lg:py-[32px]">
-        <div class="container mx-auto px-7 pt-3 pb-2 lb:pt-0 lg:pb-0 lg:flex lg:justify-between">
-            <?= $block->getChildHtml('menu-footer') ?>
+    <?php $footerMenu = trim((string) $block->getChildHtml('menu-footer')); ?>
+    <?php if ($footerMenu !== ''): ?>
+        <div class="bg-gray-100 lg:py-[32px]">
+            <div class="container mx-auto px-7 pt-3 pb-2 lb:pt-0 lg:pb-0 lg:flex lg:justify-between">
+                <?= $footerMenu ?>
 
-            <div class="lg:mb-[32px] lg:order-last">
-                <?= $block->getChildHtml('social.icons') ?>
+                <?php $socialIcons = trim((string) $block->getChildHtml('social.icons')); ?>
+                <?php if ($socialIcons !== ''): ?>
+                    <div class="lg:mb-[32px] lg:order-last">
+                        <?= $socialIcons ?>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
-    </div>
+    <?php endif; ?>
 
-    <div class="flex items-center justify-center lg:justify-between p-6 mx-auto bg-[#070914] border-b border-t border-[#1F2937] max-lg:flex-col-reverse max-lg:gap-3">
-        <div class="hidden lg:block">
+    <div class="flex items-center justify-center p-3 mx-auto max-lg:flex-col-reverse max-lg:gap-3 lg:grid lg:grid-cols-3 border-t border-global-borders-subtle">
+        <div class="hidden lg:block lg:justify-self-start">
             <?= $block->getChildHtml('copyright') ?>
         </div>
-        <?= $block->getChildHtml('payment_icons') ?>
+        <div class="flex flex-col items-center gap-3 lg:justify-self-center">
+            <?= $block->getChildHtml('payment_icons') ?>
+            <a href="https://studioraz.co.il/"
+               target="_blank"><?= $icons->renderHtml('studioraz-logo', 'text-black', 80) ?></a>
+        </div>
         <div class="block lg:hidden">
             <?= $block->getChildHtml('copyright') ?>
         </div>
-        <a href="https://studioraz.co.il/"
-           target="_blank"><?= $icons->renderHtml('studioraz-logo', 'text-white w-[113px] h-[31px]', 96, 50) ?></a>
     </div>
 </div>

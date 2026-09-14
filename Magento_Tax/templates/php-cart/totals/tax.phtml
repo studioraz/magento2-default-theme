@@ -32,7 +32,7 @@ $heroicons = $viewModels->require(HeroiconsOutline::class);
 
         <template x-if="segment.value > 0 && checkoutConfig.isFullTaxSummaryDisplayed">
             <details class="group">
-                <summary class="block cursor-pointer [&::-webkit-details-marker]:hidden"  :class="wrapperClass">
+                <summary class="list-none block cursor-pointer" :class="wrapperClass">
                     <span x-text="segment.title"></span>
                     <span class="inline-flex items-center gap-x-1 justify-self-end">
                         <span x-text="hyva.formatPrice(segment.value)"></span>

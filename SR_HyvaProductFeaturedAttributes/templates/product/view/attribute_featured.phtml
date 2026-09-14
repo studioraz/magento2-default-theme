@@ -22,11 +22,11 @@ $featuredAttributes = $viewModel->getFeaturedAttributes($product);
     <dl id="product-featured-attributes" class="product-attribute-list">
         <?php foreach ($featuredAttributes as $attribute): ?>
             <?php if ($value = $attribute['value'] ?? null): ?>
-                <div class="flex attribute-<?=/* @noEscape */ $attribute['code'] ?: "" ?> text-sm font-normal leading-5">
-                    <dt class="product-detail-label w-1/4 text-start text-slate-500">
+                <div class="flex border-t border-gray-300 py-2 last:mb-6 last:border-b attribute-<?=/* @noEscape */ $attribute['code'] ?: "" ?>">
+                    <dt class="product-detail-label w-1/4 text-start">
                         <?= $escaper->escapeHtml($attribute['label']) ?>
                     </dt>
-                    <dd class="product-detail-value w-3/4 ms-2 text-start text-slate-700">
+                    <dd class="product-detail-value w-3/4 ms-2 text-start">
                         <?= $escaper->escapeHtml($value) ?>
                     </dd>
                 </div>

@@ -24,10 +24,7 @@ $lucideIcons = $viewModels->require(LucideIcons::class);
     </div>
     <div class="block-content" x-data="initAddresses()">
         <?php if ($additionalAddresses = $block->getAdditionalAddresses()): ?>
-            <div class="card grid grid-cols-3 lg:grid-cols-6 my-6">
-                <div class="text-sm p-2">
-                    <?= $escaper->escapeHtml(__('Company')) ?>
-                </div>
+            <div class="card grid grid-cols-2 lg:grid-cols-5 my-6">
                 <div class="hidden lg:block text-sm p-2">
                     <?= $escaper->escapeHtml(__('Name')) ?>
                 </div>
@@ -44,9 +41,6 @@ $lucideIcons = $viewModels->require(LucideIcons::class);
                 <?php $i = 0; ?>
                 <?php foreach ($additionalAddresses as $address): ?>
                     <?php $i++ ?>
-                    <div class="p-2 <?= $i % 2 === 0 ? '' : ' bg-gray-100' ?>">
-                        <?= $escaper->escapeHtml($address->getCompany()) ?>
-                    </div>
                     <div class="hidden lg:block p-2 <?= $i % 2 === 0 ? '' : ' bg-gray-100' ?>">
                         <?= $escaper->escapeHtml($address->getLastname()) ?>,
                         <?= $escaper->escapeHtml($address->getFirstname()) ?>

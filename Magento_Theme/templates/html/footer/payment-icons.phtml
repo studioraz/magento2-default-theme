@@ -19,10 +19,10 @@ use Magento\Framework\View\Element\Template;
 $paymentIcons = $viewModels->require(PaymentIconsLight::class);
 ?>
 
-<div class="text-center flex md:gap-4 flex-wrap justify-center mb-0">
-    <?= $paymentIcons->googlePayHtml('max-md:mx-2 max-md:mb-4', 48, 32) ?>
-    <?= $paymentIcons->applePayHtml('max-md:mx-2 max-md:mb-4', 48, 32) ?>
-    <?= $paymentIcons->mastercardHtml('max-md:mx-2 max-md:mb-4', 48, 32) ?>
-    <?= $paymentIcons->visaHtml('max-md:mx-2 max-md:mb-4', 48, 32) ?>
-    <?= $paymentIcons->americanExpressHtml('max-md:mx-2 max-md:mb-4', 48, 32) ?>
+<div class="text-center flex md:gap-2 flex-wrap justify-center mb-0">
+    <?= $paymentIcons->googlePayHtml('max-md:mx-1 max-md:mb-2', 40) ?>
+    <?= $paymentIcons->applePayHtml('max-md:mx-1 max-md:mb-2', 40) ?>
+    <?= $paymentIcons->mastercardHtml('max-md:mx-1 max-md:mb-2', 40) ?>
+    <?= $paymentIcons->visaHtml('max-md:mx-1 max-md:mb-2', 40) ?>
+    <?= $paymentIcons->americanExpressHtml('max-md:mx-1 max-md:mb-2', 40) ?>
 </div>

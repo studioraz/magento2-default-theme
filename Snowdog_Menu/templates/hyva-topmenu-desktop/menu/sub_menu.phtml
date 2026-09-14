@@ -2,9 +2,15 @@
 
 /** @var Escaper $escaper */
 /** @var Menu $block */
+/** @var ViewModelRegistry $viewModels */
 
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\LucideIcons;
 use Magento\Framework\Escaper;
 use Snowdog\Menu\Block\Menu;
+
+/** @var LucideIcons $lucideIcons */
+$lucideIcons = $viewModels->require(LucideIcons::class);
 
 ?>
 <?php if ($block->getMenu()): ?>
@@ -15,38 +21,58 @@ use Snowdog\Menu\Block\Menu;
     $title = $parentNode->getTitle();
     ?>
     <?php if ($level === 1): ?>
-        <div
+        <ul
+            id="submenu-<?= /* @noEscape */ (string) $parentNodeIndex ?>"
             x-ref="submenu-<?= /* @noEscape */ (string) $parentNodeIndex ?>"
-            class="absolute top-full w-screen z-30 border-t border-t-slate-100 shadow-md bg-white flex rtl:start-1/2 ltr:end-1/2 translate-x-1/2 min-h-[300px]"
-            :class="{ 'pointer-events-none': !isSubmenuOpened('<?= (string)$parentNodeIndex ?>') }"
+            class="menu-list menu-list-level-1 z-30 absolute top-full start-0 w-64 max-h-96 overflow-y-auto mt-0.5 py-2 px-1 rounded-md shadow-lg bg-white"
             x-show="isSubmenuOpened('<?= (string)$parentNodeIndex ?>')"
-            x-transition:enter="transition ease-out duration-50"
-            x-transition:enter-start="opacity-0 pointer-events-none"
-            x-transition:enter-end="opacity-100 pointer-events-auto"
+            x-transition
             x-cloak
         >
-            <div class="w-full">
-                <ul
-                    class="container flex flex-wrap justify-between items-start gap-x-[5%] py-6 menu-list menu-list-level-1"
-                >
-                    <?php foreach ($block->getSubmenuNodes() as $node): ?>
-                        <?php
-                        $childrenLevel = $node->getLevel() + 1;
-                        $children = $block->getNodes($childrenLevel, $node);
-                        $node->setIsParent((bool) $children);
-                        $nodeType = $node->getType();
-                        $nodeClasses = $node->getClasses();
-                        ?>
-                        <li class="menu-list-item menu-list-item-level-1 flex-1 <?= $escaper->escapeHtmlAttr($nodeClasses) ?>">
-                            <div class="group level-1">
-                                <?= /* @noEscape */ $block->renderMenuNode($node) ?>
-                            </div>
+            <?php foreach ($block->getSubmenuNodes() as $node): ?>
+                <?php
+                $childrenLevel = $node->getLevel() + 1;
+                $children = $block->getNodes($childrenLevel, $node);
+                $node->setIsParent((bool) $children);
+                $nodeType = $node->getType();
+                $nodeClasses = $node->getClasses();
+                $nodeId = (string)$node->getId();
+                ?>
+                <li class="menu-list-item menu-list-item-level-1 <?= $escaper->escapeHtmlAttr($nodeClasses) ?>">
+                    <?php if ($children): ?>
+                        <div
+                            class="flex items-start justify-between cursor-pointer hover:bg-gray-100"
+                            role="button"
+                            tabindex="0"
+                            :aria-expanded="isSubItemOpened('<?= $nodeId ?>')"
+                            aria-controls="subitem-<?= $nodeId ?>"
+                            @click.prevent="toggleSubItem('<?= $nodeId ?>')"
+                            @keydown.enter.prevent="toggleSubItem('<?= $nodeId ?>')"
+                            @keydown.space.prevent="toggleSubItem('<?= $nodeId ?>')"
+                        >
+                            <?= /* @noEscape */ $block->renderMenuNode($node) ?>
+                            <span class="flex items-center h-6 mt-3 me-2 shrink-0">
+                                <?= $lucideIcons->renderHtml(
+                                    'chevron-down',
+                                    'transition-transform',
+                                    18,
+                                    18,
+                                    [
+                                        'aria-hidden' => 'true',
+                                        ':class' => "{ 'rotate-180': isSubItemOpened('" . $nodeId . "') }",
+                                    ]
+                                ) ?>
+                            </span>
+                        </div>
+                        <div id="subitem-<?= $nodeId ?>" x-show="isSubItemOpened('<?= $nodeId ?>')" x-transition x-cloak>
                             <?= /* @noEscape */ $block->renderSubmenu($children, $node, $childrenLevel) ?>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        </div>
+                        </div>
+                    <?php else: ?>
+                        <?= /* @noEscape */ $block->renderMenuNode($node) ?>
+                    <?php endif; ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
     <?php endif; ?>
     <?php if ($level > 1): ?>
         <ul class="menu-list menu-list-level-<?= $level + 1 ?>">

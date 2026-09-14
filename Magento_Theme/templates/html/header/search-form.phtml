@@ -76,8 +76,11 @@ $searchConfig = $viewModels->require(SearchConfig::class);
                     this.$refs.form.submit();
                 }
             },
+            searchSuggestion() {
+                this.search(this.suggestion.title)
+            },
             focusSearch() {
-                this.$ref.searchInput.focus();
+                this.$refs.searchInput.focus();
             },
             focusAfterOpen() {
                 this.$el.focus()
@@ -95,7 +98,7 @@ $searchConfig = $viewModels->require(SearchConfig::class);
     }, { once: true })
 </script>
 <?php $hyvaCsp->registerInlineScript() ?>
-<div class="container py-2 mx-auto text-black" x-data="initMiniSearch">
+<div class="py-2 mx-auto text-black" x-data="initMiniSearch">
     <search title="<?= $escaper->escapeHtmlAttr(__('Store')) ?>" role="search">
         <form
             id="search_mini_form"
@@ -146,7 +149,7 @@ $searchConfig = $viewModels->require(SearchConfig::class);
         <template x-if="suggestions.length">
             <nav
                 aria-label="<?= $escaper->escapeHtmlAttr(__('Search Suggestions')) ?>"
-                class="flex flex-col mt-1 text-grey-800 gap-1"
+                class="flex flex-col mt-1 text-gray-800 gap-1"
             >
                 <template x-for="suggestion in suggestions">
                     <button

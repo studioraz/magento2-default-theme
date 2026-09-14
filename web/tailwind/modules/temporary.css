@@ -1,0 +1,31 @@
+/**
+ * Temporary CSS for Magento 2 Default Theme
+ * This file contains temporary styles that are applied to the Magento 2 Default Theme.
+ * These styles should be moved to the appropriate 3P module CSS file and this file removed.
+ */
+.catalog-product-view .page-main .price-container .baseprice {
+    @apply order-3 w-full text-[#757575] mt-[2px];
+}
+
+.price-srmultipass_price {
+    .price-label {
+        @apply inline max-lg:text-xs;
+    }
+}
+
+/** MINI-CART RELATED ITEMS */
+.minicart-related-item {
+    .product-item-photo {
+        img {
+            @apply w-[70px] h-[70px];
+        }
+    }
+
+    .product-item-link {
+        @apply text-sm text-[#334155] font-bold;
+    }
+
+    .price {
+        @apply text-sm lg:text-base text-[#2563EB];
+    }
+}

@@ -85,7 +85,7 @@ if ($block->getChildBlock('add_to_cart') && $product->getTypeId() !== Configurab
     $addToCartBlock = $block->getChildBlock('add_to_cart');
 }
 
-$itemCss = 'item product product-item relative h-full flex flex-col grow py-4 w-full bg-white';
+$itemCss = 'item product product-item relative h-full flex flex-col grow w-full ' . ($viewIsGrid ? '' : 'md:flex-row');
 // NOTE: stub for future implementation of brand support
 $hasBrand = false;
 ?>
@@ -124,7 +124,7 @@ $hasBrand = false;
 >
 <?php endif; ?>
     <?php /* Product Image */ ?>
-    <div class="relative mb-2">
+    <div class="relative mb-2 <?= $viewIsGrid ? '' : 'md:w-2/6 md:mb-0 md:shrink-0' ?>">
         <a href="<?= $escaper->escapeUrl($product->getProductUrl()) ?>"
            title="<?= $escaper->escapeHtmlAttr($product->getName()) ?>"
            class="product photo product-item-photo block"
@@ -139,29 +139,22 @@ $hasBrand = false;
         </a>
     </div>
     <div class="product-info flex flex-col grow <?= $viewIsGrid ? '' : 'md:ps-5 md:w-4/6' ?>">
-        <div class="mb-[3px] flex flex-wrap items-center text-xs min-h-5">
-            <div class="product-info-sku me-auto flex text-slate-500">
-                <div class="product-info-sku-label"><?= __('SKU') ?></div>
-                <div class="product-info-sku-separator me-[2px]">:</div>
-                <div class="product-info-sku-value"><?= $escaper->escapeHtml($product->getSku()) ?></div>
-            </div>
-
-            <?php if (!$hideRatingSummary): ?>
-                <?= $block->getReviewsSummaryHtml($product, 'short') ?>
-            <?php endif; ?>
-        </div>
-
-        <div class="product-name mb-[2px] md:mb-0 text-sm md:text-base text-slate-800 hover:underline line-clamp-3">
+        <div class="product-name mb-[2px] md:mb-0 text-lg text-slate-800 font-semibold  hover:underline line-clamp-3">
             <a class="product-item-link"
                href="<?= $escaper->escapeUrl($product->getProductUrl()) ?>"><?= /* @noEscape */ $productName ?></a>
         </div>
 
+        <?php if (!$hideRatingSummary && $reviewsSummaryHtml = $block->getReviewsSummaryHtml($product, 'short')): ?>
+            <div class="mb-[3px] flex flex-wrap items-center text-xs min-h-5">
+                <?= $reviewsSummaryHtml ?>
+            </div>
+        <?php endif; ?>
         <?php if ($product->isAvailable() && !$hideDetails): ?>
             <?= $block->getProductDetailsHtml($product) ?>
         <?php endif; ?>
 
         <?php if ($showDescription): ?>
-        <div class="mt-2 mb-1 items-center justify-center text-primary text-center <?= $viewIsGrid ? '' : 'md:text-start' ?>">
+        <div class="mt-2 mb-1 items-center justify-center text-center <?= $viewIsGrid ? '' : 'md:text-start' ?>">
             <?= /* @noEscape */ $productViewModel->getShortDescriptionForProduct($product) ?>
         </div>
         <?php endif; ?>
@@ -172,7 +165,7 @@ $hasBrand = false;
             </span>
         <?php endif; ?>
 
-        <div class="price-box-wrapper mt-auto"
+        <div class="price-box-wrapper mt-auto pt-1"
              x-data="initPriceBox()"
              x-defer="intersect"
              @update-prices-<?= (int)$productId ?>.window="updatePrice($event.detail);"
@@ -198,12 +191,12 @@ $hasBrand = false;
             <?php endif; ?>
         </div>
 
-        <div class="actions pt-2 w-full flex items-center">
+        <div class="actions w-full flex flex-wrap items-center justify-between gap-x-2 gap-y-4 pt-3">
             <?php if ($product->isSaleable()): ?>
                 <?php if ($isProductGroupedOrBundle): ?>
                 <a
                     href="<?= $escaper->escapeUrl($product->getProductUrl()) ?>"
-                    class="btn btn-primary"
+                    class="btn btn-primary text-sm"
                     title="<?= $escaper->escapeHtmlAttr(__('Configure %1 on the product page')) ?>"
                     aria-label="<?= $escaper->escapeHtmlAttr(__('Configure %1 on the product page', $productName)) ?>"
                 >

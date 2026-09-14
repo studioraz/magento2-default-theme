@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 use Magento\Catalog\Block\Product\View;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Product\Option;
 use Magento\Framework\Escaper;
 
 /** @var View $block */
@@ -21,14 +22,22 @@ $product = $block->getProduct();
  * @see \Magento\Checkout\Block\Cart\Item\Configure::_prepareLayout
  */
 $productInfoBlock = $block->getLayout()->getBlock('product.info');
+$productOptions = $product->getOptions() ?? [];
+$hasMultiFormInputOption = (bool) array_filter($productOptions, fn($o) => $o->getType() === Option::OPTION_TYPE_FILE);
 
 ?>
 
 <?php if ($product->isSaleable()): ?>
     <form method="post"
           action="<?= $escaper->escapeUrl($productInfoBlock->getSubmitUrl($product)) ?>"
-          id="product_addtocart_form" <?php if ($product->getOptions()): ?> enctype="multipart/form-data"<?php endif; ?>
-          class="max-lg:w-full"
+          class="mb-6 max-lg:w-full"
+          id="product_addtocart_form"
+          <?php if ($hasMultiFormInputOption): ?> enctype="multipart/form-data"<?php endif; ?>
+          <?php foreach ($block->getData('product_data_attributes') ?? [] as $attribute => $include): ?>
+              <?php if ($include): ?>
+                  <?= $escaper->escapeHtml(sprintf('data-%s', $attribute)); ?>="<?= $escaper->escapeHtmlAttr($product->getData($attribute)); ?>"
+              <?php endif; ?>
+          <?php endforeach; ?>
           x-data="{...initProductAddToCart(), ...hyva.formValidation($el)}"
           x-bind="eventListeners"
     >

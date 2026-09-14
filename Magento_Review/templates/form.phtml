@@ -225,7 +225,7 @@ $starIconSize = $block->getData('rating_icon_size') ?: 24;
                                     <?= $lucideIcons->circleAlertHtml('', 24, 24, ['aria-hidden' => true]); ?>
                                 </span>
                                 <template x-for="errorMessage in errorMessages">
-                                    <span x-html="errorMessage"></span>
+                                    <span x-text="errorMessage"></span>
                                 </template>
                             </p>
                         </template>
