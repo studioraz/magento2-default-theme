@@ -1,0 +1,324 @@
+/**
+ * Copyright © 2026 Studio Raz. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+
+/*rtl:begin:ignore*/
+//
+//  =============================================================================
+//  Transactional Email Styles (RTL Theme)
+//  =============================================================================
+//  This file is written with explicit RTL (Right-to-Left) rules for Hebrew/Arabic.
+//  The /*rtl:begin:ignore*/ wrapper prevents automated flip processors from
+//  inverting these already-RTL declarations.
+//
+//  LTR THEME CONVERSION GUIDE:
+//  If using this file in an LTR theme, change the following:
+//  1. direction: change all `direction: rtl;` to `direction: ltr;` (or remove)
+//  2. text-align: change default `text-align: right;` to `text-align: left;`
+//  3. .email-items:
+//     - .item-info & th labels: change `text-align: right;` to `text-align: left;`
+//     - .item-price & totals amounts: change `text-align: left;` to `text-align: right;`
+//     - .order-totals th: change `text-align: right;` to `text-align: left;`
+//     - .order-totals td: change `text-align: left;` to `text-align: right;`
+//  4. .order-details padding:
+//     - First column: change `padding: 10px 0 15px 15px;` to `padding: 10px 15px 15px 0;`
+//     - Adjacent column (+): change `padding: 10px 15px 15px 0;` to `padding: 10px 0 15px 15px;`
+//  =============================================================================
+
+// Import custom email fonts
+@import url("@{baseUrl}css/email-fonts.css");
+
+//
+//  Typography & Layout Base
+//  ---------------------------------------------
+body {
+    direction: rtl;
+    text-align: right;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+table {
+    border-collapse: collapse;
+    direction: rtl;
+}
+
+.wrapper {
+    width: 100% !important;
+    direction: rtl;
+}
+
+.wrapper-inner {
+    width: 100% !important;
+    padding-bottom: 30px;
+}
+
+.main {
+    width: 600px !important;
+    max-width: 100% !important;
+    margin: 0 auto;
+    direction: rtl;
+    text-align: right;
+}
+
+.header {
+    padding: 10px 10px 0;
+    text-align: right;
+}
+
+.main-content {
+    padding: 10px;
+    direction: rtl;
+    text-align: right;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+td,
+th {
+    text-align: right;
+}
+
+.email-order {
+    width: 100% !important;
+    border-collapse: collapse;
+    direction: rtl;
+}
+
+.email-intro td {
+    padding-bottom: 20px;
+    text-align: right;
+}
+
+.email-summary td {
+    padding-bottom: 20px;
+    text-align: right;
+}
+
+.email-summary h1 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 24px;
+    font-weight: 300;
+    text-align: right;
+}
+
+.email-summary p {
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: right;
+}
+
+//
+//  Order Details (Billing, Shipping, Methods)
+//  ---------------------------------------------
+.order-details {
+    width: 100% !important;
+    margin-bottom: 25px;
+    border-collapse: collapse;
+    direction: rtl;
+
+    tr {
+        > .address-details,
+        > .method-info {
+            padding: 10px 0 15px 15px;
+            width: 50%;
+            vertical-align: top;
+            text-align: right;
+
+            + .address-details,
+            + .method-info {
+                padding: 10px 15px 15px 0;
+            }
+
+            h3 {
+                margin-top: 0;
+                margin-bottom: 8px;
+                font-size: 16px;
+                font-weight: 700;
+                text-align: right;
+            }
+
+            p {
+                margin: 0;
+                line-height: 1.5;
+                text-align: right;
+            }
+        }
+    }
+
+    .payment-method {
+        margin: 0;
+        text-align: right;
+
+        .title {
+            font-weight: 400;
+        }
+    }
+}
+
+//
+//  Items Table
+//  ---------------------------------------------
+.email-items {
+    width: 100% !important;
+    border-collapse: collapse;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #e5e7eb;
+    direction: rtl;
+
+    thead {
+        tr {
+            th {
+                background-color: #f9fafb;
+                padding: 12px 10px;
+                font-weight: 700;
+                border-bottom: 1px solid #e5e7eb;
+                vertical-align: middle;
+                text-align: right;
+            }
+        }
+    }
+
+    tbody {
+        tr {
+            td {
+                padding: 12px 10px;
+                vertical-align: top;
+                border-bottom: 1px solid #e5e7eb;
+            }
+        }
+    }
+
+    .item-info {
+        text-align: right !important;
+        width: 60%;
+
+        .product-name {
+            font-weight: 700;
+            margin: 0 0 5px 0;
+            text-align: right;
+        }
+
+        .sku {
+            margin: 0;
+            color: #6b7280;
+            font-size: 12px;
+            text-align: right;
+        }
+
+        .item-options {
+            margin: 5px 0 0;
+            font-size: 12px;
+            text-align: right;
+
+            dt {
+                font-weight: 700;
+                text-align: right;
+            }
+
+            dd {
+                margin: 0 0 5px;
+                text-align: right;
+            }
+        }
+    }
+
+    .item-qty {
+        text-align: center !important;
+        width: 15%;
+    }
+
+    .item-price,
+    .item-subtotal {
+        text-align: left !important;
+        width: 25%;
+    }
+
+    .order-totals,
+    tfoot {
+        tr {
+            th {
+                text-align: right !important;
+                padding: 8px 10px;
+                font-weight: 400;
+                border-top: 1px solid #e5e7eb;
+            }
+
+            td {
+                text-align: left !important;
+                padding: 8px 10px;
+                border-top: 1px solid #e5e7eb;
+            }
+
+            &.grand_total {
+                th,
+                td {
+                    border-top: 2px solid #111827;
+                    font-size: 16px;
+                    font-weight: 700;
+                }
+            }
+        }
+    }
+}
+
+//
+//  Messages & Notes
+//  ---------------------------------------------
+.message-info {
+    width: 100% !important;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    direction: rtl;
+
+    td {
+        background-color: #fdf0d5;
+        border: 1px solid #f5c6cb;
+        padding: 10px;
+        text-align: right;
+        direction: rtl;
+    }
+}
+
+//
+//  Footer
+//  ---------------------------------------------
+.footer {
+    padding: 0 10px 10px;
+    text-align: right;
+    direction: rtl;
+}
+
+.closing {
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: right;
+    direction: rtl;
+}
+
+//
+//  Price & Formatting Utilities (BiDi Isolation)
+//  ---------------------------------------------
+.price {
+    white-space: nowrap;
+    direction: rtl;
+    display: inline-block;
+    unicode-bidi: embed;
+}
+
+.no-link {
+    direction: rtl;
+    display: inline-block;
+    unicode-bidi: embed;
+}
+/*rtl:end:ignore*/
+
+
