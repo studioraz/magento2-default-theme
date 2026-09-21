@@ -32,7 +32,8 @@
         "studioraz/magento2-page-builder": "^1.10"
     },
     "replace": {
-        "hyva-themes/magento2-default-theme": "*"
+        "hyva-themes/magento2-default-theme": "*",
+        "hyva-themes/magento2-mollie-theme-bundle": "*"
     },
     "type": "magento2-theme",
     "authors": [
