@@ -39,6 +39,6 @@ if ($legalNoticeMode === 'custom' && $legalNotice === '') {
 }
 
 ?>
-<p class="prose my-4 text-sm">
+<p class="prose my-4 text-sm hidden">
     <em><?= $specialEscaper->escapeHtml($legalNotice, ['a']) ?></em>
 </p>
