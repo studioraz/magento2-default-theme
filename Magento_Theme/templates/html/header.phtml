@@ -325,7 +325,7 @@ $showWishlist = $block->getShowWishlist() !== null ? (bool)$block->getShowWishli
 
         <?php // Inline search for desktop ?>
         <div class="col-span-full py-4 lg:py-0 lg:col-auto order-last lg:order-1 hidden lg:block">
-            <?= $block->getChildHtml('mst.searchautocomplete.hyva') ?: $block->getChildHtml('header-search'); ?>
+            <?= $block->getChildHtml('header-search'); ?>
         </div>
     </div>
 
@@ -346,7 +346,7 @@ $showWishlist = $block->getShowWishlist() !== null ? (bool)$block->getShowWishli
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-center pt-4 pb-2 gap-3">
                 <div class="w-full mx-auto">
-                    <?= $block->getChildHtml('mst.searchautocomplete.hyva') ?: $block->getChildHtml('header-search'); ?>
+                    <?= $block->getChildHtml('header-search'); ?>
                 </div>
 
                 <button
