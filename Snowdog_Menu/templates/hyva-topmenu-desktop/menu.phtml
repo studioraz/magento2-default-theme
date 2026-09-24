@@ -88,7 +88,7 @@ $uniqueId = '_' . uniqid();
                                         :aria-expanded="isSubmenuOpened('<?= $nodeId ?>')"
                                         @click="toggleSubmenu('<?= $nodeId ?>')"
                                 >
-                                    <?= $lucideIcons->renderHtml('chevron-down', 'text-white', 20, 20, ['aria-hidden' => 'true']) ?>
+                                    <?= $lucideIcons->renderHtml('chevron-down', '', 20, 20, ['aria-hidden' => 'true']) ?>
                                     <span class="sr-only">
                                         <?= $escaper->escapeHtml(__('Toggle submenu for %1', $title)) ?>
                                     </span>
