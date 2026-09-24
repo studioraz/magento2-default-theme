@@ -17,21 +17,15 @@ $content = $block->getContent();
 $title = $block->getTitle();
 $dataAttribute = 'data-menu="menu-' . $nodeId . '"';
 $nodeClasses = $block->getNodeClasses();
-$level = (int)$block->getLevel();
-
-if ($level === 0) {
-    $linkClasses = 'snowdog-menu-link level-0 block py-2 px-1 rounded aria-[current=page]:font-medium';
-} else {
-    $startPadding = $level >= 2 ? 'ps-6' : 'ps-4';
-    $linkClasses = "snowdog-menu-link py-3 leading-6 {$startPadding} pe-5 hover:bg-gray-100 aria-[current=page]:font-medium flex-1 min-w-0";
-    $linkClasses .= $imageUrl ? ' flex items-center gap-2' : ' block';
-}
-$linkClasses .= $nodeClasses ? ' ' . $nodeClasses : '';
+$nodeId = $block->getId();
 ?>
 
 <?php if ($content): ?>
-    <a href="<?= $escaper->escapeUrl($content) ?>"
-       class="<?= $escaper->escapeHtmlAttr($linkClasses) ?>"
+<a href="<?= $escaper->escapeUrl($content) ?>"
+   class="snowdog-menu-link flex items-center gap-2 <?= $escaper->escapeHtmlAttr($nodeClasses) ?>"
+   :class="{
+           'text-primary': isSubmenuOpened('<?= $nodeId ?>')
+       }"
         <?php if ($nodeId): ?>
             data-menu="menu-<?= $escaper->escapeHtmlAttr($nodeId) ?>"
         <?php endif; ?>
@@ -40,24 +34,24 @@ $linkClasses .= $nodeClasses ? ' ' . $nodeClasses : '';
             rel="noopener"
         <?php endif ?>
         <?= $dataAttribute ?>
-    >
-<?php else: ?>
-    <span class="<?= $escaper->escapeHtmlAttr($linkClasses) ?>"
+>
+    <?php else: ?>
+    <span class="snowdog-menu-link flex items-center gap-2 <?= $escaper->escapeHtmlAttr($nodeClasses) ?>"
      <?= $dataAttribute ?>
     >
 <?php endif; ?>
-    <?php if ($imageUrl): ?>
-        <img class=""
-             src="<?= $escaper->escapeUrl($imageUrl) ?>"
-             alt="<?= $escaper->escapeHtmlAttr($imageAltText) ?>"
-             loading="lazy"
-             width="<?= $escaper->escapeHtmlAttr($imageWidth) ?>"
-             height="<?= $escaper->escapeHtmlAttr($imageHeight) ?>"
-        />
-    <?php endif; ?>
-    <?= $escaper->escapeHtml($title) ?>
-<?php if ($content): ?>
-    </a>
+        <?php if ($imageUrl): ?>
+            <img class=""
+                 src="<?= $escaper->escapeUrl($imageUrl) ?>"
+                 alt="<?= $escaper->escapeHtmlAttr($imageAltText) ?>"
+                 loading="lazy"
+                 width="<?= $escaper->escapeHtmlAttr($imageWidth) ?>"
+                 height="<?= $escaper->escapeHtmlAttr($imageHeight) ?>"
+            />
+        <?php endif; ?>
+        <?= $escaper->escapeHtml($title) ?>
+        <?php if ($content): ?>
+</a>
 <?php else: ?>
     </span>
 <?php endif ?>
