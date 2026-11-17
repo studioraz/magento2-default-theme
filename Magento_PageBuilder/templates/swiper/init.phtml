@@ -374,10 +374,6 @@ $globalConfig = [
                     element.insertAdjacentHTML('beforeend', NAV_HTML);
                 }
 
-                if (!element.querySelector('.carousel-nav')) {
-                    element.insertAdjacentHTML('beforeend', NAV_HTML);
-                }
-
                 const config = deepMerge(
                     {on: {noSwipingSelector: '.product-item-add-to-cart'}},
                     GLOBAL_CONFIG.products || {},
@@ -439,17 +435,8 @@ $globalConfig = [
             if (!window.hyvaSwiperPromise) {
             window.hyvaSwiperLoading = true;
             scriptLoading = true;
-                const existingScript = document.querySelector('script[src*="swiper-bundle"]');
 
                 window.hyvaSwiperPromise = new Promise((resolve, reject) => {
-                    if (existingScript) {
-                        const checkInterval = setInterval(() => {
-                            if (typeof Swiper !== 'undefined') {
-                                clearInterval(checkInterval);
-                                resolve(window.Swiper);
-                            }
-                        }, 30);
-                    } else {
                         const s = document.createElement('script');
                         s.src = SWIPER_URL;
                         s.async = true;
@@ -461,7 +448,6 @@ $globalConfig = [
                             reject(err);
                         };
                         document.head.appendChild(s);
-                    }
                 });
             }
 

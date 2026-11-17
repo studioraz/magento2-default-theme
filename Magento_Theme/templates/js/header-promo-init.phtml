@@ -59,31 +59,20 @@ $swiperUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
                 this.isHidden = window.scrollY > 1;
             },
 
-            initSwiper() {
+            loadSwiper() {
                 if (typeof Swiper !== 'undefined') {
-                    this.runSwiperConfig();
-                    return;
+                    return Promise.resolve(window.Swiper);
                 }
 
-                if (typeof window.loadSwiper === 'function') {
-                    window.loadSwiper().then(() => this.runSwiperConfig());
-                    return;
+                if (typeof window.hyvaLoadSwiper === 'function') {
+                    return window.hyvaLoadSwiper();
                 }
 
                 if (!window.hyvaSwiperPromise) {
                     window.hyvaSwiperLoading = true;
                     const swiperSrc = '<?= $escaper->escapeUrl($swiperUrl) ?>';
-                    const existingScript = document.querySelector('script[src*="swiper-bundle"]');
 
                     window.hyvaSwiperPromise = new Promise((resolve, reject) => {
-                        if (existingScript) {
-                            const checkInterval = setInterval(() => {
-                                if (typeof Swiper !== 'undefined') {
-                                    clearInterval(checkInterval);
-                                    resolve(window.Swiper);
-                                }
-                            }, 30);
-                        } else {
                             const script = document.createElement('script');
                             script.src = swiperSrc;
                             script.async = true;
@@ -94,11 +83,16 @@ $swiperUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
                                 reject(err);
                             };
                             document.head.appendChild(script);
-                        }
                     });
+
+                    window.hyvaLoadSwiper = window.hyvaLoadSwiper || (() => window.hyvaSwiperPromise);
                 }
 
-                window.hyvaSwiperPromise.then(() => this.runSwiperConfig()).catch(console.error);
+                return window.hyvaSwiperPromise;
+            },
+
+            initSwiper() {
+                this.loadSwiper().then(() => this.runSwiperConfig()).catch(console.error);
             },
 
             runSwiperConfig() {

@@ -63,31 +63,20 @@ $swiperUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
             isShowPagination: <?= $isShowPagination ?>,
             swiperInstance: null,
 
-            initSwiper() {
+            loadSwiper() {
                 if (typeof Swiper !== 'undefined') {
-                    this.runSwiperConfig();
-                    return;
+                    return Promise.resolve(window.Swiper);
                 }
 
                 if (typeof window.loadSwiper === 'function') {
-                    window.loadSwiper().then(() => this.runSwiperConfig());
-                    return;
+                    return window.loadSwiper();
                 }
 
                 if (!window.hyvaSwiperPromise) {
                     window.hyvaSwiperLoading = true;
                     const swiperSrc = '<?= $escaper->escapeUrl($swiperUrl) ?>';
-                    const existingScript = document.querySelector('script[src*="swiper-bundle"]');
 
                     window.hyvaSwiperPromise = new Promise((resolve, reject) => {
-                        if (existingScript) {
-                            const checkInterval = setInterval(() => {
-                                if (typeof Swiper !== 'undefined') {
-                                    clearInterval(checkInterval);
-                                    resolve(window.Swiper);
-                                }
-                            }, 30);
-                        } else {
                             const script = document.createElement('script');
                             script.src = swiperSrc;
                             script.async = true;
@@ -98,18 +87,30 @@ $swiperUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
                                 reject(err);
                             };
                             document.head.appendChild(script);
-                        }
                     });
+
+                    window.loadSwiper = window.loadSwiper || (() => window.hyvaSwiperPromise);
                 }
 
-                window.hyvaSwiperPromise.then(() => this.runSwiperConfig()).catch(console.error);
+                return window.hyvaSwiperPromise;
+            },
+
+            initSwiper() {
+                this.loadSwiper().then(() => this.runSwiperConfig()).catch(console.error);
             },
 
             runSwiperConfig() {
                 if (this.swiperInstance) return;
 
+                const container = this.$el.querySelector('.brand-swiper-container');
+                if (!container) return;
+
                 const isLoop = !!this.isAutoplayLoop;
                 const itemCount = <?= count($items) ?>;
+
+                const nextButton = this.$el.querySelector('.swiper-button-next.brand');
+                const prevButton = this.$el.querySelector('.swiper-button-prev.brand');
+                const paginationEl = this.$el.querySelector('.swiper-pagination.brand');
 
                 const swiperOptions = {
                     autoplay: this.isAutoplay ? {
@@ -120,14 +121,14 @@ $swiperUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
                     loop: isLoop,
                     freeMode: true,
                     watchSlidesProgress: true,
-                    pagination: this.isShowPagination ? {
-                        el: '.swiper-pagination.brand',
+                    pagination: (this.isShowPagination && paginationEl) ? {
+                        el: paginationEl,
                         clickable: true,
                     } : false,
-                    navigation: {
-                        nextEl: '.swiper-button-next.brand',
-                        prevEl: '.swiper-button-prev.brand',
-                    },
+                    navigation: (nextButton && prevButton) ? {
+                        nextEl: nextButton,
+                        prevEl: prevButton,
+                    } : false,
                     breakpoints: {
                         0: {slidesPerView: 2.5, spaceBetween: 5},
                         425: {slidesPerView: 3.5, spaceBetween: 5},
@@ -184,7 +185,7 @@ $swiperUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
                     loop: isLoop,
                 };
 
-                this.swiperInstance = new Swiper('.brand-swiper-container', finalConfig);
+                this.swiperInstance = new Swiper(container, finalConfig);
 
                 if (isMarquee && this.pauseOnHover && this.swiperInstance) {
                     const container = this.$el.querySelector('.brand-swiper-container');
