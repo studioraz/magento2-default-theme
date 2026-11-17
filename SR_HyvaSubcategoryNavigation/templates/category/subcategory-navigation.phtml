@@ -32,31 +32,20 @@ $lucideIcons = $viewModels->require(LucideIcons::class);
             return {
                 swiperInstance: null,
 
-                initSwiper() {
+                loadSwiper() {
                     if (typeof Swiper !== 'undefined') {
-                        this.runSwiperConfig();
-                        return;
+                        return Promise.resolve(window.Swiper);
                     }
 
                     if (typeof window.loadSwiper === 'function') {
-                        window.loadSwiper().then(() => this.runSwiperConfig());
-                        return;
+                        return window.loadSwiper();
                     }
 
                     if (!window.hyvaSwiperPromise) {
                         window.hyvaSwiperLoading = true;
                         const swiperSrc = '<?= $escaper->escapeUrl($swiperUrl) ?>';
-                        const existingScript = document.querySelector('script[src*="swiper-bundle"]');
 
                         window.hyvaSwiperPromise = new Promise((resolve, reject) => {
-                            if (existingScript) {
-                                const checkInterval = setInterval(() => {
-                                    if (typeof Swiper !== 'undefined') {
-                                        clearInterval(checkInterval);
-                                        resolve(window.Swiper);
-                                    }
-                                }, 30);
-                            } else {
                                 const script = document.createElement('script');
                                 script.src = swiperSrc;
                                 script.async = true;
@@ -67,11 +56,16 @@ $lucideIcons = $viewModels->require(LucideIcons::class);
                                     reject(err);
                                 };
                                 document.head.appendChild(script);
-                            }
                         });
+
+                        window.loadSwiper = window.loadSwiper || (() => window.hyvaSwiperPromise);
                     }
 
-                    window.hyvaSwiperPromise.then(() => this.runSwiperConfig()).catch(console.error);
+                    return window.hyvaSwiperPromise;
+                },
+
+                initSwiper() {
+                    this.loadSwiper().then(() => this.runSwiperConfig()).catch(console.error);
                 },
 
                 runSwiperConfig() {
