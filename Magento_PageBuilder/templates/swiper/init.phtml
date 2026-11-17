@@ -430,29 +430,52 @@ $globalConfig = [
         };
 
         const loadLibrary = () => {
-            if (scriptLoaded || scriptLoading) return;
-            // Global Lock to prevent duplicate downloads
-            if (window.hyvaSwiperLoading) {
-                const checkInterval = setInterval(() => {
                     if (typeof Swiper !== 'undefined') {
-                        clearInterval(checkInterval);
                         scriptLoaded = true;
                         runQueue();
+                return Promise.resolve(window.Swiper);
                     }
-                }, 50);
-                return;
-            }
+
+            if (!window.hyvaSwiperPromise) {
             window.hyvaSwiperLoading = true;
             scriptLoading = true;
-            const s = document.createElement('script');
-            s.src = SWIPER_URL;
-            s.async = true;
-            s.onload = () => {
+                const existingScript = document.querySelector('script[src*="swiper-bundle"]');
+
+                window.hyvaSwiperPromise = new Promise((resolve, reject) => {
+                    if (existingScript) {
+                        const checkInterval = setInterval(() => {
+                            if (typeof Swiper !== 'undefined') {
+                                clearInterval(checkInterval);
+                                resolve(window.Swiper);
+                            }
+                        }, 30);
+                    } else {
+                        const s = document.createElement('script');
+                        s.src = SWIPER_URL;
+                        s.async = true;
+                        s.onload = () => resolve(window.Swiper);
+                        s.onerror = (err) => {
+                            window.hyvaSwiperPromise = null;
+                            window.hyvaSwiperLoading = false;
+                            scriptLoading = false;
+                            reject(err);
+                        };
+                        document.head.appendChild(s);
+                    }
+                });
+            }
+
+            window.hyvaSwiperPromise.then(() => {
                 scriptLoaded = true;
+                scriptLoading = false;
                 runQueue();
+            }).catch(console.error);
+
+            return window.hyvaSwiperPromise;
             };
-            document.head.appendChild(s);
-        };
+
+        window.hyvaLoadSwiper = loadLibrary;
+        window.loadSwiper = loadLibrary;
 
         const observer = new IntersectionObserver((entries, obs) => {
             entries.forEach(entry => {

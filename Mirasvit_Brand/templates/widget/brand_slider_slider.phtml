@@ -64,27 +64,45 @@ $swiperUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
             swiperInstance: null,
 
             initSwiper() {
-                if (typeof Swiper === 'undefined') {
-                    const swiperSrc = '<?= $escaper->escapeUrl($swiperUrl) ?>';
-                    const existingScript = document.querySelector(`script[src="${swiperSrc}"]`);
-
-                    if (!existingScript) {
-                        const script = document.createElement('script');
-                        script.src = swiperSrc;
-                        script.async = true;
-                        script.onload = () => this.runSwiperConfig();
-                        document.head.appendChild(script);
-                    } else {
-                        const checkInterval = setInterval(() => {
-                            if (typeof Swiper !== 'undefined') {
-                                clearInterval(checkInterval);
-                                this.runSwiperConfig();
-                            }
-                        }, 50);
-                    }
-                } else {
+                if (typeof Swiper !== 'undefined') {
                     this.runSwiperConfig();
+                    return;
                 }
+
+                if (typeof window.loadSwiper === 'function') {
+                    window.loadSwiper().then(() => this.runSwiperConfig());
+                    return;
+                }
+
+                if (!window.hyvaSwiperPromise) {
+                    window.hyvaSwiperLoading = true;
+                    const swiperSrc = '<?= $escaper->escapeUrl($swiperUrl) ?>';
+                    const existingScript = document.querySelector('script[src*="swiper-bundle"]');
+
+                    window.hyvaSwiperPromise = new Promise((resolve, reject) => {
+                        if (existingScript) {
+                            const checkInterval = setInterval(() => {
+                                if (typeof Swiper !== 'undefined') {
+                                    clearInterval(checkInterval);
+                                    resolve(window.Swiper);
+                                }
+                            }, 30);
+                        } else {
+                            const script = document.createElement('script');
+                            script.src = swiperSrc;
+                            script.async = true;
+                            script.onload = () => resolve(window.Swiper);
+                            script.onerror = (err) => {
+                                window.hyvaSwiperPromise = null;
+                                window.hyvaSwiperLoading = false;
+                                reject(err);
+                            };
+                            document.head.appendChild(script);
+                        }
+                    });
+                }
+
+                window.hyvaSwiperPromise.then(() => this.runSwiperConfig()).catch(console.error);
             },
 
             runSwiperConfig() {
@@ -111,11 +129,11 @@ $swiperUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
                         prevEl: '.swiper-button-prev.brand',
                     },
                     breakpoints: {
-                        0: { slidesPerView: 2.5, spaceBetween: 5 },
-                        425: { slidesPerView: 3.5, spaceBetween: 5 },
-                        768: { slidesPerView: 6, slidesPerGroup: 6, spaceBetween: 10 },
-                        1024: { slidesPerView: 6, slidesPerGroup: 1, spaceBetween: 10 },
-                        1440: { slidesPerView: 7, slidesPerGroup: 1, spaceBetween: 10 }
+                        0: {slidesPerView: 2.5, spaceBetween: 5},
+                        425: {slidesPerView: 3.5, spaceBetween: 5},
+                        768: {slidesPerView: 6, slidesPerGroup: 6, spaceBetween: 10},
+                        1024: {slidesPerView: 6, slidesPerGroup: 1, spaceBetween: 10},
+                        1440: {slidesPerView: 7, slidesPerGroup: 1, spaceBetween: 10}
                     },
                     on: {
                         progress: (swiper) => {
@@ -143,7 +161,12 @@ $swiperUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
                     }
                 }
 
-                const { breakpoints: cfgBreakpoints, loop: cfgLoop, slidesPerView: cfgSpv, ...safeConfig } = (this.config || {});
+                const {
+                    breakpoints: cfgBreakpoints,
+                    loop: cfgLoop,
+                    slidesPerView: cfgSpv,
+                    ...safeConfig
+                } = (this.config || {});
 
                 const finalConfig = {
                     ...swiperOptions,
@@ -151,9 +174,9 @@ $swiperUrl = $block->getViewFileUrl('swiper/swiper-bundle.min.js');
                     breakpoints: isMarquee
                         ? undefined
                         : (swiperOptions.breakpoints && cfgBreakpoints)
-                            ? { ...swiperOptions.breakpoints, ...cfgBreakpoints }
+                            ? {...swiperOptions.breakpoints, ...cfgBreakpoints}
                             : (cfgBreakpoints || swiperOptions.breakpoints),
-                    ...(isMarquee ? { slidesPerView: 'auto' } : {}),
+                    ...(isMarquee ? {slidesPerView: 'auto'} : {}),
                     on: {
                         ...swiperOptions.on,
                         ...(this.config.on || {})
