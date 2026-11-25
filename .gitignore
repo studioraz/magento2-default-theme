@@ -5,3 +5,4 @@ web/tailwind/package-lock.json
 /vendor/
 grumphp.yml
 !grumphp.yml.sample
+.idea
