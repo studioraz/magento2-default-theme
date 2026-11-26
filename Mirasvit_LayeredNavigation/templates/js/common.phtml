@@ -191,18 +191,35 @@ $additionalConfig = $block->getJsonConfig()['*']['Mirasvit_LayeredNavigation/js/
                 let sidebarExists = true;
                 // for chrome translation
                 leftnav = leftnav.replace(/aria-label=\"(.*?)\"/, '');
-                let navigation = document.querySelector('.sidebar.sidebar-main .block.filter, .sidebar.sidebar-main .block.filter, .sidebar.sidebar-main .block-content');
-
-                // compatibility with 1-column layout
-                if(!navigation) {
-                    navigation = document.querySelector('.column.main .block.filter, .column.main .block.filter, .column.main .block-content');
-                    sidebarExists = false
+                let navigations = document.querySelectorAll('.sidebar.sidebar-main .block.filter');
+                if (!navigations.length) {
+                    navigations = document.querySelectorAll('.sidebar.sidebar-main .block-content.filter-content');
+                }
+                if (!navigations.length) {
+                    navigations = document.querySelectorAll('.sidebar.sidebar-main .block-content');
                 }
 
-                if (leftnav) {
-                    const el = navigation.parentElement;
+                // compatibility with 1-column layout
+                if (!navigations.length) {
+                    navigations = document.querySelectorAll('.column.main .block.filter');
+                    if (!navigations.length) {
+                        navigations = document.querySelectorAll('.column.main .block-content.filter-content');
+                    }
+                    if (!navigations.length) {
+                        navigations = document.querySelectorAll('.column.main .block-content');
+                    }
+                    sidebarExists = false;
+                }
 
-                    el.outerHTML = this.renderJSFromContent(leftnav);
+                if (leftnav && navigations.length) {
+                    const renderedLeftnav = this.renderJSFromContent(leftnav);
+
+                    navigations.forEach(function (navigation) {
+                        const el = navigation.parentElement;
+                        if (el) {
+                            el.outerHTML = renderedLeftnav;
+                        }
+                    });
 
                     const scriptsSelector = sidebarExists ? '.sidebar.sidebar-main script' : '.column.main script';
                     /* remove duplicated scripts */
